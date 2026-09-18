@@ -62,4 +62,60 @@ router.get(
   AuditController.getLogs
 );
 
+// ==========================================
+// 4. Phase 2: Merchandising & Commercial Routes
+// ==========================================
+import { MerchandisingController } from '../modules/merchandising/merchandising.controller';
+
+// Buyers
+router.get('/buyers', MerchandisingController.getBuyers);
+router.get('/buyers/:id', MerchandisingController.getBuyerById);
+router.post(
+  '/buyers',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_BUYERS),
+  MerchandisingController.createBuyer
+);
+
+// Styles & Tech Packs
+router.get('/styles', MerchandisingController.getStyles);
+router.get('/styles/:id', MerchandisingController.getStyleById);
+router.post(
+  '/styles',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_STYLES),
+  MerchandisingController.createStyle
+);
+
+// Costing Sheets & Margin Control
+router.get('/costing', MerchandisingController.getCostingSheets);
+router.post(
+  '/costing',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_COSTING),
+  MerchandisingController.createCostingSheet
+);
+router.put(
+  '/costing/:id/approve',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.APPROVE_COSTING),
+  MerchandisingController.approveCostingSheet
+);
+
+// Buyer Purchase Orders & BOM / MRP
+router.get('/orders/po', MerchandisingController.getPurchaseOrders);
+router.get('/orders/po/:id', MerchandisingController.getPurchaseOrderById);
+router.post(
+  '/orders/po',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_ORDERS),
+  MerchandisingController.createPurchaseOrder
+);
+router.put(
+  '/orders/po/:id/status',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_ORDERS),
+  MerchandisingController.updatePOStatus
+);
+
 export default router;

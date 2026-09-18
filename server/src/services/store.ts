@@ -1,6 +1,15 @@
 import bcrypt from 'bcryptjs';
 import { PREDEFINED_ROLES } from '../config/constants';
 import { AuditLogEntry, SystemRoleCode, UserPayload } from '../types';
+import { 
+  Buyer, 
+  GarmentStyle, 
+  CostingSheet, 
+  BuyerPurchaseOrder, 
+  BOMItem, 
+  TechPackVersion,
+  POStatus
+} from '../types/merchandising';
 
 export interface UserRecord {
   id: string;
@@ -90,6 +99,10 @@ class SystemStore {
   private users: UserRecord[] = [];
   private auditLogs: AuditLogEntry[] = [];
   private refreshTokens: Map<string, string> = new Map(); // userId -> token
+  private buyers: Buyer[] = [];
+  private styles: GarmentStyle[] = [];
+  private costingSheets: CostingSheet[] = [];
+  private purchaseOrders: BuyerPurchaseOrder[] = [];
 
   constructor() {
     this.initializeData();
@@ -356,6 +369,320 @@ class SystemStore {
 
     this.users = defaultUsers;
 
+    // 3. Pre-seed Global Export Buyers
+    this.buyers = [
+      {
+        id: 'buy-hm-01',
+        name: 'H&M Hennes & Mauritz GBC AB',
+        code: 'HM-EU',
+        country: 'Sweden',
+        currency: 'EUR',
+        paymentTerms: 'LC at sight (100% Irrevocable)',
+        shippingTerms: 'FOB',
+        portOfDischarge: 'Port of Hamburg / Gothenburg',
+        contacts: [
+          { id: 'cnt-1', name: 'Lars Lindqvist', email: 'lars.lindqvist@hm.com', phone: '+46 8 796 55 00', designation: 'Country Sourcing Manager' }
+        ],
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'buy-zara-02',
+        name: 'Inditex S.A. (Zara Fashion)',
+        code: 'INDITEX-ES',
+        country: 'Spain',
+        currency: 'EUR',
+        paymentTerms: 'TT 60 Days from B/L',
+        shippingTerms: 'FOB',
+        portOfDischarge: 'Port of Barcelona / Valencia',
+        contacts: [
+          { id: 'cnt-2', name: 'Sofia Rodriguez', email: 'sofia.rodriguez@inditex.es', phone: '+34 981 185 400', designation: 'Senior Buyer Apparel' }
+        ],
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'buy-target-03',
+        name: 'Target Brands Inc.',
+        code: 'TARGET-US',
+        country: 'United States',
+        currency: 'USD',
+        paymentTerms: 'LC 90 Days',
+        shippingTerms: 'FOB',
+        portOfDischarge: 'Port of Los Angeles (LAX)',
+        contacts: [
+          { id: 'cnt-3', name: 'David Miller', email: 'david.miller@target.com', phone: '+1 612 304 6073', designation: 'Global Procurement Lead' }
+        ],
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    // 4. Pre-seed Garment Styles & Multi-Version Tech Packs
+    this.styles = [
+      {
+        id: 'stl-polo-01',
+        buyerId: 'buy-hm-01',
+        buyerName: 'H&M Hennes & Mauritz GBC AB',
+        styleNumber: 'TSH-2026-001',
+        styleName: 'Men’s Regular Pique Polo Shirt with Rib Collar',
+        season: 'Summer 2026',
+        productCategory: 'Knitwear',
+        garmentType: 'Polo Shirt',
+        brand: 'H&M Basic Collection',
+        availableColors: ['Jet Black', 'Optical White', 'Navy Blue'],
+        availableSizes: ['S', 'M', 'L', 'XL', 'XXL'],
+        activeTechPackVersion: 'v2.0',
+        techPackVersions: [
+          {
+            version: 'v1.0',
+            revisionDate: '2026-06-10T10:00:00Z',
+            createdBy: 'Tariqul Islam',
+            isApproved: false,
+            fabricSpecs: {
+              composition: '100% Combed Ring-Spun Cotton',
+              construction: 'Pique Knit',
+              weightGsm: 180,
+              yarnCount: '26/1 Ne',
+              finishingWash: 'Bio-polish Silicon Softener Wash'
+            },
+            stitchSpecs: '12-14 SPI (Stitches Per Inch), 3-thread overlock with twin needle hem',
+            washingInstructions: 'Machine wash 40°C, wash inside out with similar colors, do not tumble dry',
+            artworkNotes: 'Self fabric collar with 2-hole horn button placket',
+            measurements: [
+              { pointOfMeasure: '1/2 Chest width (2.5cm below armhole)', code: 'CHEST', tolerancePlusCm: 1.0, toleranceMinusCm: 1.0, specsBySize: { S: 50, M: 53, L: 56, XL: 59, XXL: 62 } },
+              { pointOfMeasure: 'Body length from HPS (High Point Shoulder)', code: 'LENGTH', tolerancePlusCm: 1.5, toleranceMinusCm: 1.5, specsBySize: { S: 70, M: 72, L: 74, XL: 76, XXL: 78 } },
+              { pointOfMeasure: 'Short sleeve length from shoulder seam', code: 'SLEEVE', tolerancePlusCm: 0.5, toleranceMinusCm: 0.5, specsBySize: { S: 21, M: 22, L: 23, XL: 24, XXL: 25 } }
+            ]
+          },
+          {
+            version: 'v2.0',
+            revisionDate: '2026-07-15T14:30:00Z',
+            createdBy: 'Tariqul Islam',
+            isApproved: true,
+            fabricSpecs: {
+              composition: '100% Combed Ring-Spun Cotton (BCI Certified)',
+              construction: 'Honey-comb Pique Knit',
+              weightGsm: 185,
+              yarnCount: '28/1 Ne Compact',
+              finishingWash: 'Bio-wash Enzymatic Softener'
+            },
+            stitchSpecs: '14 SPI, Reinforcement tape at back neck & side slits',
+            washingInstructions: 'Machine wash 40°C delicate, wash inside out, iron on reverse',
+            artworkNotes: 'Embroidered tone-on-tone logo at left chest (35mm width)',
+            measurements: [
+              { pointOfMeasure: '1/2 Chest width (2.5cm below armhole)', code: 'CHEST', tolerancePlusCm: 1.0, toleranceMinusCm: 1.0, specsBySize: { S: 50, M: 53, L: 56, XL: 59, XXL: 62 } },
+              { pointOfMeasure: 'Body length from HPS', code: 'LENGTH', tolerancePlusCm: 1.5, toleranceMinusCm: 1.5, specsBySize: { S: 71, M: 73, L: 75, XL: 77, XXL: 79 } },
+              { pointOfMeasure: 'Short sleeve length', code: 'SLEEVE', tolerancePlusCm: 0.5, toleranceMinusCm: 0.5, specsBySize: { S: 21.5, M: 22.5, L: 23.5, XL: 24.5, XXL: 25.5 } },
+              { pointOfMeasure: 'Neck width / Collar circumference', code: 'COLLAR', tolerancePlusCm: 0.5, toleranceMinusCm: 0.5, specsBySize: { S: 40, M: 41.5, L: 43, XL: 44.5, XXL: 46 } }
+            ]
+          }
+        ],
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'stl-hoodie-02',
+        buyerId: 'buy-target-03',
+        buyerName: 'Target Brands Inc.',
+        styleNumber: 'HOD-2026-002',
+        styleName: 'Unisex Brushed Heavy Fleece Pullover Hoodie',
+        season: 'Winter 2026',
+        productCategory: 'Fleece / Sweatshirt',
+        garmentType: 'Fleece Hoodie',
+        brand: 'Goodfellow & Co.',
+        availableColors: ['Heather Grey', 'Military Olive', 'Washed Black'],
+        availableSizes: ['M', 'L', 'XL', 'XXL'],
+        activeTechPackVersion: 'v1.0',
+        techPackVersions: [
+          {
+            version: 'v1.0',
+            revisionDate: '2026-08-01T09:00:00Z',
+            createdBy: 'Tariqul Islam',
+            isApproved: true,
+            fabricSpecs: {
+              composition: '80% Organic Cotton / 20% Recycled Polyester',
+              construction: '3-End Brushed Fleece',
+              weightGsm: 320,
+              yarnCount: '20s + 10s fleece back',
+              finishingWash: 'Pre-shrunk Anti-pilling Wash'
+            },
+            stitchSpecs: 'Flatlock seam on kangaroo pocket and armholes',
+            washingInstructions: 'Wash cold with similar colors, tumble dry low',
+            artworkNotes: 'Double layered hood with round cotton drawcord and brass eyelets',
+            measurements: [
+              { pointOfMeasure: '1/2 Chest width', code: 'CHEST', tolerancePlusCm: 1.5, toleranceMinusCm: 1.5, specsBySize: { M: 58, L: 61, XL: 64, XXL: 67 } },
+              { pointOfMeasure: 'Body length from HPS', code: 'LENGTH', tolerancePlusCm: 2.0, toleranceMinusCm: 2.0, specsBySize: { M: 72, L: 74, XL: 76, XXL: 78 } }
+            ]
+          }
+        ],
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    // 5. Pre-seed Costing Sheets (Itemized BOM Breakdown & Margin Controls)
+    this.costingSheets = [
+      {
+        id: 'cst-polo-01',
+        styleId: 'stl-polo-01',
+        styleNumber: 'TSH-2026-001',
+        version: 1,
+        currency: 'USD',
+        items: [
+          { category: 'FABRIC', description: '100% Cotton Pique 185 GSM (0.85 KG / pc)', unit: 'KG', consumptionPerPc: 0.85, unitPriceUsd: 4.50, totalCostUsd: 3.825 },
+          { category: 'TRIMS', description: 'Rib collar & cuff, woven main label, care label', unit: 'set', consumptionPerPc: 1.0, unitPriceUsd: 0.25, totalCostUsd: 0.25 },
+          { category: 'ACCESSORIES', description: 'Buttons (3 pcs), polybag, hangtag & barcode', unit: 'set', consumptionPerPc: 1.0, unitPriceUsd: 0.125, totalCostUsd: 0.125 },
+          { category: 'CM', description: 'Cost of Making (Cutting, Sewing, Trimming)', unit: 'pc', consumptionPerPc: 1.0, unitPriceUsd: 1.50, totalCostUsd: 1.50 },
+          { category: 'WASHING', description: 'Bio-enzymatic softening wash', unit: 'pc', consumptionPerPc: 1.0, unitPriceUsd: 0.30, totalCostUsd: 0.30 },
+          { category: 'OVERHEAD', description: 'Factory utility, commercial LC & forwarder fee', unit: 'pc', consumptionPerPc: 1.0, unitPriceUsd: 0.50, totalCostUsd: 0.50 }
+        ],
+        materialCostUsd: 4.20,
+        productionCostUsd: 1.80,
+        overheadCostUsd: 0.50,
+        totalCostUsd: 6.50,
+        offeredPriceUsd: 8.00,
+        profitMarginUsd: 1.50,
+        profitMarginPercent: 18.75,
+        status: 'APPROVED',
+        approvedBy: 'Mahmudul Hasan (Savar GM)',
+        updatedAt: new Date().toISOString()
+      }
+    ];
+
+    // 6. Pre-seed Buyer Purchase Orders with Dynamic BOM & MRP Shortage
+    this.purchaseOrders = [
+      {
+        id: 'po-2026-001',
+        poNumber: 'PO-2026-001',
+        buyerId: 'buy-hm-01',
+        buyerName: 'H&M Hennes & Mauritz GBC AB',
+        styleId: 'stl-polo-01',
+        styleNumber: 'TSH-2026-001',
+        styleName: 'Men’s Regular Pique Polo Shirt',
+        factoryId: factoryDhakaId,
+        factoryName: 'Apex Garments — Dhaka Unit (Savar)',
+        orderQuantity: 10000,
+        unitPriceUsd: 8.00,
+        totalOrderValueUsd: 80000.00,
+        orderDate: '2026-08-01',
+        exFactoryDeliveryDate: '2026-11-30',
+        status: 'IN_PRODUCTION',
+        colorSizeBreakdown: [
+          { color: 'Jet Black', size: 'S', quantity: 1000 },
+          { color: 'Jet Black', size: 'M', quantity: 1500 },
+          { color: 'Jet Black', size: 'L', quantity: 1500 },
+          { color: 'Jet Black', size: 'XL', quantity: 1000 },
+          { color: 'Optical White', size: 'S', quantity: 1000 },
+          { color: 'Optical White', size: 'M', quantity: 1500 },
+          { color: 'Optical White', size: 'L', quantity: 1500 },
+          { color: 'Optical White', size: 'XL', quantity: 1000 }
+        ],
+        bom: [
+          {
+            id: 'bom-1',
+            itemType: 'FABRIC',
+            itemName: '100% Cotton Pique 185 GSM (Black & White)',
+            specification: 'Honey-comb knit, 28/1 Ne compact',
+            unit: 'KG',
+            consumptionPerPiece: 0.85,
+            wastagePercent: 5.0,
+            totalRequiredQty: 8925,
+            availableStockQty: 5000,
+            allocatedStockQty: 5000,
+            shortageQty: 3925,
+            procurementStatus: 'SHORTAGE'
+          },
+          {
+            id: 'bom-2',
+            itemType: 'TRIM',
+            itemName: 'Main Woven Brand Label (H&M Basic)',
+            specification: 'Damask weave 45mm x 20mm',
+            unit: 'PCS',
+            consumptionPerPiece: 1.0,
+            wastagePercent: 3.0,
+            totalRequiredQty: 10300,
+            availableStockQty: 15000,
+            allocatedStockQty: 10300,
+            shortageQty: 0,
+            procurementStatus: 'IN_STOCK'
+          },
+          {
+            id: 'bom-3',
+            itemType: 'ACCESSORY',
+            itemName: '18L 2-Hole Horn Pearl Button',
+            specification: 'Laser engraved H&M logo',
+            unit: 'PCS',
+            consumptionPerPiece: 3.0,
+            wastagePercent: 5.0,
+            totalRequiredQty: 31500,
+            availableStockQty: 20000,
+            allocatedStockQty: 20000,
+            shortageQty: 11500,
+            procurementStatus: 'SHORTAGE'
+          },
+          {
+            id: 'bom-4',
+            itemType: 'PACKAGING',
+            itemName: 'Individual Polybag (Recycled LDPE)',
+            specification: 'Self-adhesive seal with suffocation warning',
+            unit: 'PCS',
+            consumptionPerPiece: 1.0,
+            wastagePercent: 2.0,
+            totalRequiredQty: 10200,
+            availableStockQty: 12000,
+            allocatedStockQty: 10200,
+            shortageQty: 0,
+            procurementStatus: 'IN_STOCK'
+          }
+        ],
+        costingId: 'cst-polo-01',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: 'po-2026-002',
+        poNumber: 'PO-2026-002',
+        buyerId: 'buy-target-03',
+        buyerName: 'Target Brands Inc.',
+        styleId: 'stl-hoodie-02',
+        styleNumber: 'HOD-2026-002',
+        styleName: 'Unisex Brushed Heavy Fleece Pullover Hoodie',
+        factoryId: factoryDhakaId,
+        factoryName: 'Apex Garments — Dhaka Unit (Savar)',
+        orderQuantity: 15000,
+        unitPriceUsd: 14.50,
+        totalOrderValueUsd: 217500.00,
+        orderDate: '2026-08-15',
+        exFactoryDeliveryDate: '2026-12-20',
+        status: 'APPROVED',
+        colorSizeBreakdown: [
+          { color: 'Heather Grey', size: 'M', quantity: 2500 },
+          { color: 'Heather Grey', size: 'L', quantity: 3000 },
+          { color: 'Heather Grey', size: 'XL', quantity: 2000 },
+          { color: 'Washed Black', size: 'M', quantity: 2500 },
+          { color: 'Washed Black', size: 'L', quantity: 3000 },
+          { color: 'Washed Black', size: 'XL', quantity: 2000 }
+        ],
+        bom: [
+          {
+            id: 'bom-h1',
+            itemType: 'FABRIC',
+            itemName: '80/20 Cotton/Poly 320 GSM Brushed Fleece',
+            specification: 'Heather Grey & Jet Black',
+            unit: 'KG',
+            consumptionPerPiece: 1.25,
+            wastagePercent: 5.0,
+            totalRequiredQty: 19688,
+            availableStockQty: 12000,
+            allocatedStockQty: 12000,
+            shortageQty: 7688,
+            procurementStatus: 'SHORTAGE'
+          }
+        ],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    ];
+
     // Log system genesis
     this.addAuditLog({
       id: 'audit-001',
@@ -365,7 +692,7 @@ class SystemStore {
       action: 'CREATE',
       entityName: 'SystemGenesis',
       entityId: 'SYSTEM-ROOT',
-      newValues: { message: 'GarmentERP BD initialized with multi-tiered Bangladesh factory hierarchy.' },
+      newValues: { message: 'GarmentERP BD initialized with multi-tiered Bangladesh factory hierarchy and Phase 2 Merchandising models.' },
       timestamp: new Date().toISOString()
     });
   }
@@ -475,6 +802,112 @@ class SystemStore {
 
   public getAuditLogs(limit: number = 100): AuditLogEntry[] {
     return this.auditLogs.slice(0, limit);
+  }
+
+  // ==========================================
+  // Phase 2: Merchandising & Commercial Methods
+  // ==========================================
+
+  // Buyers
+  public getAllBuyers(): Buyer[] {
+    return this.buyers;
+  }
+
+  public getBuyerById(id: string): Buyer | undefined {
+    return this.buyers.find(b => b.id === id);
+  }
+
+  public createBuyer(buyer: Omit<Buyer, 'id' | 'createdAt'>): Buyer {
+    const newBuyer: Buyer = {
+      ...buyer,
+      id: `buy-${Date.now()}`,
+      createdAt: new Date().toISOString()
+    };
+    this.buyers.push(newBuyer);
+    return newBuyer;
+  }
+
+  // Styles & Tech Packs
+  public getAllStyles(): GarmentStyle[] {
+    return this.styles;
+  }
+
+  public getStyleById(id: string): GarmentStyle | undefined {
+    return this.styles.find(s => s.id === id);
+  }
+
+  public createStyle(styleData: Omit<GarmentStyle, 'id' | 'createdAt'>): GarmentStyle {
+    const newStyle: GarmentStyle = {
+      ...styleData,
+      id: `stl-${Date.now()}`,
+      createdAt: new Date().toISOString()
+    };
+    this.styles.push(newStyle);
+    return newStyle;
+  }
+
+  public addTechPackVersion(styleId: string, versionData: TechPackVersion): GarmentStyle | null {
+    const style = this.getStyleById(styleId);
+    if (!style) return null;
+    style.techPackVersions.push(versionData);
+    style.activeTechPackVersion = versionData.version;
+    return style;
+  }
+
+  // Costing Sheets
+  public getAllCostingSheets(): CostingSheet[] {
+    return this.costingSheets;
+  }
+
+  public getCostingByStyleId(styleId: string): CostingSheet | undefined {
+    return this.costingSheets.find(c => c.styleId === styleId);
+  }
+
+  public createCostingSheet(costingData: Omit<CostingSheet, 'id' | 'updatedAt'>): CostingSheet {
+    const newCosting: CostingSheet = {
+      ...costingData,
+      id: `cst-${Date.now()}`,
+      updatedAt: new Date().toISOString()
+    };
+    this.costingSheets.push(newCosting);
+    return newCosting;
+  }
+
+  public approveCostingSheet(costingId: string, approvedBy: string): CostingSheet | null {
+    const sheet = this.costingSheets.find(c => c.id === costingId);
+    if (!sheet) return null;
+    sheet.status = 'APPROVED';
+    sheet.approvedBy = approvedBy;
+    sheet.updatedAt = new Date().toISOString();
+    return sheet;
+  }
+
+  // Buyer Purchase Orders
+  public getAllPurchaseOrders(): BuyerPurchaseOrder[] {
+    return this.purchaseOrders;
+  }
+
+  public getPurchaseOrderById(id: string): BuyerPurchaseOrder | undefined {
+    return this.purchaseOrders.find(po => po.id === id);
+  }
+
+  public createPurchaseOrder(poData: Omit<BuyerPurchaseOrder, 'id' | 'createdAt' | 'updatedAt'>): BuyerPurchaseOrder {
+    const newPO: BuyerPurchaseOrder = {
+      ...poData,
+      id: `po-${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.purchaseOrders.push(newPO);
+    return newPO;
+  }
+
+  public updatePOStatus(id: string, status: POStatus): BuyerPurchaseOrder | null {
+    const po = this.getPurchaseOrderById(id);
+    if (!po) return null;
+    po.status = status;
+    po.updatedAt = new Date().toISOString();
+    return po;
   }
 }
 
