@@ -68,10 +68,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, user 
       ]
     },
     {
-      title: 'Phase 4 & 5 — Production & QA/QC',
+      title: 'Phase 4 — Garments Production',
       items: [
-        { id: 'cutting', label: 'Cutting, Relaxation & Bundling', icon: Scissors, disabled: true, phase: 'Phase 4' },
-        { id: 'sewing', label: 'Sewing Lines & Hourly Output', icon: Layers, disabled: true, phase: 'Phase 4' },
+        { id: 'cutting', label: 'Cutting & 24h Relaxation', icon: Scissors, permission: null },
+        { id: 'sewing', label: 'Sewing Lines 01-04 Output', icon: Layers, permission: null },
+        { id: 'finishing', label: 'Finishing & Carton Packing', icon: Package, permission: null }
+      ]
+    },
+    {
+      title: 'Phase 5 — Quality Control (QA/QC)',
+      items: [
         { id: 'quality', label: 'Inspections, Defects, Rework & AQL', icon: CheckCircle2, disabled: true, phase: 'Phase 5' }
       ]
     },

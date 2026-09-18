@@ -13,6 +13,9 @@ import { CostingView } from './modules/merchandising/CostingView';
 import { SupplierView } from './modules/supplychain/SupplierView';
 import { ProcurementView } from './modules/supplychain/ProcurementView';
 import { InventoryView } from './modules/supplychain/InventoryView';
+import { CuttingView } from './modules/production/CuttingView';
+import { SewingView } from './modules/production/SewingView';
+import { FinishingPackingView } from './modules/production/FinishingPackingView';
 import { DEMO_PROFILES } from './services/api';
 import { SystemRoleCode, User } from './types';
 
@@ -195,6 +198,18 @@ export const App: React.FC = () => {
 
           {currentTab === 'warehouse' && (
             <InventoryView />
+          )}
+
+          {currentTab === 'cutting' && (
+            <CuttingView />
+          )}
+
+          {currentTab === 'sewing' && (
+            <SewingView />
+          )}
+
+          {currentTab === 'finishing' && (
+            <FinishingPackingView />
           )}
         </main>
       </div>

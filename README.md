@@ -138,8 +138,8 @@ npm run dev
 
 - [x] **Phase 1: Foundation, SRS/ERD Documentation, Auth & RBAC (Mod 01), Organization Topology (Mod 02)**
 - [x] **Phase 2: Commercial — Buyer & Merchandising, Style & Tech Pack Versioning, Buyer POs, Pre-Costing & BOM**
-- [ ] **Phase 3: Supply Chain — Procurement Requisitions, Supplier Scorecard, Multi-Warehouse & Inventory Control**
-- [ ] **Phase 4: Production — Line Allocation, Cutting Workflow, QR Bundling, Sewing Hourly Tracking, Finishing, Packing**
+- [x] **Phase 3: Supply Chain — Procurement Requisitions, Supplier Scorecard, Multi-Warehouse & Inventory Control**
+- [x] **Phase 4: Production — Line Allocation, Cutting Workflow, QR Bundling, Sewing Hourly Tracking, Finishing, Packing**
 - [ ] **Phase 5: Core QA/QC Suite — Fabric 4-Point, Cutting Panels, Sewing Inline, Defect Severity, Rework Orders, CAPA 5-Whys, Configurable AQL Tables**
 - [ ] **Phase 6: Shipment & Logistics — Commercial Invoicing, Packing List, Security Gate Pass, Dispatch Tracking**
 - [ ] **Phase 7: Factory Operations — HR/Roster, Biometric Payroll, Operational Finance, Machine Maintenance, Compliance Audits**
