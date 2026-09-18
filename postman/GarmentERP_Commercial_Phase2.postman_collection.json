@@ -1,0 +1,131 @@
+{
+  "info": {
+    "_postman_id": "9a2c3d4e-5f60-4812-b512-c28929103e99",
+    "name": "GarmentERP BD — Phase 2 Commercial & Merchandising Test Suite",
+    "description": "Automated SQA test suite for Phase 2: Global Buyers, Styles, Multi-Version Tech Packs, Pre-Costing & Profit Margins, Buyer Purchase Orders with Color/Size Matrix, and BOM/MRP Shortage Engine.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "merchToken", "value": "" },
+    { "key": "adminToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01 - Merchandiser Authentication",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set('merchToken', jsonData.data.accessToken);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"merchandiser@garmenterp.com\",\n  \"password\": \"Merch123!\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+      }
+    },
+    {
+      "name": "02 - Fetch Global Buyers List",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(3);",
+              "var codes = jsonData.data.map(function(b) { return b.code; });",
+              "pm.expect(codes).to.include('HM-EU');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/buyers", "host": ["{{baseUrl}}"], "path": ["buyers"] }
+      }
+    },
+    {
+      "name": "03 - Fetch Styles & Tech Packs",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(2);",
+              "var polo = jsonData.data.find(function(s) { return s.styleNumber === 'TSH-2026-001'; });",
+              "pm.expect(polo.techPackVersions.length).to.be.at.least(2);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/styles", "host": ["{{baseUrl}}"], "path": ["styles"] }
+      }
+    },
+    {
+      "name": "04 - Pre-Costing Sheet Validation",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "var costing = jsonData.data[0];",
+              "pm.expect(costing.totalCostUsd).to.eql(6.5);",
+              "pm.expect(costing.offeredPriceUsd).to.eql(8.0);",
+              "pm.expect(costing.profitMarginUsd).to.eql(1.5);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/costing", "host": ["{{baseUrl}}"], "path": ["costing"] }
+      }
+    },
+    {
+      "name": "05 - Buyer PO Intake with Automatic BOM Explosion",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "var po = jsonData.data[0];",
+              "pm.expect(po.orderQuantity).to.eql(10000);",
+              "pm.expect(po.bom.length).to.be.at.least(3);",
+              "var fabric = po.bom.find(function(b) { return b.itemType === 'FABRIC'; });",
+              "pm.expect(fabric.shortageQty).to.be.above(0);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/orders/po", "host": ["{{baseUrl}}"], "path": ["orders", "po"] }
+      }
+    }
+  ]
+}

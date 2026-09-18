@@ -1,7 +1,7 @@
 # GarmentERP BD — Bangladesh Garment Manufacturing ERP & Quality Management System
 
 [![Build Status](https://img.shields.io/badge/Build-Passing-emerald)](https://github.com/naimuropu-cell/GarmentERP-BD)
-[![Phase](https://img.shields.io/badge/Phase%201-Auth%20%26%20Organization%20Complete-blue)](https://github.com/naimuropu-cell/GarmentERP-BD)
+[![Phase](https://img.shields.io/badge/Phase%201%20%26%202-Commercial%20%26%20Orders%20Complete-emerald)](https://github.com/naimuropu-cell/GarmentERP-BD)
 [![License](https://img.shields.io/badge/License-Proprietary%20%2F%20MIT-violet)](https://github.com/naimuropu-cell/GarmentERP-BD)
 
 **GarmentERP BD** is an enterprise-grade ERP and Quality Management System engineered around the authentic business, production, and quality assurance workflows of Bangladesh Ready-Made Garments (RMG) manufacturing factories.
@@ -137,7 +137,7 @@ npm run dev
 ## 🗺️ Implementation Roadmap
 
 - [x] **Phase 1: Foundation, SRS/ERD Documentation, Auth & RBAC (Mod 01), Organization Topology (Mod 02)**
-- [ ] **Phase 2: Commercial — Buyer & Merchandising, Style & Tech Pack Versioning, Buyer POs, Pre-Costing & BOM**
+- [x] **Phase 2: Commercial — Buyer & Merchandising, Style & Tech Pack Versioning, Buyer POs, Pre-Costing & BOM**
 - [ ] **Phase 3: Supply Chain — Procurement Requisitions, Supplier Scorecard, Multi-Warehouse & Inventory Control**
 - [ ] **Phase 4: Production — Line Allocation, Cutting Workflow, QR Bundling, Sewing Hourly Tracking, Finishing, Packing**
 - [ ] **Phase 5: Core QA/QC Suite — Fabric 4-Point, Cutting Panels, Sewing Inline, Defect Severity, Rework Orders, CAPA 5-Whys, Configurable AQL Tables**

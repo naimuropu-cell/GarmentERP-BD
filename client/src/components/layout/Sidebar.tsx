@@ -51,11 +51,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, user 
       ]
     },
     {
-      title: 'Phase 2 — Merchandising & PO (Next)',
+      title: 'Phase 2 — Commercial & Orders',
       items: [
-        { id: 'buyers', label: 'Buyer Profiles & Terms', icon: ShoppingBag, disabled: true, phase: 'Phase 2' },
-        { id: 'styles', label: 'Style Master & Tech Packs', icon: FileText, disabled: true, phase: 'Phase 2' },
-        { id: 'costing', label: 'Pre-Costing & BOM MRP', icon: Layers, disabled: true, phase: 'Phase 2' }
+        { id: 'buyers', label: 'Buyer Profiles & Terms', icon: ShoppingBag, permission: null },
+        { id: 'styles', label: 'Style Master & Tech Packs', icon: FileText, permission: null },
+        { id: 'orders', label: 'Buyer POs & MRP Shortage', icon: ShoppingBag, permission: null },
+        { id: 'costing', label: 'Pre-Costing & Profit Margins', icon: Layers, permission: null }
       ]
     },
     {

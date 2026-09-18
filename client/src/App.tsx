@@ -6,6 +6,10 @@ import { OrganizationView } from './modules/organization/OrganizationView';
 import { RbacMatrixView } from './modules/rbac/RbacMatrixView';
 import { AuditView } from './modules/audit/AuditView';
 import { OverviewDashboard } from './modules/dashboard/OverviewDashboard';
+import { BuyerView } from './modules/merchandising/BuyerView';
+import { StyleTechPackView } from './modules/merchandising/StyleTechPackView';
+import { PurchaseOrderView } from './modules/merchandising/PurchaseOrderView';
+import { CostingView } from './modules/merchandising/CostingView';
 import { DEMO_PROFILES } from './services/api';
 import { SystemRoleCode, User } from './types';
 
@@ -160,6 +164,22 @@ export const App: React.FC = () => {
 
           {currentTab === 'audit' && (
             <AuditView />
+          )}
+
+          {currentTab === 'buyers' && (
+            <BuyerView />
+          )}
+
+          {currentTab === 'styles' && (
+            <StyleTechPackView />
+          )}
+
+          {currentTab === 'orders' && (
+            <PurchaseOrderView />
+          )}
+
+          {currentTab === 'costing' && (
+            <CostingView user={currentUser} />
           )}
         </main>
       </div>
