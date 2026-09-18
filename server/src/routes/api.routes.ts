@@ -239,6 +239,62 @@ router.post(
   ProductionController.createCartonRecord
 );
 
+// ==========================================
+// 7. Phase 5: Core QA/QC Suite, Defect Severity & AQL 2.5
+// ==========================================
+import * as QaController from '../modules/qa/qa.controller';
+
+// Fabric 4-Point System
+router.get('/qa/fabric-4point', QaController.getFabricInspections);
+router.post(
+  '/qa/fabric-4point',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.CONDUCT_INSPECTION),
+  QaController.createFabricInspection
+);
+
+// Inline & End-line Sewing Defects
+router.get('/qa/inspections', QaController.getSewingDefects);
+router.post(
+  '/qa/inspections',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.CONDUCT_INSPECTION),
+  QaController.createSewingDefect
+);
+
+// Rework Orders
+router.get('/qa/rework-orders', QaController.getReworkOrders);
+router.put(
+  '/qa/rework-orders/:id/status',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_REWORK),
+  QaController.updateReworkStatus
+);
+
+// CAPA 5-Whys Root Cause
+router.get('/qa/capa', QaController.getCapaRecords);
+router.post(
+  '/qa/capa',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_CAPA),
+  QaController.createCapaRecord
+);
+router.put(
+  '/qa/capa/:id/verify',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_CAPA),
+  QaController.verifyCapa
+);
+
+// ISO 2859-1 / AQL 2.5 Sampling Inspections
+router.get('/qa/aql', QaController.getAqlInspections);
+router.post(
+  '/qa/aql/calculate',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.APPROVE_AQL),
+  QaController.calculateAndCreateAqlSampling
+);
+
 export default router;
 
 

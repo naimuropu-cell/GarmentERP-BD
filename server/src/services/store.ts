@@ -27,6 +27,13 @@ import {
   FinishingBatch,
   CartonPackingRecord
 } from '../types/production';
+import {
+  Fabric4PointInspection,
+  SewingDefectRecord,
+  ReworkOrder,
+  CapaRecord,
+  AqlSamplingInspection
+} from '../types/qa';
 
 export interface UserRecord {
   id: string;
@@ -132,6 +139,11 @@ class SystemStore {
   private sewingHourlyLogs: SewingHourlyOutput[] = [];
   private finishingBatches: FinishingBatch[] = [];
   private cartons: CartonPackingRecord[] = [];
+  private fabricInspections: Fabric4PointInspection[] = [];
+  private sewingDefects: SewingDefectRecord[] = [];
+  private reworkOrders: ReworkOrder[] = [];
+  private capaRecords: CapaRecord[] = [];
+  private aqlInspections: AqlSamplingInspection[] = [];
 
   constructor() {
     this.initializeData();
@@ -1133,6 +1145,246 @@ class SystemStore {
       }
     ];
 
+    // 10. Pre-seed Phase 5: Fabric 4-Point Inspections
+    this.fabricInspections = [
+      {
+        id: 'f4p-001',
+        rollNumber: 'ROL-PTM-8891',
+        fabricLot: 'LOT-PTM-2026-A',
+        fabricType: '100% Combed Cotton Pique 185 GSM',
+        inspectedLengthYards: 130,
+        fabricWidthInches: 68,
+        defectsSize1Count: 2, // 2 pts
+        defectsSize2Count: 1, // 2 pts
+        defectsSize3Count: 0,
+        defectsSize4Count: 0,
+        totalDefectPoints: 4,
+        pointsPer100SqYards: 1.63, // (4 * 3600) / (130 * 68) = 1.63 pts (Well under 20.0 pt pass threshold)
+        penaltyGrade: 'FIRST_QUALITY_PASS',
+        inspectorName: 'Nazmul Haque (QC Fabric Inspector)',
+        inspectedAt: '2026-06-21T09:15:00Z',
+        comments: 'Uniform knit tension, excellent color fastness, within shade band A.'
+      },
+      {
+        id: 'f4p-002',
+        rollNumber: 'ROL-HMD-1042',
+        fabricLot: 'LOT-HMD-2026-B',
+        fabricType: 'Heavyweight Cotton Fleece 320 GSM',
+        inspectedLengthYards: 100,
+        fabricWidthInches: 60,
+        defectsSize1Count: 4, // 4 pts
+        defectsSize2Count: 3, // 6 pts
+        defectsSize3Count: 2, // 6 pts
+        defectsSize4Count: 1, // 4 pts
+        totalDefectPoints: 20,
+        pointsPer100SqYards: 12.0, // (20 * 3600) / (100 * 60) = 12.0 pts (First quality pass)
+        penaltyGrade: 'FIRST_QUALITY_PASS',
+        inspectorName: 'Nazmul Haque (QC Fabric Inspector)',
+        inspectedAt: '2026-06-22T11:30:00Z',
+        comments: 'Minor slubs near selvedge, approved for lay spreading.'
+      },
+      {
+        id: 'f4p-003',
+        rollNumber: 'ROL-REJ-9901',
+        fabricLot: 'LOT-TC-FAIL-09',
+        fabricType: 'Polyester Cotton Single Jersey 160 GSM',
+        inspectedLengthYards: 90,
+        fabricWidthInches: 58,
+        defectsSize1Count: 6,  // 6 pts
+        defectsSize2Count: 5,  // 10 pts
+        defectsSize3Count: 5,  // 15 pts
+        defectsSize4Count: 4,  // 16 pts
+        totalDefectPoints: 47,
+        pointsPer100SqYards: 32.41, // (47 * 3600) / (90 * 58) = 32.41 pts (> 28.0 = REJECT)
+        penaltyGrade: 'REJECTED',
+        inspectorName: 'Nazmul Haque (QC Fabric Inspector)',
+        inspectedAt: '2026-06-23T14:10:00Z',
+        comments: 'Severe yarn contamination, continuous horizontal barre marks and pinholes. Quarantine gate hold issued.'
+      }
+    ];
+
+    // 11. Pre-seed Phase 5: Inline & End-line Sewing Defects
+    this.sewingDefects = [
+      {
+        id: 'def-001',
+        inspectionType: 'INLINE',
+        lineId: 'line-sew-01',
+        lineNumber: 'Sewing Line 01 (Polo Shirt Specialist)',
+        styleNumber: 'TSH-2026-001',
+        poNumber: 'PO-2026-001',
+        defectCode: 'DEF-ST-01',
+        defectName: 'Skipped Stitch on Collar Placket',
+        severity: 'MAJOR',
+        zone: 'COLLAR',
+        operatorStation: 'Station 08 (Placket Attacher)',
+        inspectorName: 'Sultana Razia (QC Inspector)',
+        inspectedGarments: 250,
+        defectQty: 4,
+        dhuPercent: 1.6,
+        timestamp: new Date().toISOString(),
+        status: 'REWORK_ISSUED'
+      },
+      {
+        id: 'def-002',
+        inspectionType: 'INLINE',
+        lineId: 'line-sew-02',
+        lineNumber: 'Sewing Line 02 (Graphic Tees High-Speed)',
+        styleNumber: 'TSH-2026-001',
+        poNumber: 'PO-2026-001',
+        defectCode: 'DEF-HM-03',
+        defectName: 'Uneven Bottom Hem Twin Needle Stitch',
+        severity: 'MINOR',
+        zone: 'HEM',
+        operatorStation: 'Station 22 (Bottom Hemming)',
+        inspectorName: 'Kamal Hossain (QC Inspector)',
+        inspectedGarments: 300,
+        defectQty: 3,
+        dhuPercent: 1.0,
+        timestamp: new Date().toISOString(),
+        status: 'RESOLVED'
+      },
+      {
+        id: 'def-003',
+        inspectionType: 'INLINE',
+        lineId: 'line-sew-03',
+        lineNumber: 'Sewing Line 03 (Hoodies & Fleece Complex)',
+        styleNumber: 'HOD-2026-002',
+        poNumber: 'PO-2026-002',
+        defectCode: 'DEF-ND-99',
+        defectName: 'Broken Needle Fragment inside Armhole Join',
+        severity: 'CRITICAL',
+        zone: 'ARMHOLE',
+        operatorStation: 'Station 14 (Armhole Overlock)',
+        inspectorName: 'Sultana Razia (QC Inspector)',
+        inspectedGarments: 180,
+        defectQty: 1,
+        dhuPercent: 0.56,
+        timestamp: new Date().toISOString(),
+        status: 'REWORK_ISSUED'
+      },
+      {
+        id: 'def-004',
+        inspectionType: 'ENDLINE',
+        lineId: 'line-sew-04',
+        lineNumber: 'Sewing Line 04 (Activewear & Shorts)',
+        styleNumber: 'TSH-2026-001',
+        poNumber: 'PO-2026-001',
+        defectCode: 'DEF-PK-02',
+        defectName: 'Seam Puckering along Left Side Join',
+        severity: 'MINOR',
+        zone: 'SIDE_SEAM',
+        operatorStation: 'Station 11 (Side Seaming)',
+        inspectorName: 'Kamal Hossain (QC Inspector)',
+        inspectedGarments: 200,
+        defectQty: 2,
+        dhuPercent: 1.0,
+        timestamp: new Date().toISOString(),
+        status: 'RESOLVED'
+      }
+    ];
+
+    // 12. Pre-seed Phase 5: Rework Orders
+    this.reworkOrders = [
+      {
+        id: 'rwk-001',
+        reworkNumber: 'RWK-2026-001',
+        defectId: 'def-001',
+        defectName: 'Skipped Stitch on Collar Placket',
+        severity: 'MAJOR',
+        poNumber: 'PO-2026-001',
+        styleNumber: 'TSH-2026-001',
+        lineId: 'line-sew-01',
+        lineNumber: 'Sewing Line 01 (Polo Shirt Specialist)',
+        quarantineQty: 15,
+        repairedQty: 12,
+        scrappedQty: 0,
+        assignedRepairOperator: 'Rehana Begum (Senior Repair Specialist)',
+        status: 'IN_REPAIR',
+        notes: 'Unpick placket topstitch, replace bobbin thread, re-stitch with 14 SPI.',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'rwk-002',
+        reworkNumber: 'RWK-2026-002',
+        defectId: 'def-003',
+        defectName: 'Broken Needle Fragment inside Armhole Join',
+        severity: 'CRITICAL',
+        poNumber: 'PO-2026-002',
+        styleNumber: 'HOD-2026-002',
+        lineId: 'line-sew-03',
+        lineNumber: 'Sewing Line 03 (Hoodies & Fleece Complex)',
+        quarantineQty: 1,
+        repairedQty: 1,
+        scrappedQty: 0,
+        assignedRepairOperator: 'Farid Ahmed (Master Rework Tailor)',
+        status: 'RE_INSPECTED_PASS',
+        notes: 'Needle fragment extracted and matched with broken needle tip. Passed metal detector 1.0mm ferrous audit.',
+        createdAt: '2026-06-24T10:00:00Z',
+        completedAt: '2026-06-24T11:15:00Z'
+      }
+    ];
+
+    // 13. Pre-seed Phase 5: CAPA 5-Whys Investigations
+    this.capaRecords = [
+      {
+        id: 'capa-001',
+        capaNumber: 'CAPA-2026-001',
+        title: 'Recurring Needle Breakage on Line 03 Heavyweight Fleece Join',
+        issueDescription: 'During production run of HOD-2026-002, Line 03 suffered 5 needle breakages within 2 hours at the Armhole overlock station.',
+        lineId: 'line-sew-03',
+        lineNumber: 'Sewing Line 03 (Hoodies & Fleece Complex)',
+        defectType: 'Needle Breakage & Metal Contamination Risk',
+        why1: 'Needle tip snapped while penetrating dense 320 GSM fleece crossed seam.',
+        why2: 'Standard light-weight needle (Size 11/75) was being used on heavyweight fleece.',
+        why3: 'Floor mechanic did not reference the Tech Pack needle gauge specification during line changeover.',
+        why4: 'Line Changeover Checklist lacked a mandatory dual-signature step for needle gauge verification.',
+        why5RootCause: 'Inadequate Line Setup SOP and lack of mechanical needle verification gate prior to bulk production feeding.',
+        category: 'METHOD_TRAINING',
+        correctiveAction: 'Immediately stopped line, replaced all 22 overlock needles with Organ DBx1 #16 Ballpoint heavy-duty needles, and ran 100% metal detection on all cut bundles from batch.',
+        preventiveAction: 'Updated Factory SOP #QA-SOP-014 to require QA Inspector & Chief Mechanic co-signing needle gauge audit sheet before releasing power to line.',
+        assignedTo: 'Engr. Naimur Rahman (QA Head)',
+        targetClosureDate: '2026-07-15',
+        status: 'APPROVED_ACTIVE',
+        qaManagerApproval: {
+          approvedBy: 'Farhana Akhter (QA Manager)',
+          approvedAt: '2026-06-25T14:30:00Z',
+          signature: 'FA-QA-DIR-APPROVED'
+        },
+        createdAt: '2026-06-25T12:00:00Z'
+      }
+    ];
+
+    // 14. Pre-seed Phase 5: ISO 2859-1 / AQL 2.5 Sampling Inspections
+    this.aqlInspections = [
+      {
+        id: 'aql-001',
+        certificateNumber: 'AQL-CERT-2026-0001',
+        poNumber: 'PO-2026-001',
+        buyerPo: 'HM-PO-99201',
+        buyerName: 'H&M Hennes & Mauritz GBC AB',
+        styleNumber: 'TSH-2026-001',
+        totalLotSize: 5000,
+        generalInspectionLevel: 'LEVEL_II',
+        sampleSizeCodeLetter: 'K',
+        sampleSize: 315,
+        criticalAql: 0.0,
+        criticalAc: 0,
+        criticalRe: 1,
+        criticalDefectsFound: 0,
+        majorAql: 2.5,
+        majorAc: 14,
+        majorRe: 15,
+        majorDefectsFound: 3, // Well below 14 max allowable
+        minorAql: 4.0,
+        minorAc: 21,
+        minorRe: 22,
+        minorDefectsFound: 6, // Well below 21 max allowable
+        overallResult: 'ACCEPTED_PASS',
+        qaManagerSignoff: 'Farhana Akhter (Certified Lead Auditor)',
+        inspectionDate: new Date().toISOString()
+      }
+    ];
+
     // Log system genesis
     this.addAuditLog({
       id: 'audit-001',
@@ -1748,6 +2000,273 @@ class SystemStore {
     };
     this.cartons.unshift(newCarton);
     return newCarton;
+  }
+
+  // ==========================================
+  // PHASE 5: Comprehensive QA/QC Suite Methods
+  // ==========================================
+
+  // 1. Fabric 4-Point System
+  public getAllFabricInspections(): Fabric4PointInspection[] {
+    return this.fabricInspections;
+  }
+
+  public createFabricInspection(data: {
+    rollNumber: string;
+    fabricLot: string;
+    fabricType: string;
+    inspectedLengthYards: number;
+    fabricWidthInches: number;
+    defectsSize1Count: number;
+    defectsSize2Count: number;
+    defectsSize3Count: number;
+    defectsSize4Count: number;
+    inspectorName: string;
+    comments?: string;
+  }): Fabric4PointInspection {
+    const totalDefectPoints = 
+      (data.defectsSize1Count * 1) + 
+      (data.defectsSize2Count * 2) + 
+      (data.defectsSize3Count * 3) + 
+      (data.defectsSize4Count * 4);
+
+    const pointsPer100SqYards = Number(
+      ((totalDefectPoints * 3600) / (data.inspectedLengthYards * data.fabricWidthInches)).toFixed(2)
+    );
+
+    let penaltyGrade: 'FIRST_QUALITY_PASS' | 'WARNING_ACCEPTABLE' | 'REJECTED' = 'FIRST_QUALITY_PASS';
+    if (pointsPer100SqYards > 28) {
+      penaltyGrade = 'REJECTED';
+    } else if (pointsPer100SqYards > 20) {
+      penaltyGrade = 'WARNING_ACCEPTABLE';
+    }
+
+    const newInsp: Fabric4PointInspection = {
+      id: `f4p-${Date.now()}`,
+      ...data,
+      totalDefectPoints,
+      pointsPer100SqYards,
+      penaltyGrade,
+      inspectedAt: new Date().toISOString()
+    };
+
+    this.fabricInspections.unshift(newInsp);
+    return newInsp;
+  }
+
+  // 2. Inline & End-line Sewing Defects
+  public getAllSewingDefects(): SewingDefectRecord[] {
+    return this.sewingDefects;
+  }
+
+  public createSewingDefect(data: {
+    inspectionType: 'INLINE' | 'ENDLINE';
+    lineId: string;
+    lineNumber: string;
+    styleNumber: string;
+    poNumber: string;
+    defectCode: string;
+    defectName: string;
+    severity: 'CRITICAL' | 'MAJOR' | 'MINOR';
+    zone: 'COLLAR' | 'ARMHOLE' | 'PLACKET' | 'HEM' | 'SIDE_SEAM' | 'CUFF';
+    operatorStation?: string;
+    inspectorName: string;
+    inspectedGarments: number;
+    defectQty: number;
+  }): SewingDefectRecord {
+    const dhuPercent = data.inspectedGarments > 0 
+      ? Number(((data.defectQty / data.inspectedGarments) * 100).toFixed(2)) 
+      : 0;
+
+    const newDefect: SewingDefectRecord = {
+      id: `def-${Date.now()}`,
+      ...data,
+      dhuPercent,
+      timestamp: new Date().toISOString(),
+      status: data.severity === 'CRITICAL' || data.severity === 'MAJOR' ? 'REWORK_ISSUED' : 'OPEN'
+    };
+
+    this.sewingDefects.unshift(newDefect);
+
+    // If Major or Critical, auto-generate Rework Order
+    if (data.severity === 'CRITICAL' || data.severity === 'MAJOR') {
+      const rework: ReworkOrder = {
+        id: `rwk-${Date.now()}`,
+        reworkNumber: `RWK-${Date.now().toString().slice(-4)}`,
+        defectId: newDefect.id,
+        defectName: newDefect.defectName,
+        severity: newDefect.severity,
+        poNumber: newDefect.poNumber,
+        styleNumber: newDefect.styleNumber,
+        lineId: newDefect.lineId,
+        lineNumber: newDefect.lineNumber,
+        quarantineQty: newDefect.defectQty,
+        repairedQty: 0,
+        scrappedQty: 0,
+        assignedRepairOperator: 'Floor Rework Section Operator',
+        status: 'PENDING_REWORK',
+        notes: `Immediate quarantine of ${newDefect.defectQty} pcs due to ${newDefect.severity} ${newDefect.defectName}.`,
+        createdAt: new Date().toISOString()
+      };
+      this.reworkOrders.unshift(rework);
+    }
+
+    return newDefect;
+  }
+
+  // 3. Rework Orders
+  public getAllReworkOrders(): ReworkOrder[] {
+    return this.reworkOrders;
+  }
+
+  public updateReworkStatus(
+    id: string, 
+    status: 'PENDING_REWORK' | 'IN_REPAIR' | 'RE_INSPECTED_PASS' | 'SCRAPPED_B_GRADE',
+    repairedQty?: number,
+    scrappedQty?: number
+  ): ReworkOrder | null {
+    const rework = this.reworkOrders.find(r => r.id === id);
+    if (!rework) return null;
+    rework.status = status;
+    if (repairedQty !== undefined) rework.repairedQty = repairedQty;
+    if (scrappedQty !== undefined) rework.scrappedQty = scrappedQty;
+    if (status === 'RE_INSPECTED_PASS' || status === 'SCRAPPED_B_GRADE') {
+      rework.completedAt = new Date().toISOString();
+      const linkedDef = this.sewingDefects.find(d => d.id === rework.defectId);
+      if (linkedDef) linkedDef.status = 'RESOLVED';
+    }
+    return rework;
+  }
+
+  // 4. CAPA 5-Whys Records
+  public getAllCapaRecords(): CapaRecord[] {
+    return this.capaRecords;
+  }
+
+  public createCapaRecord(data: Omit<CapaRecord, 'id' | 'capaNumber' | 'status' | 'createdAt'>): CapaRecord {
+    const newCapa: CapaRecord = {
+      ...data,
+      id: `capa-${Date.now()}`,
+      capaNumber: `CAPA-2026-${Date.now().toString().slice(-4)}`,
+      status: 'UNDER_REVIEW',
+      createdAt: new Date().toISOString()
+    };
+    this.capaRecords.unshift(newCapa);
+    return newCapa;
+  }
+
+  public verifyCapa(id: string, qaManagerName: string, signature: string): CapaRecord | null {
+    const capa = this.capaRecords.find(c => c.id === id);
+    if (!capa) return null;
+    capa.status = 'APPROVED_ACTIVE';
+    capa.qaManagerApproval = {
+      approvedBy: qaManagerName,
+      approvedAt: new Date().toISOString(),
+      signature
+    };
+    return capa;
+  }
+
+  // 5. ISO 2859-1 / AQL 2.5 Sampling Inspections
+  public getAllAqlInspections(): AqlSamplingInspection[] {
+    return this.aqlInspections;
+  }
+
+  public calculateAndCreateAqlSampling(params: {
+    poNumber: string;
+    buyerPo: string;
+    buyerName: string;
+    styleNumber: string;
+    totalLotSize: number;
+    generalInspectionLevel: 'LEVEL_I' | 'LEVEL_II' | 'LEVEL_III';
+    criticalDefectsFound: number;
+    majorDefectsFound: number;
+    minorDefectsFound: number;
+    qaManagerSignoff: string;
+  }): AqlSamplingInspection {
+    const lot = params.totalLotSize;
+    let code = 'J';
+    let sampleSize = 80;
+    let majorAc = 5;
+    let majorRe = 6;
+    let minorAc = 7;
+    let minorRe = 8;
+
+    if (lot <= 500) {
+      code = 'H';
+      sampleSize = 50;
+      majorAc = 3;
+      majorRe = 4;
+      minorAc = 5;
+      minorRe = 6;
+    } else if (lot <= 1200) {
+      code = 'J';
+      sampleSize = 80;
+      majorAc = 5;
+      majorRe = 6;
+      minorAc = 7;
+      minorRe = 8;
+    } else if (lot <= 3200) {
+      code = 'K';
+      sampleSize = 125;
+      majorAc = 7;
+      majorRe = 8;
+      minorAc = 10;
+      minorRe = 11;
+    } else if (lot <= 10000) {
+      code = 'K';
+      sampleSize = 315;
+      majorAc = 14;
+      majorRe = 15;
+      minorAc = 21;
+      minorRe = 22;
+    } else {
+      code = 'M';
+      sampleSize = 315;
+      majorAc = 14;
+      majorRe = 15;
+      minorAc = 21;
+      minorRe = 22;
+    }
+
+    const criticalAc = 0;
+    const criticalRe = 1;
+
+    const isPass = 
+      params.criticalDefectsFound <= criticalAc &&
+      params.majorDefectsFound <= majorAc &&
+      params.minorDefectsFound <= minorAc;
+
+    const newAql: AqlSamplingInspection = {
+      id: `aql-${Date.now()}`,
+      certificateNumber: `AQL-CERT-2026-${Date.now().toString().slice(-4)}`,
+      poNumber: params.poNumber,
+      buyerPo: params.buyerPo,
+      buyerName: params.buyerName,
+      styleNumber: params.styleNumber,
+      totalLotSize: params.totalLotSize,
+      generalInspectionLevel: params.generalInspectionLevel,
+      sampleSizeCodeLetter: code,
+      sampleSize,
+      criticalAql: 0.0,
+      criticalAc,
+      criticalRe,
+      criticalDefectsFound: params.criticalDefectsFound,
+      majorAql: 2.5,
+      majorAc,
+      majorRe,
+      majorDefectsFound: params.majorDefectsFound,
+      minorAql: 4.0,
+      minorAc,
+      minorRe,
+      minorDefectsFound: params.minorDefectsFound,
+      overallResult: isPass ? 'ACCEPTED_PASS' : 'REJECTED_FAIL',
+      qaManagerSignoff: params.qaManagerSignoff,
+      inspectionDate: new Date().toISOString()
+    };
+
+    this.aqlInspections.unshift(newAql);
+    return newAql;
   }
 }
 

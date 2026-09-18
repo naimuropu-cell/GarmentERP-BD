@@ -1,0 +1,210 @@
+{
+  "info": {
+    "_postman_id": "9f3c2b1a-4d5e-4682-b714-e591283c7042",
+    "name": "GarmentERP BD — Phase 5 Core QA/QC & AQL 2.5 Test Suite",
+    "description": "Automated SQA test suite for Phase 5: Fabric 4-Point Inspection System, Inline & End-line Sewing Defects, Defect Severity Matrix, Rework Orders, CAPA 5-Whys Root Cause Analysis, and ISO 2859-1 Level II AQL 2.5 Sampling Inspection.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "qaToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01 - Authenticate QA Manager",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.success).to.be.true;",
+              "pm.collectionVariables.set('qaToken', jsonData.data.accessToken);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@garmenterp.com\",\n  \"password\": \"Admin123!\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+      }
+    },
+    {
+      "name": "02 - Fabric 4-Point Inspection Registry",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(3);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{qaToken}}" }],
+        "url": { "raw": "{{baseUrl}}/qa/fabric-4point", "host": ["{{baseUrl}}"], "path": ["qa", "fabric-4point"] }
+      }
+    },
+    {
+      "name": "03 - Record Fabric 4-Point Roll Inspection",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.penaltyGrade).to.eql('FIRST_QUALITY_PASS');",
+              "pm.expect(jsonData.data.pointsPer100SqYards).to.be.below(20.0);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{qaToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"rollNumber\": \"ROL-PTM-POSTMAN-01\",\n  \"fabricLot\": \"LOT-PTM-2026-A\",\n  \"fabricType\": \"100% Combed Cotton Pique 185 GSM\",\n  \"inspectedLengthYards\": 120,\n  \"fabricWidthInches\": 68,\n  \"defectsSize1Count\": 2,\n  \"defectsSize2Count\": 1,\n  \"defectsSize3Count\": 0,\n  \"defectsSize4Count\": 0,\n  \"comments\": \"Passed 4-point inspection for cutting lay\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/qa/fabric-4point", "host": ["{{baseUrl}}"], "path": ["qa", "fabric-4point"] }
+      }
+    },
+    {
+      "name": "04 - Inline & End-line Sewing Defect Matrix",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(4);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{qaToken}}" }],
+        "url": { "raw": "{{baseUrl}}/qa/inspections", "host": ["{{baseUrl}}"], "path": ["qa", "inspections"] }
+      }
+    },
+    {
+      "name": "05 - Log Sewing Defect & Auto-Trigger Rework",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.status).to.eql('REWORK_ISSUED');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{qaToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"inspectionType\": \"INLINE\",\n  \"lineId\": \"line-sew-01\",\n  \"lineNumber\": \"Sewing Line 01 (Polo Shirt Specialist)\",\n  \"styleNumber\": \"TSH-2026-001\",\n  \"poNumber\": \"PO-2026-001\",\n  \"defectCode\": \"DEF-ST-02\",\n  \"defectName\": \"Broken Topstitch on Neck Tape\",\n  \"severity\": \"MAJOR\",\n  \"zone\": \"COLLAR\",\n  \"inspectedGarments\": 200,\n  \"defectQty\": 3\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/qa/inspections", "host": ["{{baseUrl}}"], "path": ["qa", "inspections"] }
+      }
+    },
+    {
+      "name": "06 - Rework Orders Quarantine Queue",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(2);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{qaToken}}" }],
+        "url": { "raw": "{{baseUrl}}/qa/rework-orders", "host": ["{{baseUrl}}"], "path": ["qa", "rework-orders"] }
+      }
+    },
+    {
+      "name": "07 - CAPA 5-Whys Root Cause Registry",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(1);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{qaToken}}" }],
+        "url": { "raw": "{{baseUrl}}/qa/capa", "host": ["{{baseUrl}}"], "path": ["qa", "capa"] }
+      }
+    },
+    {
+      "name": "08 - ISO 2859-1 Level II AQL 2.5 Audit Calculation",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.sampleSize).to.eql(315);",
+              "pm.expect(jsonData.data.overallResult).to.eql('ACCEPTED_PASS');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{qaToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"poNumber\": \"PO-2026-001\",\n  \"buyerPo\": \"HM-PO-99201\",\n  \"buyerName\": \"H&M Hennes & Mauritz GBC AB\",\n  \"styleNumber\": \"TSH-2026-001\",\n  \"totalLotSize\": 5000,\n  \"generalInspectionLevel\": \"LEVEL_II\",\n  \"criticalDefectsFound\": 0,\n  \"majorDefectsFound\": 3,\n  \"minorDefectsFound\": 5\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/qa/aql/calculate", "host": ["{{baseUrl}}"], "path": ["qa", "aql", "calculate"] }
+      }
+    }
+  ]
+}
