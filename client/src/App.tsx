@@ -16,6 +16,10 @@ import { InventoryView } from './modules/supplychain/InventoryView';
 import { CuttingView } from './modules/production/CuttingView';
 import { SewingView } from './modules/production/SewingView';
 import { FinishingPackingView } from './modules/production/FinishingPackingView';
+import { FabricInspectionView } from './modules/qa/FabricInspectionView';
+import { InlineQualityView } from './modules/qa/InlineQualityView';
+import { ReworkCapaView } from './modules/qa/ReworkCapaView';
+import { AqlSamplingView } from './modules/qa/AqlSamplingView';
 import { DEMO_PROFILES } from './services/api';
 import { SystemRoleCode, User } from './types';
 
@@ -132,7 +136,7 @@ export const App: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col">
+    <div className="min-h-screen bg-[#F7F8FA] text-slate-900 flex flex-col">
       {/* Top Navbar */}
       <Navbar
         user={currentUser}
@@ -152,7 +156,7 @@ export const App: React.FC = () => {
         />
 
         {/* Content Area */}
-        <main className="flex-1 overflow-y-auto bg-slate-950/60 pb-16">
+        <main className="flex-1 overflow-y-auto bg-[#F7F8FA] pb-16">
           {currentTab === 'overview' && (
             <OverviewDashboard user={currentUser} onNavigate={(tab) => setCurrentTab(tab)} />
           )}
@@ -210,6 +214,22 @@ export const App: React.FC = () => {
 
           {currentTab === 'finishing' && (
             <FinishingPackingView />
+          )}
+
+          {currentTab === 'fabric-qc' && (
+            <FabricInspectionView />
+          )}
+
+          {currentTab === 'sewing-qc' && (
+            <InlineQualityView />
+          )}
+
+          {currentTab === 'rework-capa' && (
+            <ReworkCapaView />
+          )}
+
+          {currentTab === 'aql-audit' && (
+            <AqlSamplingView />
           )}
         </main>
       </div>

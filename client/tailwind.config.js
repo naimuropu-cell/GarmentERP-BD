@@ -8,17 +8,26 @@ export default {
     extend: {
       colors: {
         brand: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
+          50: '#ECFDF5',
+          100: '#D1FAE5',
+          200: '#A7F3D0',
+          300: '#6EE7B7',
+          400: '#34D399',
+          500: '#10B981', // Secondary: Soft Green
+          600: '#059669',
+          700: '#047857', // Primary: Deep Green
+          800: '#065F46', // Primary: Deep Green
+          900: '#064E3B',
+          950: '#022c22'
         },
-        slate: {
-          850: '#151f32',
-          950: '#0b1120'
+        app: {
+          bg: '#F7F8FA',       // Background: very light gray
+          card: '#FFFFFF',     // Cards: White
+          border: '#E2E8F0',   // Borders: Very light gray
+          text: '#0F172A',     // Text: Dark Slate
+          muted: '#64748B',    // Muted slate
+          accent: '#F59E0B',   // Accent: Amber/Gold
+          'accent-light': '#FEF3C7'
         }
       }
     },

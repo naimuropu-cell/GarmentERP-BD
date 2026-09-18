@@ -15,7 +15,10 @@ import {
   Users, 
   DollarSign, 
   Wrench,
-  Lock
+  Lock,
+  Activity,
+  RefreshCw,
+  Award
 } from 'lucide-react';
 import { User } from '../../types';
 
@@ -78,7 +81,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, user 
     {
       title: 'Phase 5 — Quality Control (QA/QC)',
       items: [
-        { id: 'quality', label: 'Inspections, Defects, Rework & AQL', icon: CheckCircle2, disabled: true, phase: 'Phase 5' }
+        { id: 'fabric-qc', label: 'Fabric 4-Point Inspection', icon: CheckCircle2, permission: null },
+        { id: 'sewing-qc', label: 'Inline & End-Line QC & DHU', icon: Activity, permission: null },
+        { id: 'rework-capa', label: 'Rework Orders & CAPA 5-Whys', icon: RefreshCw, permission: null },
+        { id: 'aql-audit', label: 'ISO AQL 2.5 Final Audit', icon: Award, permission: null }
       ]
     },
     {
@@ -93,7 +99,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, user 
   ];
 
   return (
-    <aside className="w-64 border-r border-slate-800 bg-slate-900/60 flex flex-col justify-between shrink-0 select-none overflow-y-auto">
+    <aside className="w-64 border-r border-slate-200 bg-white flex flex-col justify-between shrink-0 select-none overflow-y-auto shadow-sm">
       <div className="p-4 space-y-6">
         {navSections.map((section, idx) => (
           <div key={idx} className="space-y-1.5">
@@ -118,7 +124,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, user 
                         <Icon className="w-4 h-4 shrink-0 text-slate-400" />
                         <span className="truncate">{item.label}</span>
                       </div>
-                      <span className="text-[9px] font-medium px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 border border-slate-700">
+                      <span className="text-[9px] font-medium px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">
                         {item.phase}
                       </span>
                     </div>
@@ -145,18 +151,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, user 
                   <button
                     key={item.id}
                     onClick={() => onSelectTab(item.id)}
-                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                       isCurrent
-                        ? 'bg-brand-500/15 text-brand-400 font-bold border border-brand-500/30 shadow-sm'
-                        : 'text-slate-300 hover:text-white hover:bg-slate-800/80'
+                        ? 'bg-emerald-50 text-emerald-900 font-bold border border-emerald-200 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
                     }`}
                   >
                     <div className="flex items-center gap-2.5 truncate">
-                      <Icon className={`w-4 h-4 shrink-0 ${isCurrent ? 'text-brand-400' : 'text-slate-400'}`} />
+                      <Icon className={`w-4 h-4 shrink-0 ${isCurrent ? 'text-emerald-700' : 'text-slate-400'}`} />
                       <span className="truncate">{item.label}</span>
                     </div>
                     {isCurrent && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-brand-400 shadow-[0_0_8px_#22c55e]" />
+                      <span className="w-2 h-2 rounded-full bg-emerald-600 shadow-sm" />
                     )}
                   </button>
                 );
@@ -167,12 +173,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, user 
       </div>
 
       {/* Footer info */}
-      <div className="p-4 border-t border-slate-800/80 bg-slate-950/40">
-        <div className="flex items-center justify-between text-[11px] text-slate-400">
-          <span>GarmentERP BD</span>
-          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-slate-800 text-slate-300">v1.0.0</span>
+      <div className="p-4 border-t border-slate-100 bg-slate-50/70">
+        <div className="flex items-center justify-between text-[11px] text-slate-500">
+          <span className="font-semibold text-slate-700">GarmentERP BD</span>
+          <span className="px-1.5 py-0.5 rounded text-[10px] font-mono bg-white border border-slate-200 text-slate-600 shadow-2xs">v1.0.0</span>
         </div>
-        <p className="text-[10px] text-slate-400 mt-1">Phase 1: Foundation & RBAC</p>
+        <p className="text-[10px] text-slate-400 mt-1 font-medium">Phase 5: Core QA/QC Suite Active</p>
       </div>
     </aside>
   );
