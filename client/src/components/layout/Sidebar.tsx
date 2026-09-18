@@ -62,8 +62,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, user 
     {
       title: 'Phase 3 — SCM & Inventory',
       items: [
-        { id: 'procurement', label: 'Requisitions & Supplier PO', icon: Truck, disabled: true, phase: 'Phase 3' },
-        { id: 'warehouse', label: 'Multi-Warehouse Inventory', icon: Package, disabled: true, phase: 'Phase 3' }
+        { id: 'suppliers', label: 'Supplier Scorecards', icon: Truck, permission: null },
+        { id: 'procurement', label: 'PR, Supplier PO & GRN', icon: ShoppingBag, permission: null },
+        { id: 'warehouse', label: 'Multi-Warehouse & Stock Engine', icon: Package, permission: null }
       ]
     },
     {

@@ -10,6 +10,9 @@ import { BuyerView } from './modules/merchandising/BuyerView';
 import { StyleTechPackView } from './modules/merchandising/StyleTechPackView';
 import { PurchaseOrderView } from './modules/merchandising/PurchaseOrderView';
 import { CostingView } from './modules/merchandising/CostingView';
+import { SupplierView } from './modules/supplychain/SupplierView';
+import { ProcurementView } from './modules/supplychain/ProcurementView';
+import { InventoryView } from './modules/supplychain/InventoryView';
 import { DEMO_PROFILES } from './services/api';
 import { SystemRoleCode, User } from './types';
 
@@ -180,6 +183,18 @@ export const App: React.FC = () => {
 
           {currentTab === 'costing' && (
             <CostingView user={currentUser} />
+          )}
+
+          {currentTab === 'suppliers' && (
+            <SupplierView />
+          )}
+
+          {currentTab === 'procurement' && (
+            <ProcurementView />
+          )}
+
+          {currentTab === 'warehouse' && (
+            <InventoryView />
           )}
         </main>
       </div>
