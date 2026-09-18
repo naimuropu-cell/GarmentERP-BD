@@ -1,0 +1,165 @@
+// Prisma Schema for GarmentERP BD
+// Designed for PostgreSQL with SQLite fallback compatibility
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ----------------------------------------------------
+// 1. Identity, Access Control & Organization Hierarchy
+// ----------------------------------------------------
+
+model Company {
+  id           String    @id @default(uuid())
+  name         String
+  code         String    @unique
+  taxNumber    String?
+  country      String    @default("Bangladesh")
+  headquarters String
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  factories    Factory[]
+}
+
+model Factory {
+  id          String       @id @default(uuid())
+  companyId   String
+  company     Company      @relation(fields: [companyId], references: [id])
+  name        String
+  code        String       @unique
+  division    String       @default("Dhaka")
+  district    String       @default("Gazipur")
+  upazila     String?
+  address     String
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  buildings   Building[]
+  warehouses  Warehouse[]
+  userAccess  UserFactoryAccess[]
+}
+
+model Building {
+  id          String       @id @default(uuid())
+  factoryId   String
+  factory     Factory      @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  name        String
+  floors      Floor[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Floor {
+  id          String       @id @default(uuid())
+  buildingId  String
+  building    Building     @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  floorNumber Int
+  name        String
+  departments Department[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Department {
+  id          String           @id @default(uuid())
+  floorId     String
+  floor       Floor            @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  name        String
+  type        String           // CUTTING, SEWING, FINISHING, QA_QC, STORE, HR, FINANCE, MAINTENANCE
+  lines       ProductionLine[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model ProductionLine {
+  id               String      @id @default(uuid())
+  departmentId     String
+  department       Department  @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  lineNumber       String
+  operatorCapacity Int         @default(40)
+  helperCapacity   Int         @default(10)
+  targetEfficiency Float       @default(85.0)
+  isActive         Boolean     @default(true)
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+}
+
+model Warehouse {
+  id          String        @id @default(uuid())
+  factoryId   String
+  factory     Factory       @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  name        String
+  type        String        // FABRIC, TRIMS, ACCESSORIES, FINISHED_GOODS
+  binLocations BinLocation[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model BinLocation {
+  id          String    @id @default(uuid())
+  warehouseId String
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id], onDelete: Cascade)
+  rack        String
+  binCode     String
+  capacityKg  Float?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model User {
+  id           String              @id @default(uuid())
+  email        String              @unique
+  passwordHash String
+  fullName     String
+  phone        String?
+  roleId       String
+  role         Role                @relation(fields: [roleId], references: [id])
+  isActive     Boolean             @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  factoryAccess UserFactoryAccess[]
+  auditLogs    AuditLog[]
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  code        String   @unique // SUPER_ADMIN, MERCHANDISER, QA_MANAGER, etc.
+  description String
+  permissions String   // JSON array string of permission codes
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model UserFactoryAccess {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  factoryId String
+  factory   Factory  @relation(fields: [factoryId], references: [id], onDelete: Cascade)
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, factoryId])
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action     String   // CREATE, UPDATE, DELETE, LOGIN, APPROVAL, REJECT
+  entityName String   // PurchaseOrder, Costing, Inspection, Stock, User
+  entityId   String
+  oldValues  String?  // JSON string
+  newValues  String?  // JSON string
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime @default(now())
+}

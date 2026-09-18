@@ -1,0 +1,18 @@
+{
+  "name": "garment-erp-bd-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GarmentERP BD — Enterprise Garment Manufacturing ERP & Quality Management System",
+  "scripts": {
+    "server:install": "cd server && npm install",
+    "server:build": "cd server && npm run build",
+    "server:start": "cd server && npm start",
+    "server:test": "cd server && npm test",
+    "client:install": "cd client && npm install",
+    "client:dev": "cd client && npm run dev",
+    "client:build": "cd client && npm run build"
+  },
+  "keywords": ["garment-erp", "qa-qc", "rmg", "bangladesh"],
+  "author": "naimuropu-cell",
+  "license": "ISC"
+}

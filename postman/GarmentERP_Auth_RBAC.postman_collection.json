@@ -1,0 +1,244 @@
+{
+  "info": {
+    "_postman_id": "8f3b2190-4c12-4211-9a74-b52e259b19df",
+    "name": "GarmentERP BD — Auth, RBAC & Organization Test Suite",
+    "description": "Automated SQA test suite for Bangladesh Garment ERP: Module 01 (Auth & RBAC) and Module 02 (Organization Hierarchy). Contains positive, negative, and role authorization validation tests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "adminToken", "value": "" },
+    { "key": "merchToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01 - Health Check",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Service status is HEALTHY', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.status).to.eql('HEALTHY');",
+              "    pm.expect(jsonData.timezone).to.eql('Asia/Dhaka');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "http://localhost:5000/health", "protocol": "http", "host": ["localhost"], "port": "5000", "path": ["health"] }
+      }
+    },
+    {
+      "name": "02 - Admin Login (Positive)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Admin login returns 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Response contains accessToken and user profile', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.true;",
+              "    pm.expect(jsonData.data.accessToken).to.be.a('string');",
+              "    pm.expect(jsonData.data.user.role.code).to.eql('SUPER_ADMIN');",
+              "    pm.collectionVariables.set('adminToken', jsonData.data.accessToken);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@garmenterp.com\",\n  \"password\": \"Admin123!\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+      }
+    },
+    {
+      "name": "03 - Invalid Credentials (Negative)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Invalid credentials returns 401 Unauthorized', function () {",
+              "    pm.response.to.have.status(401);",
+              "});",
+              "pm.test('Error code is INVALID_CREDENTIALS', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.success).to.be.false;",
+              "    pm.expect(jsonData.error.code).to.eql('INVALID_CREDENTIALS');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@garmenterp.com\",\n  \"password\": \"WrongPass999!\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+      }
+    },
+    {
+      "name": "04 - Merchandiser Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Merchandiser login returns 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('User role is MERCHANDISER', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.user.role.code).to.eql('MERCHANDISER');",
+              "    pm.collectionVariables.set('merchToken', jsonData.data.accessToken);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"merchandiser@garmenterp.com\",\n  \"password\": \"Merch123!\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+      }
+    },
+    {
+      "name": "05 - RBAC Guard: Merchandiser Denied Admin Action",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Unauthorized role modification returns 403 Forbidden', function () {",
+              "    pm.response.to.have.status(403);",
+              "});",
+              "pm.test('Error code is PERMISSION_DENIED', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.error.code).to.eql('PERMISSION_DENIED');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{merchToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roleCode\": \"SUPER_ADMIN\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/users/usr-admin-01/role", "host": ["{{baseUrl}}"], "path": ["auth", "users", "usr-admin-01", "role"] }
+      }
+    },
+    {
+      "name": "06 - Organization Hierarchy Tree",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Hierarchy returns 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Contains Bangladesh factories and departments', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.country).to.eql('Bangladesh');",
+              "    pm.expect(jsonData.data.factories.length).to.be.at.least(2);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/organization/hierarchy", "host": ["{{baseUrl}}"], "path": ["organization", "hierarchy"] }
+      }
+    },
+    {
+      "name": "07 - Multi-Warehouse Inventory Registry",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Warehouses return 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Contains Fabric, Trims, and Finished Goods stores', function () {",
+              "    var jsonData = pm.response.json();",
+              "    var types = jsonData.data.map(function(w) { return w.type; });",
+              "    pm.expect(types).to.include('FABRIC');",
+              "    pm.expect(types).to.include('TRIMS');",
+              "    pm.expect(types).to.include('FINISHED_GOODS');",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/organization/warehouses", "host": ["{{baseUrl}}"], "path": ["organization", "warehouses"] }
+      }
+    },
+    {
+      "name": "08 - Tamper-Evident Audit Logs",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Audit log returns 200 OK', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('Audit entries include logins and system genesis', function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.data.total).to.be.at.least(1);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": { "raw": "{{baseUrl}}/audit/logs", "host": ["{{baseUrl}}"], "path": ["audit", "logs"] }
+      }
+    }
+  ]
+}

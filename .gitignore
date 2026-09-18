@@ -22,5 +22,9 @@ yarn-error.log*
 tmp/
 temp/
 
-# Node dependencies (if any)
+# Node dependencies and build artifacts
 node_modules/
+dist/
+build/
+.env
+.env.local
