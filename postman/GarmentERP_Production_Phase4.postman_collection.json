@@ -1,0 +1,123 @@
+{
+  "info": {
+    "_postman_id": "7c4d5e23-8b2a-4310-a295-f5829103b711",
+    "name": "GarmentERP BD — Phase 4 Production Management Test Suite",
+    "description": "Automated SQA test suite for Phase 4: Fabric Relaxation 24-Hour Timer, Cutting Orders, QR/Barcode Bundling, Sewing Lines 01-04 Real-Time Output, Finishing Process, and Ratio Assortment Carton Packing.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "adminToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01 - Authenticate Supervisor",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set('adminToken', jsonData.data.accessToken);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@garmenterp.com\",\n  \"password\": \"Admin123!\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+      }
+    },
+    {
+      "name": "02 - Fabric Relaxation Logs",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(2);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": { "raw": "{{baseUrl}}/production/relaxation", "host": ["{{baseUrl}}"], "path": ["production", "relaxation"] }
+      }
+    },
+    {
+      "name": "03 - Cut Orders & Marker Efficiency",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.some(c => c.cutNumber === 'CUT-2026-001')).to.be.true;"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": { "raw": "{{baseUrl}}/production/cut-orders", "host": ["{{baseUrl}}"], "path": ["production", "cut-orders"] }
+      }
+    },
+    {
+      "name": "04 - Sewing Floor Lines Summary",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.eql(4);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": { "raw": "{{baseUrl}}/production/sewing/lines-summary", "host": ["{{baseUrl}}"], "path": ["production", "sewing", "lines-summary"] }
+      }
+    },
+    {
+      "name": "05 - Carton Ratio Packing Records",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(2);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": { "raw": "{{baseUrl}}/production/packing", "host": ["{{baseUrl}}"], "path": ["production", "packing"] }
+      }
+    }
+  ]
+}

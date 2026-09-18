@@ -17,7 +17,10 @@ try {
   console.log('\n▶ Running Phase 3 (Supply Chain, Procurement & Inventory) Tests...');
   execSync('node dist/tests/supplychain.test.js', { cwd: serverDir, stdio: 'inherit' });
 
-  console.log('\n🎉 ALL 32 Integration Tests Passed with Zero Errors across all modules!');
+  console.log('\n▶ Running Phase 4 (Production: Cutting, Bundles, Sewing Lines 01-04 & Packing) Tests...');
+  execSync('node dist/tests/production.test.js', { cwd: serverDir, stdio: 'inherit' });
+
+  console.log('\n🎉 ALL 44 Integration Tests Passed with Zero Errors across all modules!');
   process.exit(0);
 } catch (err) {
   console.error('\n❌ Test suite failed:', err);

@@ -18,6 +18,15 @@ import {
   StockItem,
   StockTransaction
 } from '../types/supplyChain';
+import {
+  FabricRelaxationRecord,
+  CutOrder,
+  CutBundle,
+  SewingHourlyOutput,
+  SewingLineSummary,
+  FinishingBatch,
+  CartonPackingRecord
+} from '../types/production';
 
 export interface UserRecord {
   id: string;
@@ -117,6 +126,12 @@ class SystemStore {
   private grns: GoodsReceivedNote[] = [];
   private stockInventory: StockItem[] = [];
   private stockTransactions: StockTransaction[] = [];
+  private relaxations: FabricRelaxationRecord[] = [];
+  private cutOrders: CutOrder[] = [];
+  private bundles: CutBundle[] = [];
+  private sewingHourlyLogs: SewingHourlyOutput[] = [];
+  private finishingBatches: FinishingBatch[] = [];
+  private cartons: CartonPackingRecord[] = [];
 
   constructor() {
     this.initializeData();
@@ -968,6 +983,156 @@ class SystemStore {
       }
     ];
 
+    // 13. Pre-seed Fabric Relaxation (24h Requirement for Knit/Pique)
+    const now = new Date();
+    const readyTime24hAgo = new Date(now.getTime() - 26 * 3600 * 1000).toISOString();
+    const readyTarget24hAgo = new Date(now.getTime() - 2 * 3600 * 1000).toISOString();
+    const relaxingStartTime = new Date(now.getTime() - 6 * 3600 * 1000).toISOString();
+    const relaxingTargetReady = new Date(now.getTime() + 18 * 3600 * 1000).toISOString();
+
+    this.relaxations = [
+      {
+        id: 'rlx-001',
+        rollNumber: 'ROL-PTM-091',
+        fabricLot: 'LOT-PTM-2026-A',
+        fabricType: '100% Cotton Pique 185 GSM',
+        color: 'White',
+        weightGsm: 185,
+        rollLengthMeters: 120,
+        warehouseBin: 'R-A1-01',
+        startTime: readyTime24hAgo,
+        durationHours: 24,
+        targetReadyTime: readyTarget24hAgo,
+        status: 'READY_FOR_CUT',
+        inspectedBy: 'Jamal Uddin (Cutting QC Master)',
+        notes: '24h relaxation finished; zero residual shrinkage tension observed.'
+      },
+      {
+        id: 'rlx-002',
+        rollNumber: 'ROL-PTM-092',
+        fabricLot: 'LOT-PTM-2026-A',
+        fabricType: '100% Cotton Pique 185 GSM',
+        color: 'Black',
+        weightGsm: 185,
+        rollLengthMeters: 140,
+        warehouseBin: 'R-A1-01',
+        startTime: relaxingStartTime,
+        durationHours: 24,
+        targetReadyTime: relaxingTargetReady,
+        status: 'RELAXING',
+        inspectedBy: 'Jamal Uddin (Cutting QC Master)',
+        notes: 'Undergoing 24-hour tension release spreading on relaxation racks.'
+      }
+    ];
+
+    // 14. Pre-seed Cut Orders & QR Bundle Tickets
+    const cutOrder1Id = 'cut-2026-001';
+    const sampleBundles: CutBundle[] = [
+      { id: 'bnd-01', bundleNumber: 'BND-CUT01-WHT-S-01', cutNumber: 'CUT-2026-001', poNumber: 'PO-2026-001', styleNumber: 'TSH-2026-001', color: 'White', size: 'S', quantity: 250, serialStart: 1, serialEnd: 250, barcode: 'BC-CUT01-S01', assignedLineId: 'line-sew-01', assignedLineName: 'Sewing Line 01 (Polo Shirt)', status: 'ISSUED_TO_SEWING' },
+      { id: 'bnd-02', bundleNumber: 'BND-CUT01-WHT-S-02', cutNumber: 'CUT-2026-001', poNumber: 'PO-2026-001', styleNumber: 'TSH-2026-001', color: 'White', size: 'S', quantity: 250, serialStart: 251, serialEnd: 500, barcode: 'BC-CUT01-S02', assignedLineId: 'line-sew-01', assignedLineName: 'Sewing Line 01 (Polo Shirt)', status: 'ISSUED_TO_SEWING' },
+      { id: 'bnd-03', bundleNumber: 'BND-CUT01-WHT-M-01', cutNumber: 'CUT-2026-001', poNumber: 'PO-2026-001', styleNumber: 'TSH-2026-001', color: 'White', size: 'M', quantity: 250, serialStart: 501, serialEnd: 750, barcode: 'BC-CUT01-M01', assignedLineId: 'line-sew-01', assignedLineName: 'Sewing Line 01 (Polo Shirt)', status: 'ISSUED_TO_SEWING' },
+      { id: 'bnd-04', bundleNumber: 'BND-CUT01-WHT-M-02', cutNumber: 'CUT-2026-001', poNumber: 'PO-2026-001', styleNumber: 'TSH-2026-001', color: 'White', size: 'M', quantity: 250, serialStart: 751, serialEnd: 1000, barcode: 'BC-CUT01-M02', assignedLineId: 'line-sew-01', assignedLineName: 'Sewing Line 01 (Polo Shirt)', status: 'ISSUED_TO_SEWING' },
+      { id: 'bnd-05', bundleNumber: 'BND-CUT01-WHT-L-01', cutNumber: 'CUT-2026-001', poNumber: 'PO-2026-001', styleNumber: 'TSH-2026-001', color: 'White', size: 'L', quantity: 250, serialStart: 1001, serialEnd: 1250, barcode: 'BC-CUT01-L01', assignedLineId: 'line-sew-01', assignedLineName: 'Sewing Line 01 (Polo Shirt)', status: 'ISSUED_TO_SEWING' }
+    ];
+    this.bundles = [...sampleBundles];
+
+    this.cutOrders = [
+      {
+        id: cutOrder1Id,
+        cutNumber: 'CUT-2026-001',
+        poId: 'po-2026-001',
+        poNumber: 'PO-2026-001',
+        buyerName: 'H&M Hennes & Mauritz GBC AB',
+        styleId: 'stl-polo-01',
+        styleNumber: 'TSH-2026-001',
+        styleName: 'Men’s Regular Pique Polo Shirt',
+        markerLengthMeters: 7.8,
+        pliesCount: 80,
+        markerEfficiencyPercent: 89.2,
+        totalPlannedPcs: 2500,
+        totalCutPcs: 2500,
+        cuttingTableId: 'line-cut-1',
+        cuttingTableName: 'Cut Table 01 (Gerber Spreader)',
+        status: 'COMPLETED',
+        colorSizeBreakdown: [
+          { color: 'White', size: 'S', plannedPcs: 500, actualCutPcs: 500 },
+          { color: 'White', size: 'M', plannedPcs: 1000, actualCutPcs: 1000 },
+          { color: 'White', size: 'L', plannedPcs: 1000, actualCutPcs: 1000 }
+        ],
+        bundles: sampleBundles,
+        cuttingSupervisor: 'Rafiqul Islam (CAD & Cutting Master)',
+        createdAt: '2026-08-20T08:00:00Z',
+        updatedAt: '2026-08-20T17:30:00Z'
+      }
+    ];
+
+    // 15. Pre-seed Sewing Hourly Tracking
+    const todayStr = new Date().toISOString().split('T')[0];
+    this.sewingHourlyLogs = [
+      { id: 'shl-01', lineId: 'line-sew-01', lineNumber: 'Sewing Line 01 (Polo Shirt)', date: todayStr, hourSlot: '09:00 - 10:00', styleNumber: 'TSH-2026-001', poNumber: 'PO-2026-001', targetQty: 120, actualQty: 116, rejectedQty: 2, efficiencyPercent: 96.6, operatorCount: 38, helperCount: 10, smv: 14.5, recordedBy: 'Sultan Mahmud (Line Supervisor)', timestamp: `${todayStr}T10:02:00Z` },
+      { id: 'shl-02', lineId: 'line-sew-01', lineNumber: 'Sewing Line 01 (Polo Shirt)', date: todayStr, hourSlot: '10:00 - 11:00', styleNumber: 'TSH-2026-001', poNumber: 'PO-2026-001', targetQty: 120, actualQty: 122, rejectedQty: 1, efficiencyPercent: 101.6, operatorCount: 38, helperCount: 10, smv: 14.5, recordedBy: 'Sultan Mahmud (Line Supervisor)', timestamp: `${todayStr}T11:01:00Z` },
+      { id: 'shl-03', lineId: 'line-sew-01', lineNumber: 'Sewing Line 01 (Polo Shirt)', date: todayStr, hourSlot: '11:00 - 12:00', styleNumber: 'TSH-2026-001', poNumber: 'PO-2026-001', targetQty: 120, actualQty: 119, rejectedQty: 3, efficiencyPercent: 99.1, operatorCount: 38, helperCount: 10, smv: 14.5, recordedBy: 'Sultan Mahmud (Line Supervisor)', timestamp: `${todayStr}T12:03:00Z` },
+      { id: 'shl-04', lineId: 'line-sew-01', lineNumber: 'Sewing Line 01 (Polo Shirt)', date: todayStr, hourSlot: '12:00 - 13:00', styleNumber: 'TSH-2026-001', poNumber: 'PO-2026-001', targetQty: 120, actualQty: 125, rejectedQty: 0, efficiencyPercent: 104.1, operatorCount: 38, helperCount: 10, smv: 14.5, recordedBy: 'Sultan Mahmud (Line Supervisor)', timestamp: `${todayStr}T13:01:00Z` }
+    ];
+
+    // 16. Pre-seed Finishing & Packaging Batches
+    this.finishingBatches = [
+      {
+        id: 'fin-001',
+        batchNumber: 'FIN-2026-001',
+        poNumber: 'PO-2026-001',
+        styleNumber: 'TSH-2026-001',
+        totalReceivedPcs: 2500,
+        threadTrimmedPcs: 2500,
+        steamIronedPcs: 2450,
+        metalDetectedPcs: 2400,
+        polybaggedPcs: 2400,
+        rejectedPcs: 14,
+        status: 'IN_PROGRESS',
+        updatedAt: new Date().toISOString()
+      }
+    ];
+
+    // 17. Pre-seed Carton Packing Records with Ratio Assortment
+    this.cartons = [
+      {
+        id: 'ctn-01',
+        cartonNumber: 'CTN-2026-0001',
+        poNumber: 'PO-2026-001',
+        buyerPo: 'HM-PO-99201',
+        styleNumber: 'TSH-2026-001',
+        color: 'White',
+        sizeRatio: { S: 10, M: 20, L: 20, XL: 10 },
+        totalPcsPerCarton: 60,
+        grossWeightKg: 13.8,
+        netWeightKg: 12.6,
+        cartonDimensionsCm: '60 x 40 x 30',
+        barcode: 'CTN-HM-2026-0001',
+        cbm: 0.072,
+        packedBy: 'Anwar Hossain (Packing In-Charge)',
+        status: 'READY_FOR_SHIPMENT',
+        packedAt: new Date().toISOString()
+      },
+      {
+        id: 'ctn-02',
+        cartonNumber: 'CTN-2026-0002',
+        poNumber: 'PO-2026-001',
+        buyerPo: 'HM-PO-99201',
+        styleNumber: 'TSH-2026-001',
+        color: 'White',
+        sizeRatio: { S: 10, M: 20, L: 20, XL: 10 },
+        totalPcsPerCarton: 60,
+        grossWeightKg: 13.9,
+        netWeightKg: 12.6,
+        cartonDimensionsCm: '60 x 40 x 30',
+        barcode: 'CTN-HM-2026-0002',
+        cbm: 0.072,
+        packedBy: 'Anwar Hossain (Packing In-Charge)',
+        status: 'READY_FOR_SHIPMENT',
+        packedAt: new Date().toISOString()
+      }
+    ];
+
     // Log system genesis
     this.addAuditLog({
       id: 'audit-001',
@@ -1394,6 +1559,195 @@ class SystemStore {
       transaction,
       updatedStock: stock
     };
+  }
+
+  // ==========================================
+  // Phase 4: Production Management Methods
+  // ==========================================
+
+  // 1. Fabric Relaxation Tracking (24h Countdown)
+  public getAllFabricRelaxations(): FabricRelaxationRecord[] {
+    const now = new Date().toISOString();
+    this.relaxations.forEach(r => {
+      if (r.status === 'RELAXING' && now >= r.targetReadyTime) {
+        r.status = 'READY_FOR_CUT';
+      }
+    });
+    return this.relaxations;
+  }
+
+  public startFabricRelaxation(data: Omit<FabricRelaxationRecord, 'id' | 'status' | 'targetReadyTime'>): FabricRelaxationRecord {
+    const startTime = data.startTime || new Date().toISOString();
+    const durationHours = data.durationHours || 24;
+    const targetReadyTime = new Date(new Date(startTime).getTime() + durationHours * 3600 * 1000).toISOString();
+
+    const record: FabricRelaxationRecord = {
+      ...data,
+      id: `rlx-${Date.now()}`,
+      startTime,
+      durationHours,
+      targetReadyTime,
+      status: 'RELAXING'
+    };
+    this.relaxations.unshift(record);
+    return record;
+  }
+
+  public completeFabricRelaxation(id: string): FabricRelaxationRecord | null {
+    const record = this.relaxations.find(r => r.id === id);
+    if (!record) return null;
+    record.status = 'READY_FOR_CUT';
+    return record;
+  }
+
+  // 2. Cut Orders & Bundles
+  public getAllCutOrders(): CutOrder[] {
+    return this.cutOrders;
+  }
+
+  public getCutOrderById(id: string): CutOrder | undefined {
+    return this.cutOrders.find(c => c.id === id);
+  }
+
+  public createCutOrder(data: Omit<CutOrder, 'id' | 'bundles' | 'createdAt' | 'updatedAt'>): CutOrder {
+    const newCutOrder: CutOrder = {
+      ...data,
+      id: `cut-${Date.now()}`,
+      bundles: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    this.cutOrders.unshift(newCutOrder);
+    return newCutOrder;
+  }
+
+  public generateBundlesForCutOrder(cutOrderId: string, bundleSize: number = 250): CutBundle[] {
+    const cutOrder = this.getCutOrderById(cutOrderId);
+    if (!cutOrder) {
+      throw new Error(`Cut order ${cutOrderId} not found.`);
+    }
+
+    const generated: CutBundle[] = [];
+    let serialCounter = 1;
+
+    cutOrder.colorSizeBreakdown.forEach((cs) => {
+      const pcs = cs.actualCutPcs || cs.plannedPcs;
+      const numBundles = Math.ceil(pcs / bundleSize);
+
+      for (let i = 1; i <= numBundles; i++) {
+        const qty = i === numBundles && pcs % bundleSize !== 0 ? pcs % bundleSize : bundleSize;
+        const bnd: CutBundle = {
+          id: `bnd-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+          bundleNumber: `BND-${cutOrder.cutNumber}-${cs.color.slice(0, 3).toUpperCase()}-${cs.size}-${String(i).padStart(2, '0')}`,
+          cutNumber: cutOrder.cutNumber,
+          poNumber: cutOrder.poNumber,
+          styleNumber: cutOrder.styleNumber,
+          color: cs.color,
+          size: cs.size,
+          quantity: qty,
+          serialStart: serialCounter,
+          serialEnd: serialCounter + qty - 1,
+          barcode: `BC-${cutOrder.cutNumber}-${cs.size}-${String(i).padStart(2, '0')}`,
+          assignedLineId: 'line-sew-01',
+          assignedLineName: 'Sewing Line 01 (Polo Shirt)',
+          status: 'GENERATED'
+        };
+        serialCounter += qty;
+        generated.push(bnd);
+        this.bundles.push(bnd);
+      }
+    });
+
+    cutOrder.bundles = [...cutOrder.bundles, ...generated];
+    cutOrder.updatedAt = new Date().toISOString();
+    return generated;
+  }
+
+  public getAllBundles(): CutBundle[] {
+    return this.bundles;
+  }
+
+  // 3. Sewing Line Tracking & Efficiency
+  public getAllSewingOutputs(lineId?: string): SewingHourlyOutput[] {
+    if (lineId) {
+      return this.sewingHourlyLogs.filter(s => s.lineId === lineId);
+    }
+    return this.sewingHourlyLogs;
+  }
+
+  public recordSewingHourlyOutput(data: Omit<SewingHourlyOutput, 'id' | 'timestamp'>): SewingHourlyOutput {
+    const newLog: SewingHourlyOutput = {
+      ...data,
+      id: `shl-${Date.now()}`,
+      timestamp: new Date().toISOString()
+    };
+    this.sewingHourlyLogs.unshift(newLog);
+    return newLog;
+  }
+
+  public getSewingLinesSummary(): SewingLineSummary[] {
+    const lines = [
+      { id: 'line-sew-01', name: 'Sewing Line 01 (Polo Shirt)', style: 'TSH-2026-001', po: 'PO-2026-001', target: 120, op: 38, hl: 10, smv: 14.5 },
+      { id: 'line-sew-02', name: 'Sewing Line 02 (T-Shirt & Henley)', style: 'TSH-2026-001', po: 'PO-2026-001', target: 140, op: 32, hl: 8, smv: 11.2 },
+      { id: 'line-sew-03', name: 'Sewing Line 03 (Fleece Hoodie)', style: 'HOD-2026-002', po: 'PO-2026-002', target: 80, op: 42, hl: 12, smv: 24.0 },
+      { id: 'line-sew-04', name: 'Sewing Line 04 (Jogger Pants)', style: 'JOG-2026-003', po: 'PO-2026-003', target: 100, op: 40, hl: 10, smv: 18.5 }
+    ];
+
+    return lines.map(line => {
+      const logs = this.sewingHourlyLogs.filter(l => l.lineId === line.id);
+      const totalTarget = logs.reduce((acc, l) => acc + l.targetQty, 0) || (line.target * 8);
+      const totalActual = logs.reduce((acc, l) => acc + l.actualQty, 0);
+      const totalRejected = logs.reduce((acc, l) => acc + l.rejectedQty, 0);
+      const efficiency = totalTarget > 0 ? Number(((totalActual / totalTarget) * 100).toFixed(1)) : 88.0;
+
+      return {
+        lineId: line.id,
+        lineNumber: line.name,
+        currentStyle: line.style,
+        currentPo: line.po,
+        targetPerHour: line.target,
+        todayTargetTotal: totalTarget,
+        todayActualTotal: totalActual,
+        todayRejectedTotal: totalRejected,
+        overallEfficiencyPercent: efficiency,
+        operatorCount: line.op,
+        helperCount: line.hl,
+        smv: line.smv,
+        status: 'RUNNING',
+        hourlyLogs: logs
+      };
+    });
+  }
+
+  // 4. Finishing & Packaging
+  public getAllFinishingBatches(): FinishingBatch[] {
+    return this.finishingBatches;
+  }
+
+  public updateFinishingStage(
+    batchId: string, 
+    stage: 'threadTrimmedPcs' | 'steamIronedPcs' | 'metalDetectedPcs' | 'polybaggedPcs', 
+    qty: number
+  ): FinishingBatch | null {
+    const batch = this.finishingBatches.find(b => b.id === batchId);
+    if (!batch) return null;
+    batch[stage] = Math.min(batch.totalReceivedPcs, batch[stage] + qty);
+    batch.updatedAt = new Date().toISOString();
+    return batch;
+  }
+
+  public getAllCartonRecords(): CartonPackingRecord[] {
+    return this.cartons;
+  }
+
+  public createCartonRecord(data: Omit<CartonPackingRecord, 'id' | 'packedAt'>): CartonPackingRecord {
+    const newCarton: CartonPackingRecord = {
+      ...data,
+      id: `ctn-${Date.now()}`,
+      packedAt: new Date().toISOString()
+    };
+    this.cartons.unshift(newCarton);
+    return newCarton;
   }
 }
 

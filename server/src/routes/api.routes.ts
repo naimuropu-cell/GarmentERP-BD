@@ -176,5 +176,69 @@ router.post(
   SupplyChainController.issueStock
 );
 
+// ==========================================
+// 6. Phase 4: Production Management Routes
+// ==========================================
+import { ProductionController } from '../modules/production/production.controller';
+
+// Fabric Relaxation (24h Countdown)
+router.get('/production/relaxation', ProductionController.getFabricRelaxations);
+router.post(
+  '/production/relaxation',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_CUTTING),
+  ProductionController.startFabricRelaxation
+);
+router.put(
+  '/production/relaxation/:id/complete',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_CUTTING),
+  ProductionController.completeFabricRelaxation
+);
+
+// Cut Orders & Bundles
+router.get('/production/cut-orders', ProductionController.getCutOrders);
+router.get('/production/cut-orders/:id', ProductionController.getCutOrderById);
+router.post(
+  '/production/cut-orders',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_CUTTING),
+  ProductionController.createCutOrder
+);
+router.post(
+  '/production/cut-orders/:id/bundles',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_CUTTING),
+  ProductionController.generateBundles
+);
+router.get('/production/bundles', ProductionController.getBundles);
+
+// Sewing Floor Output & Lines Summary
+router.get('/production/sewing/hourly', ProductionController.getSewingHourly);
+router.post(
+  '/production/sewing/hourly',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_SEWING),
+  ProductionController.recordSewingHourly
+);
+router.get('/production/sewing/lines-summary', ProductionController.getSewingLinesSummary);
+
+// Finishing & Packing
+router.get('/production/finishing', ProductionController.getFinishingBatches);
+router.put(
+  '/production/finishing/:id/stage',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_FINISHING),
+  ProductionController.updateFinishingStage
+);
+router.get('/production/packing', ProductionController.getCartonRecords);
+router.post(
+  '/production/packing',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_PACKING),
+  ProductionController.createCartonRecord
+);
+
 export default router;
+
 
