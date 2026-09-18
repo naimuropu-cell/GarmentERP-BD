@@ -1,0 +1,188 @@
+{
+  "info": {
+    "_postman_id": "8b3f4e12-9c1a-4290-b184-e4938a192bc3",
+    "name": "GarmentERP BD — Phase 3 Supply Chain, Procurement & Negative Stock Engine",
+    "description": "Automated SQA test suite for Phase 3: Bangladesh Certified Suppliers, Purchase Requisitions, Supplier Purchase Orders (SPO), Inbound Goods Received Notes (GRN), Multi-Warehouse Stock Management, and Zero Negative Stock Issuance Enforcement Engine.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "adminToken", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01 - Super Admin Authentication",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set('adminToken', jsonData.data.accessToken);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@garmenterp.com\",\n  \"password\": \"Admin123!\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+      }
+    },
+    {
+      "name": "02 - List Certified Bangladesh Suppliers",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(4);",
+              "var codes = jsonData.data.map(function(s) { return s.code; });",
+              "pm.expect(codes).to.include('PARAMOUNT-BD');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": { "raw": "{{baseUrl}}/suppliers", "host": ["{{baseUrl}}"], "path": ["suppliers"] }
+      }
+    },
+    {
+      "name": "03 - Register Certified Fabric Mill",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.code).to.eql('ENVOY-BD');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Envoy Textiles Limited\",\n  \"code\": \"ENVOY-BD\",\n  \"category\": \"FABRIC\",\n  \"country\": \"Bangladesh\",\n  \"city\": \"Bhaluka, Mymensingh\",\n  \"leadTimeDays\": 15,\n  \"qualityRating\": 4.9,\n  \"onTimeDeliveryRate\": 98.0,\n  \"paymentTerms\": \"LC 90 Days\",\n  \"contactPerson\": \"Kazi Moniruzzaman\",\n  \"email\": \"sales@envoytextiles.com\",\n  \"materialsSupplied\": [\"Rope Dyed Denim\", \"Organic Cotton Indigo Twill\"]\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/suppliers", "host": ["{{baseUrl}}"], "path": ["suppliers"] }
+      }
+    },
+    {
+      "name": "04 - Fetch Shortage Requisitions",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(1);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": { "raw": "{{baseUrl}}/requisitions", "host": ["{{baseUrl}}"], "path": ["requisitions"] }
+      }
+    },
+    {
+      "name": "05 - Query Multi-Warehouse Live Stock",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(4);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+        "url": { "raw": "{{baseUrl}}/inventory/stock", "host": ["{{baseUrl}}"], "path": ["inventory", "stock"] }
+      }
+    },
+    {
+      "name": "06 - Issue Stock to Sewing Line",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.success).to.be.true;"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sku\": \"TRM-BTN-HORN-18L\",\n  \"quantity\": 500,\n  \"targetLine\": \"Sewing Line 01 (Polo Shirt)\",\n  \"referenceDoc\": \"ISSUE-SLIP-091\",\n  \"reason\": \"Issue buttons for batch #1 assembly\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/inventory/transactions/issue", "host": ["{{baseUrl}}"], "path": ["inventory", "transactions", "issue"] }
+      }
+    },
+    {
+      "name": "07 - Negative Stock Issuance Attempt (Expect 400 Bad Request)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 400 Bad Request', function () { pm.response.to.have.status(400); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.error.code).to.eql('STOCK_ISSUANCE_REJECTED');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"sku\": \"TRM-BTN-HORN-18L\",\n  \"quantity\": 99999999,\n  \"targetLine\": \"Sewing Line 01 (Polo Shirt)\",\n  \"referenceDoc\": \"UNAUTHORIZED-SLIP\",\n  \"reason\": \"Over-issuance test\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/inventory/transactions/issue", "host": ["{{baseUrl}}"], "path": ["inventory", "transactions", "issue"] }
+      }
+    }
+  ]
+}

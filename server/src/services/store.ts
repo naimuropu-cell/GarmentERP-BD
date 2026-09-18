@@ -10,6 +10,14 @@ import {
   TechPackVersion,
   POStatus
 } from '../types/merchandising';
+import {
+  Supplier,
+  PurchaseRequisition,
+  SupplierPurchaseOrder,
+  GoodsReceivedNote,
+  StockItem,
+  StockTransaction
+} from '../types/supplyChain';
 
 export interface UserRecord {
   id: string;
@@ -103,6 +111,12 @@ class SystemStore {
   private styles: GarmentStyle[] = [];
   private costingSheets: CostingSheet[] = [];
   private purchaseOrders: BuyerPurchaseOrder[] = [];
+  private suppliers: Supplier[] = [];
+  private purchaseRequisitions: PurchaseRequisition[] = [];
+  private supplierPurchaseOrders: SupplierPurchaseOrder[] = [];
+  private grns: GoodsReceivedNote[] = [];
+  private stockInventory: StockItem[] = [];
+  private stockTransactions: StockTransaction[] = [];
 
   constructor() {
     this.initializeData();
@@ -683,6 +697,277 @@ class SystemStore {
       }
     ];
 
+    // 7. Pre-seed Certified Bangladesh Raw Material Suppliers
+    this.suppliers = [
+      {
+        id: 'sup-paramount-01',
+        name: 'Paramount Textile Mills Ltd.',
+        code: 'PARAMOUNT-BD',
+        category: 'FABRIC',
+        country: 'Bangladesh',
+        city: 'Narayanganj',
+        leadTimeDays: 14,
+        qualityRating: 4.85,
+        onTimeDeliveryRate: 96.5,
+        paymentTerms: 'LC at 60 days',
+        contactPerson: 'Engr. Shakhawat Hossain',
+        email: 'sales@paramount-textile.com',
+        phone: '+88029881234',
+        materialsSupplied: ['100% Cotton Pique Knit', 'Single Jersey 160-220 GSM', 'CVC Fleece'],
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'sup-ykk-02',
+        name: 'YKK Bangladesh Pte. Ltd.',
+        code: 'YKK-BD',
+        category: 'TRIMS',
+        country: 'Bangladesh',
+        city: 'Dhaka EPZ (DEPZ), Savar',
+        leadTimeDays: 7,
+        qualityRating: 4.95,
+        onTimeDeliveryRate: 98.2,
+        paymentTerms: 'Payment Against Delivery',
+        contactPerson: 'Tanaka Kenji / Rubel Ahmed',
+        email: 'apparel-sales@ykk.com.bd',
+        phone: '+88027788990',
+        materialsSupplied: ['Metal Zippers #5', 'Vislon Zippers', 'Concealed Zippers'],
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'sup-coats-03',
+        name: 'Coats Bangladesh Ltd.',
+        code: 'COATS-BD',
+        category: 'TRIMS',
+        country: 'Bangladesh',
+        city: 'Chittagong CEPZ',
+        leadTimeDays: 5,
+        qualityRating: 4.90,
+        onTimeDeliveryRate: 99.0,
+        paymentTerms: 'Monthly Account 30 Days',
+        contactPerson: 'Farhana Akhter',
+        email: 'orders@coatsbd.com',
+        phone: '+88031740011',
+        materialsSupplied: ['Epic Poly-Poly Core Thread (Ticket 120)', 'Gramax Textured Thread'],
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString()
+      },
+      {
+        id: 'sup-buttons-04',
+        name: 'Dekko Accessories Ltd.',
+        code: 'DEKKO-BD',
+        category: 'ACCESSORIES',
+        country: 'Bangladesh',
+        city: 'Gazipur',
+        leadTimeDays: 6,
+        qualityRating: 4.70,
+        onTimeDeliveryRate: 95.0,
+        paymentTerms: 'TT 30 Days',
+        contactPerson: 'Kamrul Ahsan',
+        email: 'buttons@dekko-group.com',
+        phone: '+88029887766',
+        materialsSupplied: ['Horn Buttons 18L', 'Polyester Resin Buttons', 'Woven Labels'],
+        status: 'ACTIVE',
+        createdAt: new Date().toISOString()
+      }
+    ];
+
+    // 8. Pre-seed Purchase Requisition (Triggered from PO-2026-001 Material Shortage)
+    this.purchaseRequisitions = [
+      {
+        id: 'pr-2026-001',
+        prNumber: 'PR-2026-001',
+        poNumber: 'PO-2026-001',
+        buyerName: 'H&M Hennes & Mauritz GBC AB',
+        requestedBy: 'Tariqul Islam (Merchandiser)',
+        department: 'Merchandising & Planning',
+        items: [
+          {
+            sku: 'FAB-CTN-PIQUE-185',
+            itemName: '100% Cotton Pique 185 GSM (Black & White)',
+            unit: 'KG',
+            requiredQty: 3925,
+            estimatedUnitPriceUsd: 4.50,
+            estimatedTotalUsd: 17662.50,
+            neededByDate: '2026-09-25'
+          },
+          {
+            sku: 'TRM-BTN-HORN-18L',
+            itemName: '18L 2-Hole Horn Pearl Button (H&M Logo)',
+            unit: 'PCS',
+            requiredQty: 11500,
+            estimatedUnitPriceUsd: 0.04,
+            estimatedTotalUsd: 460.00,
+            neededByDate: '2026-09-30'
+          }
+        ],
+        totalEstimatedValueUsd: 18122.50,
+        urgency: 'HIGH',
+        status: 'APPROVED',
+        approvedBy: 'Mahmudul Hasan (Savar Factory GM)',
+        approvalDate: '2026-08-05T11:00:00Z',
+        createdAt: '2026-08-04T10:00:00Z'
+      }
+    ];
+
+    // 9. Pre-seed Supplier Purchase Orders
+    this.supplierPurchaseOrders = [
+      {
+        id: 'spo-2026-001',
+        spoNumber: 'SPO-2026-001',
+        prNumber: 'PR-2026-001',
+        supplierId: 'sup-paramount-01',
+        supplierName: 'Paramount Textile Mills Ltd.',
+        orderDate: '2026-08-06',
+        expectedDeliveryDate: '2026-08-20',
+        currency: 'USD',
+        items: [
+          {
+            sku: 'FAB-CTN-PIQUE-185',
+            itemName: '100% Cotton Pique 185 GSM (Black & White)',
+            unit: 'KG',
+            orderedQty: 3925,
+            deliveredQty: 3925,
+            unitPrice: 4.50,
+            totalPrice: 17662.50
+          }
+        ],
+        totalAmount: 17662.50,
+        paymentTerms: 'LC at 60 days',
+        status: 'DELIVERED',
+        createdAt: '2026-08-06T14:00:00Z'
+      }
+    ];
+
+    // 10. Pre-seed Goods Received Note (GRN) with Gate & Vehicle Entry
+    this.grns = [
+      {
+        id: 'grn-2026-001',
+        grnNumber: 'GRN-2026-001',
+        spoNumber: 'SPO-2026-001',
+        supplierName: 'Paramount Textile Mills Ltd.',
+        warehouseId: 'wh-savar-fabric',
+        warehouseName: 'Central Bonded Fabric Warehouse',
+        receivedDate: '2026-08-19T11:30:00Z',
+        vehicleNumber: 'DHAKA-METRO-TA-14-9921',
+        challanNumber: 'PTM-CH-9942',
+        driverName: 'Abdul Malek',
+        qcInspectionStatus: 'PASSED',
+        items: [
+          {
+            sku: 'FAB-CTN-PIQUE-185',
+            itemName: '100% Cotton Pique 185 GSM',
+            orderedQty: 3925,
+            receivedQty: 3925,
+            acceptedQty: 3925,
+            rejectedQty: 0,
+            unit: 'KG',
+            lotNumber: 'LOT-PTM-2026-A',
+            shadeBand: 'Shade Band A (Within +/- 0.5 Delta-E)',
+            binCode: 'R-A1-01'
+          }
+        ],
+        receivedBy: 'Kazi Farhan (Chief Warehouse Officer)',
+        createdAt: '2026-08-19T12:00:00Z'
+      }
+    ];
+
+    // 11. Multi-Warehouse Stock Inventory (Strict Negative Inventory Prevention)
+    this.stockInventory = [
+      {
+        id: 'stk-01',
+        sku: 'FAB-CTN-PIQUE-185',
+        itemName: '100% Cotton Pique 185 GSM',
+        category: 'FABRIC',
+        warehouseId: 'wh-savar-fabric',
+        warehouseName: 'Central Bonded Fabric Warehouse',
+        binCode: 'R-A1-01',
+        lotNumber: 'LOT-PTM-2026-A',
+        shadeBand: 'Shade Band A',
+        unit: 'KG',
+        totalQty: 8925,
+        availableQty: 8925,
+        reservedQty: 0,
+        quarantineQty: 0,
+        rejectedQty: 0,
+        reorderLevel: 2000,
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: 'stk-02',
+        sku: 'TRM-LBL-HM-MAIN',
+        itemName: 'H&M Basic Main Woven Damask Label',
+        category: 'TRIMS',
+        warehouseId: 'wh-savar-trims',
+        warehouseName: 'Accessories & Trims Store',
+        binCode: 'TR-LBL-02',
+        lotNumber: 'LOT-DEK-01',
+        unit: 'PCS',
+        totalQty: 15000,
+        availableQty: 15000,
+        reservedQty: 0,
+        quarantineQty: 0,
+        rejectedQty: 0,
+        reorderLevel: 5000,
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: 'stk-03',
+        sku: 'TRM-BTN-HORN-18L',
+        itemName: '18L 2-Hole Horn Pearl Button',
+        category: 'ACCESSORIES',
+        warehouseId: 'wh-savar-trims',
+        warehouseName: 'Accessories & Trims Store',
+        binCode: 'TR-BTN-01',
+        lotNumber: 'LOT-BTN-88',
+        unit: 'PCS',
+        totalQty: 31500,
+        availableQty: 31500,
+        reservedQty: 0,
+        quarantineQty: 0,
+        rejectedQty: 0,
+        reorderLevel: 5000,
+        updatedAt: new Date().toISOString()
+      },
+      {
+        id: 'stk-04',
+        sku: 'PKG-POLY-LDPE',
+        itemName: 'Recycled LDPE Garment Polybags',
+        category: 'ACCESSORIES',
+        warehouseId: 'wh-savar-trims',
+        warehouseName: 'Accessories & Trims Store',
+        binCode: 'TR-BTN-01',
+        lotNumber: 'LOT-POLY-12',
+        unit: 'PCS',
+        totalQty: 12000,
+        availableQty: 12000,
+        reservedQty: 0,
+        quarantineQty: 0,
+        rejectedQty: 0,
+        reorderLevel: 3000,
+        updatedAt: new Date().toISOString()
+      }
+    ];
+
+    // 12. Stock Transactions Log
+    this.stockTransactions = [
+      {
+        id: 'stx-001',
+        transactionNumber: 'STX-2026-0001',
+        type: 'RECEIVE_GRN',
+        sku: 'FAB-CTN-PIQUE-185',
+        itemName: '100% Cotton Pique 185 GSM',
+        toWarehouse: 'Central Bonded Fabric Warehouse (R-A1-01)',
+        quantity: 3925,
+        unit: 'KG',
+        referenceDoc: 'GRN-2026-001',
+        performedBy: 'Kazi Farhan (Chief Warehouse Officer)',
+        reason: 'Received against Supplier PO SPO-2026-001 from Paramount Textile',
+        timestamp: '2026-08-19T12:05:00Z'
+      }
+    ];
+
     // Log system genesis
     this.addAuditLog({
       id: 'audit-001',
@@ -692,7 +977,7 @@ class SystemStore {
       action: 'CREATE',
       entityName: 'SystemGenesis',
       entityId: 'SYSTEM-ROOT',
-      newValues: { message: 'GarmentERP BD initialized with multi-tiered Bangladesh factory hierarchy and Phase 2 Merchandising models.' },
+      newValues: { message: 'GarmentERP BD initialized with Phase 1 & 2 foundations and Phase 3 Supply Chain models.' },
       timestamp: new Date().toISOString()
     });
   }
@@ -908,6 +1193,207 @@ class SystemStore {
     po.status = status;
     po.updatedAt = new Date().toISOString();
     return po;
+  }
+
+  // ==========================================
+  // Phase 3: Supply Chain, Procurement & Inventory
+  // ==========================================
+
+  // 1. Suppliers
+  public getAllSuppliers(): Supplier[] {
+    return this.suppliers;
+  }
+
+  public getSupplierById(id: string): Supplier | undefined {
+    return this.suppliers.find(s => s.id === id);
+  }
+
+  public createSupplier(data: Omit<Supplier, 'id' | 'createdAt'>): Supplier {
+    const newSupplier: Supplier = {
+      ...data,
+      id: `sup-${Date.now()}`,
+      createdAt: new Date().toISOString()
+    };
+    this.suppliers.push(newSupplier);
+    return newSupplier;
+  }
+
+  // 2. Purchase Requisitions
+  public getAllPurchaseRequisitions(): PurchaseRequisition[] {
+    return this.purchaseRequisitions;
+  }
+
+  public getPurchaseRequisitionById(id: string): PurchaseRequisition | undefined {
+    return this.purchaseRequisitions.find(pr => pr.id === id);
+  }
+
+  public createPurchaseRequisition(data: Omit<PurchaseRequisition, 'id' | 'createdAt'>): PurchaseRequisition {
+    const newPR: PurchaseRequisition = {
+      ...data,
+      id: `pr-${Date.now()}`,
+      createdAt: new Date().toISOString()
+    };
+    this.purchaseRequisitions.push(newPR);
+    return newPR;
+  }
+
+  public approvePurchaseRequisition(id: string, approvedBy: string): PurchaseRequisition | null {
+    const pr = this.getPurchaseRequisitionById(id);
+    if (!pr) return null;
+    pr.status = 'APPROVED';
+    pr.approvedBy = approvedBy;
+    pr.approvalDate = new Date().toISOString();
+    return pr;
+  }
+
+  // 3. Supplier Purchase Orders
+  public getAllSupplierPOs(): SupplierPurchaseOrder[] {
+    return this.supplierPurchaseOrders;
+  }
+
+  public getSupplierPOById(id: string): SupplierPurchaseOrder | undefined {
+    return this.supplierPurchaseOrders.find(spo => spo.id === id);
+  }
+
+  public createSupplierPO(data: Omit<SupplierPurchaseOrder, 'id' | 'createdAt'>): SupplierPurchaseOrder {
+    const newSPO: SupplierPurchaseOrder = {
+      ...data,
+      id: `spo-${Date.now()}`,
+      createdAt: new Date().toISOString()
+    };
+    this.supplierPurchaseOrders.push(newSPO);
+    return newSPO;
+  }
+
+  // 4. Goods Received Notes (GRN)
+  public getAllGRNs(): GoodsReceivedNote[] {
+    return this.grns;
+  }
+
+  public getGRNById(id: string): GoodsReceivedNote | undefined {
+    return this.grns.find(g => g.id === id);
+  }
+
+  public createGRN(data: Omit<GoodsReceivedNote, 'id' | 'createdAt'>): GoodsReceivedNote {
+    const newGRN: GoodsReceivedNote = {
+      ...data,
+      id: `grn-${Date.now()}`,
+      createdAt: new Date().toISOString()
+    };
+    this.grns.push(newGRN);
+
+    // If inspection passed, update inventory and post StockTransaction
+    if (newGRN.qcInspectionStatus === 'PASSED') {
+      newGRN.items.forEach(item => {
+        let stock = this.stockInventory.find(s => s.sku === item.sku && s.warehouseId === newGRN.warehouseId);
+        if (stock) {
+          stock.totalQty += item.acceptedQty;
+          stock.availableQty += item.acceptedQty;
+          stock.updatedAt = new Date().toISOString();
+        } else {
+          stock = {
+            id: `stk-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+            sku: item.sku,
+            itemName: item.itemName,
+            category: item.sku.startsWith('FAB') ? 'FABRIC' : item.sku.startsWith('TRM') ? 'TRIMS' : 'ACCESSORIES',
+            warehouseId: newGRN.warehouseId,
+            warehouseName: newGRN.warehouseName,
+            binCode: item.binCode,
+            lotNumber: item.lotNumber,
+            shadeBand: item.shadeBand,
+            unit: item.unit,
+            totalQty: item.acceptedQty,
+            availableQty: item.acceptedQty,
+            reservedQty: 0,
+            quarantineQty: 0,
+            rejectedQty: item.rejectedQty,
+            reorderLevel: 1000,
+            updatedAt: new Date().toISOString()
+          };
+          this.stockInventory.push(stock);
+        }
+
+        const tx: StockTransaction = {
+          id: `stx-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+          transactionNumber: `STX-${Date.now()}`,
+          type: 'RECEIVE_GRN',
+          sku: item.sku,
+          itemName: item.itemName,
+          toWarehouse: `${newGRN.warehouseName} (${item.binCode})`,
+          quantity: item.acceptedQty,
+          unit: item.unit,
+          referenceDoc: newGRN.grnNumber,
+          performedBy: newGRN.receivedBy,
+          reason: `GRN inbound receipt against SPO ${newGRN.spoNumber}`,
+          timestamp: new Date().toISOString()
+        };
+        this.stockTransactions.unshift(tx);
+      });
+    }
+
+    return newGRN;
+  }
+
+  // 5. Stock Inventory & Negative Stock Prevention
+  public getStockInventory(): StockItem[] {
+    return this.stockInventory;
+  }
+
+  public getStockTransactions(limit: number = 50): StockTransaction[] {
+    return this.stockTransactions.slice(0, limit);
+  }
+
+  public issueStockToLine(params: {
+    sku: string;
+    warehouseId?: string;
+    quantity: number;
+    targetLine: string;
+    referenceDoc: string;
+    performedBy: string;
+    reason: string;
+  }): { success: boolean; transaction: StockTransaction; updatedStock: StockItem } {
+    const stock = this.stockInventory.find(s => 
+      s.sku === params.sku && (!params.warehouseId || s.warehouseId === params.warehouseId)
+    );
+
+    if (!stock) {
+      throw new Error(`Stock item with SKU '${params.sku}' not found in specified warehouse.`);
+    }
+
+    if (stock.availableQty < params.quantity) {
+      throw new Error(
+        `Insufficient inventory for SKU '${params.sku}'. Available: ${stock.availableQty} ${stock.unit}, Requested: ${params.quantity} ${stock.unit}. Negative stock issuance is strictly rejected by GarmentERP compliance.`
+      );
+    }
+
+    // Deduct stock safely
+    stock.availableQty -= params.quantity;
+    stock.totalQty -= params.quantity;
+    stock.updatedAt = new Date().toISOString();
+
+    const transaction: StockTransaction = {
+      id: `stx-${Date.now()}`,
+      transactionNumber: `STX-${Date.now()}`,
+      type: 'ISSUE_TO_LINE',
+      sku: stock.sku,
+      itemName: stock.itemName,
+      fromWarehouse: stock.warehouseName,
+      targetLine: params.targetLine,
+      quantity: params.quantity,
+      unit: stock.unit,
+      referenceDoc: params.referenceDoc,
+      performedBy: params.performedBy,
+      reason: params.reason,
+      timestamp: new Date().toISOString()
+    };
+
+    this.stockTransactions.unshift(transaction);
+
+    return {
+      success: true,
+      transaction,
+      updatedStock: stock
+    };
   }
 }
 

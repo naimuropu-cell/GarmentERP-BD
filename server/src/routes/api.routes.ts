@@ -118,4 +118,63 @@ router.put(
   MerchandisingController.updatePOStatus
 );
 
+// ==========================================
+// 5. Phase 3: Supply Chain, Procurement & Inventory Routes
+// ==========================================
+import { SupplyChainController } from '../modules/supplychain/supplychain.controller';
+
+// Suppliers
+router.get('/suppliers', SupplyChainController.getSuppliers);
+router.get('/suppliers/:id', SupplyChainController.getSupplierById);
+router.post(
+  '/suppliers',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_SUPPLIERS),
+  SupplyChainController.createSupplier
+);
+
+// Purchase Requisitions
+router.get('/requisitions', SupplyChainController.getRequisitions);
+router.post(
+  '/requisitions',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_REQUISITIONS),
+  SupplyChainController.createRequisition
+);
+router.put(
+  '/requisitions/:id/approve',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.APPROVE_REQUISITIONS),
+  SupplyChainController.approveRequisition
+);
+
+// Supplier Purchase Orders
+router.get('/procurement/orders', SupplyChainController.getSupplierPOs);
+router.post(
+  '/procurement/orders',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_REQUISITIONS),
+  SupplyChainController.createSupplierPO
+);
+
+// Goods Received Notes (GRN)
+router.get('/grn', SupplyChainController.getGRNs);
+router.post(
+  '/grn',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_INVENTORY),
+  SupplyChainController.createGRN
+);
+
+// Inventory Stock & Issuance (Strict Negative Check)
+router.get('/inventory/stock', SupplyChainController.getStockInventory);
+router.get('/inventory/transactions', SupplyChainController.getStockTransactions);
+router.post(
+  '/inventory/transactions/issue',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.ISSUE_STOCK),
+  SupplyChainController.issueStock
+);
+
 export default router;
+
