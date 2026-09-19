@@ -12,7 +12,8 @@ import {
   Anchor, 
   Printer,
   BadgeCheck,
-  Clock
+  Clock,
+  Download
 } from 'lucide-react';
 import { 
   Shipment, 
@@ -21,8 +22,14 @@ import {
   SecurityGatePass, 
   ShipmentStatus 
 } from '../../types/shipment';
+import { useToast } from '../../context/ToastContext';
+import { exportToCsv } from '../../utils/exportCsv';
+import { PrintableGatePass } from './PrintableGatePass';
+import { PrintableInvoice } from './PrintableInvoice';
+import { ConfirmModal } from '../../components/common/ConfirmModal';
 
 export const ShipmentView: React.FC = () => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState<'shipments' | 'invoices' | 'packing' | 'gatepass'>('shipments');
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [invoices, setInvoices] = useState<CommercialInvoice[]>([]);
@@ -30,6 +37,23 @@ export const ShipmentView: React.FC = () => {
   const [gatePasses, setGatePasses] = useState<SecurityGatePass[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+
+  // Printable & Confirmation Modals
+  const [printGatePass, setPrintGatePass] = useState<SecurityGatePass | null>(null);
+  const [printInvoice, setPrintInvoice] = useState<CommercialInvoice | null>(null);
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    confirmText?: string;
+    type?: 'danger' | 'warning' | 'primary';
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  });
 
   // Modal State
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -113,7 +137,7 @@ export const ShipmentView: React.FC = () => {
   const handleCreateShipment = async (e: React.FormEvent) => {
     e.preventDefault();
     if (gateCheckStatus && !gateCheckStatus.verified) {
-      alert('Cannot create shipment: Pre-shipment AQL quality gate has not passed.');
+      toast.error('Pre-shipment AQL quality gate has not passed. Export shipment is locked.', 'Quality Gate Violation');
       return;
     }
 
@@ -139,33 +163,112 @@ export const ShipmentView: React.FC = () => {
       const json = await res.json();
       if (json.success) {
         setShowCreateModal(false);
+        toast.success(`Export shipment for ${poNumberInput} successfully authorized!`, 'Shipment Created');
         fetchAllData();
       } else {
-        alert(json.error?.message || 'Failed to create shipment');
+        toast.error(json.error?.message || 'Failed to create shipment', 'Creation Failed');
       }
     } catch (err: any) {
-      alert(err.message || 'Error occurred');
+      toast.error(err.message || 'Error occurred', 'Network Error');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleDispatchGatePass = async (id: string) => {
-    try {
-      const res = await fetch(`/api/v1/shipments/gate-passes/${id}/status`, {
-        method: 'PUT',
-        headers,
-        body: JSON.stringify({ status: 'DISPATCHED_GATE_OUT' })
-      });
-      const json = await res.json();
-      if (json.success) {
-        fetchAllData();
-      } else {
-        alert(json.error?.message || 'Failed to dispatch gate pass');
+  const requestDispatch = (gp: SecurityGatePass) => {
+    setConfirmModal({
+      isOpen: true,
+      title: `Authorize Plant Exit: ${gp.gatePassNumber}`,
+      message: `Are you sure you want to authorize factory gate exit for vehicle ${gp.vehicleNumber} (Container Seal: ${gp.containerSealNumber})? This timestamped event will update shipment tracking to GATE OUT.`,
+      confirmText: 'Confirm Gate Out Dispatch',
+      type: 'warning',
+      onConfirm: async () => {
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+        try {
+          const res = await fetch(`/api/v1/shipments/gate-passes/${gp.id}/status`, {
+            method: 'PUT',
+            headers,
+            body: JSON.stringify({ status: 'DISPATCHED_GATE_OUT' })
+          });
+          const json = await res.json();
+          if (json.success) {
+            toast.success(`Gate Pass ${gp.gatePassNumber} authorized! Container dispatched to port.`, 'Gate Out Dispatched');
+            fetchAllData();
+          } else {
+            toast.error(json.error?.message || 'Failed to dispatch gate pass', 'Dispatch Failed');
+          }
+        } catch (e: any) {
+          toast.error(e.message || 'Dispatch error', 'Network Error');
+        }
       }
-    } catch (e: any) {
-      alert(e.message || 'Dispatch error');
-    }
+    });
+  };
+
+  const handleExportShipments = () => {
+    const headers = ['Tracking #', 'PO Number', 'Buyer Name', 'Style', 'Shipped Qty', 'AQL Certificate', 'Vessel / Flight', 'ETD', 'ETA', 'Status'];
+    const rows = shipments.map(s => [
+      s.shipmentTrackingNumber,
+      s.poNumber,
+      s.buyerName,
+      s.styleNumber,
+      s.shippedQuantity,
+      s.aqlCertificateNumber || 'N/A',
+      s.vesselOrFlight,
+      s.etd,
+      s.eta,
+      s.status
+    ]);
+    exportToCsv('Export_Shipments', headers, rows);
+    toast.info('Export Shipments CSV downloaded successfully.', 'Export Complete');
+  };
+
+  const handleExportInvoices = () => {
+    const headers = ['Invoice #', 'PO Number', 'Buyer Name', 'LC Number', 'Incoterm', 'Port Loading', 'Port Discharge', 'Amount USD', 'Date'];
+    const rows = invoices.map(i => [
+      i.invoiceNumber,
+      i.poNumber,
+      i.buyerName,
+      i.lcNumber,
+      i.incoterms,
+      i.portOfLoading,
+      i.portOfDischarge,
+      i.totalAmount,
+      new Date(i.createdAt).toLocaleDateString()
+    ]);
+    exportToCsv('Commercial_Invoices', headers, rows);
+    toast.info('Commercial Invoices CSV downloaded successfully.', 'Export Complete');
+  };
+
+  const handleExportPacking = () => {
+    const headers = ['Packing List #', 'PO Number', 'Total Cartons', 'Gross Wt (kg)', 'Net Wt (kg)', 'CBM Volume', 'Container #', 'Seal #'];
+    const rows = packingLists.map(p => [
+      p.packingListNumber,
+      p.poNumber,
+      p.totalCartons,
+      p.totalGrossWeightKg,
+      p.totalNetWeightKg,
+      p.totalCbm,
+      p.containerNumber,
+      p.sealNumber
+    ]);
+    exportToCsv('Export_Packing_Lists', headers, rows);
+    toast.info('Packing Lists CSV downloaded successfully.', 'Export Complete');
+  };
+
+  const handleExportGatePasses = () => {
+    const headers = ['Gate Pass #', 'Vehicle Number', 'Driver Name', 'Driver Phone', 'Seal Number', 'Destination', 'Status', 'Security Officer'];
+    const rows = gatePasses.map(g => [
+      g.gatePassNumber,
+      g.vehicleNumber,
+      g.driverName,
+      g.driverPhone,
+      g.containerSealNumber,
+      g.destination,
+      g.status,
+      g.securityOfficer
+    ]);
+    exportToCsv('Security_Gate_Passes', headers, rows);
+    toast.info('Security Gate Passes CSV downloaded successfully.', 'Export Complete');
   };
 
   const getStatusBadge = (status: ShipmentStatus) => {
@@ -355,6 +458,13 @@ export const ShipmentView: React.FC = () => {
                 className="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-white border border-slate-200 text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent"
               />
             </div>
+            <button
+              onClick={handleExportShipments}
+              className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Export Shipments CSV</span>
+            </button>
           </div>
 
           <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
@@ -414,24 +524,35 @@ export const ShipmentView: React.FC = () => {
 
       {/* Tab 2: Commercial Invoices */}
       {activeTab === 'invoices' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {invoices.map((inv) => (
-            <div key={inv.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4 hover:shadow-md transition-all">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div>
-                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
-                    EXPORT COMMERCIAL INVOICE
-                  </span>
-                  <h3 className="text-base font-extrabold text-slate-900 font-mono mt-1">{inv.invoiceNumber}</h3>
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <button
+              onClick={handleExportInvoices}
+              className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Export Invoices CSV</span>
+            </button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {invoices.map((inv) => (
+              <div key={inv.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4 hover:shadow-md transition-all">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                      EXPORT COMMERCIAL INVOICE
+                    </span>
+                    <h3 className="text-base font-extrabold text-slate-900 font-mono mt-1">{inv.invoiceNumber}</h3>
+                  </div>
+                  <button 
+                    onClick={() => setPrintInvoice(inv)}
+                    className="p-2 rounded-xl text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200 transition-colors cursor-pointer flex items-center gap-1 text-xs font-semibold"
+                    title="Print Official Invoice"
+                  >
+                    <Printer className="w-4 h-4 text-emerald-700" />
+                    <span>Print</span>
+                  </button>
                 </div>
-                <button 
-                  onClick={() => window.print()}
-                  className="p-2 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-slate-100 border border-slate-200 transition-colors cursor-pointer"
-                  title="Print Invoice"
-                >
-                  <Printer className="w-4 h-4" />
-                </button>
-              </div>
 
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div>
@@ -470,13 +591,24 @@ export const ShipmentView: React.FC = () => {
               </div>
             </div>
           ))}
+          </div>
         </div>
       )}
 
       {/* Tab 3: Export Packing Lists */}
       {activeTab === 'packing' && (
-        <div className="space-y-6">
-          {packingLists.map((pl) => (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <button
+              onClick={handleExportPacking}
+              className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Export Packing Lists CSV</span>
+            </button>
+          </div>
+          <div className="space-y-6">
+            {packingLists.map((pl) => (
             <div key={pl.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 border-b border-slate-100 pb-3">
                 <div>
@@ -546,76 +678,98 @@ export const ShipmentView: React.FC = () => {
               </div>
             </div>
           ))}
+          </div>
         </div>
       )}
 
       {/* Tab 4: Security Gate Passes */}
       {activeTab === 'gatepass' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {gatePasses.map((gp) => (
-            <div key={gp.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4 hover:shadow-md transition-all">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div>
-                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
-                    PLANT SECURITY GATE PASS
-                  </span>
-                  <h3 className="text-base font-extrabold text-slate-900 font-mono mt-1">{gp.gatePassNumber}</h3>
-                </div>
-                {gp.status === 'DISPATCHED_GATE_OUT' ? (
-                  <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1">
-                    <Truck className="w-3.5 h-3.5" /> Gate Out / Dispatched
-                  </span>
-                ) : (
-                  <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
-                    Pending Gate Exit
-                  </span>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div>
-                  <span className="text-slate-400 font-medium">Prime Mover / Vehicle:</span>
-                  <p className="font-bold text-slate-900 font-mono">{gp.vehicleNumber}</p>
-                </div>
-                <div>
-                  <span className="text-slate-400 font-medium">Container Seal No:</span>
-                  <p className="font-bold text-emerald-800 font-mono">{gp.containerSealNumber}</p>
-                </div>
-                <div>
-                  <span className="text-slate-400 font-medium">Driver Information:</span>
-                  <p className="font-bold text-slate-900">{gp.driverName}</p>
-                  <p className="text-slate-500 font-mono">{gp.driverPhone}</p>
-                </div>
-                <div>
-                  <span className="text-slate-400 font-medium">Destination Terminal:</span>
-                  <p className="font-bold text-slate-900">{gp.destination}</p>
-                </div>
-              </div>
-
-              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
-                <div>
-                  <span className="text-[11px] text-slate-400">Security Officer:</span>
-                  <p className="font-semibold text-slate-800">{gp.securityOfficer}</p>
-                </div>
-                {gp.exitTimestamp && (
-                  <div className="text-right">
-                    <span className="text-[11px] text-slate-400">Exit Timestamp:</span>
-                    <p className="font-mono text-slate-800 text-[11px]">{new Date(gp.exitTimestamp).toLocaleTimeString()}</p>
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <button
+              onClick={handleExportGatePasses}
+              className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-xs cursor-pointer transition"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Export Gate Passes CSV</span>
+            </button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {gatePasses.map((gp) => (
+              <div key={gp.id} className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4 hover:shadow-md transition-all">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded">
+                      PLANT SECURITY GATE PASS
+                    </span>
+                    <h3 className="text-base font-extrabold text-slate-900 font-mono mt-1">{gp.gatePassNumber}</h3>
                   </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setPrintGatePass(gp)}
+                      className="p-1.5 rounded-lg text-slate-600 hover:text-emerald-700 hover:bg-emerald-50 border border-slate-200 transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-semibold"
+                      title="Print Official Gate Pass Slip"
+                    >
+                      <Printer className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>Print Slip</span>
+                    </button>
+                    {gp.status === 'DISPATCHED_GATE_OUT' ? (
+                      <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1">
+                        <Truck className="w-3.5 h-3.5" /> Gate Out
+                      </span>
+                    ) : (
+                      <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-slate-100 text-slate-700 border border-slate-200">
+                        Pending Exit
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <span className="text-slate-400 font-medium">Prime Mover / Vehicle:</span>
+                    <p className="font-bold text-slate-900 font-mono">{gp.vehicleNumber}</p>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-medium">Container Seal No:</span>
+                    <p className="font-bold text-emerald-800 font-mono">{gp.containerSealNumber}</p>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-medium">Driver Information:</span>
+                    <p className="font-bold text-slate-900">{gp.driverName}</p>
+                    <p className="text-slate-500 font-mono">{gp.driverPhone}</p>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-medium">Destination Terminal:</span>
+                    <p className="font-bold text-slate-900">{gp.destination}</p>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
+                  <div>
+                    <span className="text-[11px] text-slate-400">Security Officer:</span>
+                    <p className="font-semibold text-slate-800">{gp.securityOfficer}</p>
+                  </div>
+                  {gp.exitTimestamp && (
+                    <div className="text-right">
+                      <span className="text-[11px] text-slate-400">Exit Timestamp:</span>
+                      <p className="font-mono text-slate-800 text-[11px]">{new Date(gp.exitTimestamp).toLocaleTimeString()}</p>
+                    </div>
+                  )}
+                </div>
+
+                {gp.status === 'PENDING_EXIT' && (
+                  <button
+                    onClick={() => requestDispatch(gp)}
+                    className="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
+                  >
+                    <Truck className="w-4 h-4" />
+                    <span>Authorize Gate Exit & Dispatch Container</span>
+                  </button>
                 )}
               </div>
-
-              {gp.status === 'PENDING_EXIT' && (
-                <button
-                  onClick={() => handleDispatchGatePass(gp.id)}
-                  className="w-full py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
-                >
-                  <Truck className="w-4 h-4" />
-                  <span>Authorize Gate Exit & Dispatch Container</span>
-                </button>
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       )}
 
@@ -735,6 +889,34 @@ export const ShipmentView: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Printable Security Gate Pass Slip Modal */}
+      {printGatePass && (
+        <PrintableGatePass
+          gatePass={printGatePass}
+          shipment={shipments.find(s => s.id === printGatePass.shipmentId)}
+          onClose={() => setPrintGatePass(null)}
+        />
+      )}
+
+      {/* Printable Commercial Invoice Modal */}
+      {printInvoice && (
+        <PrintableInvoice
+          invoice={printInvoice}
+          onClose={() => setPrintInvoice(null)}
+        />
+      )}
+
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        type={confirmModal.type}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 };

@@ -8,11 +8,15 @@ import {
   X,
   ShieldCheck,
   Flame,
-  CheckCircle2
+  CheckCircle2,
+  Download
 } from 'lucide-react';
 import { SewingDefectRecord, DefectSeverity, GarmentZone } from '../../types/qa';
+import { useToast } from '../../context/ToastContext';
+import { exportToCsv } from '../../utils/exportCsv';
 
 export const InlineQualityView: React.FC = () => {
+  const toast = useToast();
   const [defects, setDefects] = useState<SewingDefectRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -93,13 +97,34 @@ export const InlineQualityView: React.FC = () => {
       const json = await res.json();
       if (json.success) {
         setShowModal(false);
+        toast.success(`Defect ${defectCode} (${defectName}) logged for ${lineNumber}`, 'Defect Recorded');
         fetchData();
       } else {
-        alert(json.error?.message || 'Failed to log defect');
+        toast.error(json.error?.message || 'Failed to log defect', 'Log Error');
       }
-    } catch (err) {
-      console.error('Error logging defect', err);
+    } catch (err: any) {
+      toast.error(err.message || 'Error occurred', 'Network Error');
     }
+  };
+
+  const handleExportDefects = () => {
+    const headers = ['Type', 'Defect Code', 'Defect Name', 'Line', 'PO #', 'Style #', 'Severity', 'Garment Zone', 'Defect Qty', 'Inspected Qty', 'Line DHU %', 'Status'];
+    const rows = defects.map(d => [
+      d.inspectionType,
+      d.defectCode,
+      d.defectName,
+      d.lineNumber,
+      d.poNumber,
+      d.styleNumber,
+      d.severity,
+      d.zone,
+      d.defectQty,
+      d.inspectedGarments,
+      d.dhuPercent.toFixed(2),
+      d.status
+    ]);
+    exportToCsv('Sewing_Inline_Defects_Log', headers, rows);
+    toast.info('Sewing defect log CSV exported successfully.', 'Export Complete');
   };
 
   const filteredDefects = selectedLineFilter === 'ALL' 
@@ -228,6 +253,14 @@ export const InlineQualityView: React.FC = () => {
             )}
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleExportDefects}
+              className="px-2.5 py-1 text-xs text-slate-700 bg-white border border-slate-200 rounded font-semibold hover:bg-slate-50 flex items-center gap-1 cursor-pointer"
+              title="Export Defects to CSV"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Export CSV</span>
+            </button>
             <button 
               onClick={() => setSelectedLineFilter('ALL')} 
               className={`text-xs px-2.5 py-1 rounded cursor-pointer ${

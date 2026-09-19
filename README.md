@@ -25,10 +25,10 @@ React 18 + TypeScript + Vite + Tailwind CSS (Client SPA)
          Audit Trail & SQA Suites
 ```
 
-- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Lucide Icons, Modern Glassmorphism.
+- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Lucide Icons, Global Toast HUD, RFC-4180 Excel/CSV Exporters, Printable Gate Passes & Commercial Invoices.
 - **Backend**: Node.js, Express.js, TypeScript, JWT with Refresh Tokens, bcrypt, Zod validation.
 - **Database**: Prisma ORM, Multi-tenant Bangladesh Factory Schema (PostgreSQL/SQLite compatible).
-- **SQA & Portfolio Assets**: Postman Automated Test Collection, SRS, ERD, API specs, and operational workflows.
+- **SQA & Portfolio Assets**: 8 Postman Collections, 96 Automated Integration Tests, 10-page Master Blueprint PDF.
 
 ---
 

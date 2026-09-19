@@ -4,11 +4,15 @@ import {
   Layers, 
   AlertTriangle, 
   CheckCircle2, 
-  Package
+  Package,
+  Download
 } from 'lucide-react';
 import { BuyerPurchaseOrder, POStatus } from '../../types/merchandising';
+import { useToast } from '../../context/ToastContext';
+import { exportToCsv } from '../../utils/exportCsv';
 
 export const PurchaseOrderView: React.FC = () => {
+  const toast = useToast();
   const [orders, setOrders] = useState<BuyerPurchaseOrder[]>([]);
   const [selectedPoId, setSelectedPoId] = useState<string>('');
   const [loading, setLoading] = useState(true);
@@ -51,13 +55,30 @@ export const PurchaseOrderView: React.FC = () => {
       });
       const json = await res.json();
       if (json.success) {
+        toast.success(`Purchase Order ${poId} status updated to ${newStatus}`, 'PO Status Updated');
         fetchOrders();
       } else {
-        alert(json.error?.message || 'Failed to update PO status');
+        toast.error(json.error?.message || 'Failed to update PO status', 'Update Error');
       }
     } catch (err: any) {
-      alert(err.message || 'Status update error');
+      toast.error(err.message || 'Status update error', 'Network Error');
     }
+  };
+
+  const handleExportOrders = () => {
+    const headers = ['PO Number', 'Buyer', 'Style', 'Total Qty', 'Unit Price USD', 'Total Revenue USD', 'Shipment Date', 'Status'];
+    const rows = orders.map(po => [
+      po.poNumber,
+      po.buyerName,
+      po.styleNumber,
+      po.orderQuantity,
+      po.unitPriceUsd,
+      po.totalOrderValueUsd,
+      po.exFactoryDeliveryDate,
+      po.status
+    ]);
+    exportToCsv('Buyer_Purchase_Orders', headers, rows);
+    toast.info('Buyer Purchase Orders CSV exported successfully.', 'Export Complete');
   };
 
   const currentPO = orders.find(po => po.id === selectedPoId) || orders[0];
@@ -98,15 +119,25 @@ export const PurchaseOrderView: React.FC = () => {
           </p>
         </div>
 
-        <div className="relative w-48 sm:w-64">
-          <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
-          <input
-            type="text"
-            placeholder="Search POs, styles, buyers..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
-          />
+        <div className="flex items-center gap-2.5">
+          <div className="relative w-48 sm:w-64">
+            <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
+            <input
+              type="text"
+              placeholder="Search POs, styles, buyers..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-500"
+            />
+          </div>
+          <button
+            onClick={handleExportOrders}
+            className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer shrink-0"
+            title="Export Orders to CSV"
+          >
+            <Download className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Export CSV</span>
+          </button>
         </div>
       </div>
 

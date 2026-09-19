@@ -11,7 +11,9 @@ import {
   TrendingUp, 
   Activity, 
   Cpu, 
-  BadgeCheck
+  BadgeCheck,
+  Printer,
+  Download
 } from 'lucide-react';
 import { 
   Employee, 
@@ -24,12 +26,15 @@ import {
   OrderProfitabilityAnalysis, 
   ComplianceAudit 
 } from '../../types/operations';
+import { useToast } from '../../context/ToastContext';
+import { exportToCsv } from '../../utils/exportCsv';
 
 interface OperationsViewProps {
   initialSubTab?: 'hr' | 'maintenance' | 'finance' | 'compliance';
 }
 
 export const OperationsView: React.FC<OperationsViewProps> = ({ initialSubTab = 'hr' }) => {
+  const toast = useToast();
   const [activeTab, setActiveTab] = useState<'hr' | 'maintenance' | 'finance' | 'compliance'>(initialSubTab);
   const [loading, setLoading] = useState(true);
 
@@ -180,6 +185,59 @@ export const OperationsView: React.FC<OperationsViewProps> = ({ initialSubTab = 
     fetchOperationsData();
   }, [selectedPo]);
 
+  // CSV Export Handlers
+  const handleExportEmployees = () => {
+    const headers = ['Employee Code', 'Full Name', 'Designation', 'Department', 'Factory', 'Shift', 'Basic Salary BDT', 'Status'];
+    const rows = employees.map(e => [
+      e.employeeCode,
+      e.fullName,
+      e.designation,
+      e.departmentName,
+      e.factoryId,
+      e.shift,
+      e.baseSalaryBdt,
+      e.status
+    ]);
+    exportToCsv('Factory_Employees_Roster', headers, rows);
+    toast.info('Factory Employee Roster CSV exported successfully.', 'Export Complete');
+  };
+
+  const handleExportAttendance = () => {
+    const headers = ['Employee Code', 'Name', 'Date', 'Check In', 'Check Out', 'Status', 'Overtime Hrs', 'Gate Terminal'];
+    const rows = attendance.map(a => [
+      a.employeeCode,
+      a.employeeName,
+      a.date,
+      a.checkIn,
+      a.checkOut || 'N/A',
+      a.status,
+      a.overtimeHours,
+      a.biometricTerminalId
+    ]);
+    exportToCsv('Biometric_Attendance_Ledger', headers, rows);
+    toast.info('Biometric Attendance Ledger CSV exported successfully.', 'Export Complete');
+  };
+
+  const handleExportPayroll = () => {
+    const headers = ['Employee Code', 'Name', 'Designation', 'Month Year', 'Base Salary BDT', 'OT Rate/Hr', 'OT Hrs', 'OT Pay BDT', 'Bonus BDT', 'Deductions BDT', 'Net Payable BDT', 'Status'];
+    const rows = payroll.map(p => [
+      p.employeeCode,
+      p.employeeName,
+      p.designation,
+      p.monthYear,
+      p.baseSalaryBdt,
+      p.overtimeHourlyRateBdt,
+      p.overtimeHours,
+      p.overtimePayBdt,
+      p.attendanceBonusBdt,
+      p.deductionsBdt,
+      p.netPayableBdt,
+      p.paymentStatus
+    ]);
+    exportToCsv('Factory_Payroll_Ledger', headers, rows);
+    toast.info('Factory Payroll Ledger CSV exported successfully.', 'Export Complete');
+  };
+
   // HR Handlers
   const handleCreateEmployee = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -192,10 +250,13 @@ export const OperationsView: React.FC<OperationsViewProps> = ({ initialSubTab = 
       const data = await res.json();
       if (data.success) {
         setShowEmployeeModal(false);
+        toast.success(`Operator ${newEmpData.fullName} registered into HR roster`, 'Employee Enrolled');
         fetchOperationsData();
+      } else {
+        toast.error(data.error?.message || 'Failed to create employee', 'Error');
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      toast.error(err.message || 'Error occurred', 'Network Error');
     }
   };
 
@@ -210,10 +271,13 @@ export const OperationsView: React.FC<OperationsViewProps> = ({ initialSubTab = 
       const data = await res.json();
       if (data.success) {
         setShowPunchModal(false);
+        toast.success('Biometric punch processed & overtime computed at 2x rate', 'Punch Recorded');
         fetchOperationsData();
+      } else {
+        toast.error(data.error?.message || 'Failed to record punch', 'Error');
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      toast.error(err.message || 'Error occurred', 'Network Error');
     }
   };
 
@@ -232,10 +296,13 @@ export const OperationsView: React.FC<OperationsViewProps> = ({ initialSubTab = 
       });
       const data = await res.json();
       if (data.success) {
+        toast.success('Monthly payslip generated under BD Labor Act 2006 (2x Basic Overtime rate)', 'Payroll Calculated');
         fetchOperationsData();
+      } else {
+        toast.error(data.error?.message || 'Failed to calculate payroll', 'Error');
       }
-    } catch (err) {
-      console.error(err);
+    } catch (err: any) {
+      toast.error(err.message || 'Error occurred', 'Network Error');
     }
   };
 
@@ -540,9 +607,19 @@ export const OperationsView: React.FC<OperationsViewProps> = ({ initialSubTab = 
                     <h3 className="text-sm font-bold text-slate-800">Biometric Gate Reader Attendance Ledger</h3>
                     <p className="text-xs text-slate-500">Automated shift check-in/out and 2x overtime calculation</p>
                   </div>
-                  <span className="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
-                    Terminal BIO-GATE-01 (Online)
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleExportAttendance}
+                      className="px-2.5 py-1 text-xs text-slate-700 bg-white border border-slate-200 rounded font-semibold hover:bg-slate-50 flex items-center gap-1 cursor-pointer"
+                      title="Export Attendance to CSV"
+                    >
+                      <Download className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>Export CSV</span>
+                    </button>
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                      Terminal BIO-GATE-01 (Online)
+                    </span>
+                  </div>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs text-left">
@@ -588,8 +665,18 @@ export const OperationsView: React.FC<OperationsViewProps> = ({ initialSubTab = 
                 {/* Employee Roster */}
                 <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                   <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
-                    <h3 className="text-sm font-bold text-slate-800">Factory Floor Operator Roster</h3>
-                    <span className="text-xs text-slate-500">{employees.length} enrolled</span>
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-800">Factory Floor Operator Roster</h3>
+                      <span className="text-xs text-slate-500">{employees.length} enrolled</span>
+                    </div>
+                    <button
+                      onClick={handleExportEmployees}
+                      className="px-2.5 py-1 text-xs text-slate-700 bg-white border border-slate-200 rounded font-semibold hover:bg-slate-50 flex items-center gap-1 cursor-pointer"
+                      title="Export Employees to CSV"
+                    >
+                      <Download className="w-3.5 h-3.5 text-emerald-700" />
+                      <span>Export CSV</span>
+                    </button>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs text-left">
@@ -632,9 +719,19 @@ export const OperationsView: React.FC<OperationsViewProps> = ({ initialSubTab = 
                 <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
                   <div className="p-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
                     <h3 className="text-sm font-bold text-slate-800">Monthly Payroll & Payslips</h3>
-                    <span className="text-xs text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                      September 2026
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleExportPayroll}
+                        className="px-2.5 py-1 text-xs text-slate-700 bg-white border border-slate-200 rounded font-semibold hover:bg-slate-50 flex items-center gap-1 cursor-pointer"
+                        title="Export Payroll to CSV"
+                      >
+                        <Download className="w-3.5 h-3.5 text-emerald-700" />
+                        <span>Export CSV</span>
+                      </button>
+                      <span className="text-xs text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        September 2026
+                      </span>
+                    </div>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs text-left">
@@ -1758,10 +1855,17 @@ export const OperationsView: React.FC<OperationsViewProps> = ({ initialSubTab = 
                 <span className="text-lg font-black text-emerald-800">৳{showPayslipModal.netPayableBdt.toLocaleString()}</span>
               </div>
             </div>
-            <div className="p-3 border-t border-slate-200 bg-slate-50 flex justify-end">
+            <div className="p-3 border-t border-slate-200 bg-slate-50 flex justify-end gap-2">
+              <button
+                onClick={() => window.print()}
+                className="px-3.5 py-1.5 text-xs text-slate-700 bg-white border border-slate-200 rounded font-semibold hover:bg-slate-100 flex items-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <Printer className="w-3.5 h-3.5 text-emerald-700" />
+                <span>Print Payslip</span>
+              </button>
               <button
                 onClick={() => setShowPayslipModal(null)}
-                className="px-4 py-1.5 text-xs text-slate-700 bg-white border border-slate-200 rounded font-semibold hover:bg-slate-100"
+                className="px-4 py-1.5 text-xs text-white bg-slate-800 border border-slate-800 rounded font-semibold hover:bg-slate-900 cursor-pointer"
               >
                 Close
               </button>

@@ -12,11 +12,15 @@ import {
   X, 
   AlertTriangle,
   Building2,
-  Tag
+  Tag,
+  Download
 } from 'lucide-react';
 import { StockItem, StockTransaction } from '../../types/supplyChain';
+import { useToast } from '../../context/ToastContext';
+import { exportToCsv } from '../../utils/exportCsv';
 
 export const InventoryView: React.FC = () => {
+  const toast = useToast();
   const [stockItems, setStockItems] = useState<StockItem[]>([]);
   const [transactions, setTransactions] = useState<StockTransaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -100,16 +104,37 @@ export const InventoryView: React.FC = () => {
       const json = await res.json();
       if (json.success) {
         setIssueSuccess(json.message);
+        toast.success(`Issued ${issueQty} ${selectedStock.unit} of ${selectedStock.sku} to ${targetLine}`, 'Material Issued');
         setTimeout(() => {
           setShowIssueModal(false);
           fetchInventory();
         }, 1200);
       } else {
-        setIssueError(json.error?.message || 'Stock issuance rejected');
+        const errMsg = json.error?.message || 'Stock issuance rejected';
+        setIssueError(errMsg);
+        toast.error(errMsg, 'Issuance Blocked');
       }
     } catch (err: any) {
-      setIssueError(err.message || 'Issuance network error');
+      setIssueError(err.message || 'Error occurred');
+      toast.error(err.message || 'Error occurred', 'Network Error');
     }
+  };
+
+  const handleExportStock = () => {
+    const headers = ['SKU', 'Item Name', 'Category', 'Warehouse', 'Location/Bin', 'Balance', 'Unit', 'Reorder Level', 'Status'];
+    const rows = stockItems.map(item => [
+      item.sku,
+      item.itemName,
+      item.category,
+      item.warehouseName,
+      item.binCode,
+      item.availableQty,
+      item.unit,
+      item.reorderLevel,
+      item.availableQty <= item.reorderLevel ? 'REORDER REQUIRED' : 'SUFFICIENT'
+    ]);
+    exportToCsv('Warehouse_Stock_Balance', headers, rows);
+    toast.info('Warehouse stock balance CSV exported successfully.', 'Export Complete');
   };
 
   const filteredStock = stockItems.filter(s => {
@@ -233,7 +258,17 @@ export const InventoryView: React.FC = () => {
             <Building2 className="h-5 w-5 text-emerald-400" />
             <h2 className="text-base font-bold text-white">Live Multi-Warehouse Stock Ledger</h2>
           </div>
-          <span className="text-xs text-slate-400">Strict negative inventory protection active</span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleExportStock}
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+              title="Export Stock Balance to CSV"
+            >
+              <Download className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Export CSV</span>
+            </button>
+            <span className="text-xs text-slate-400 hidden sm:inline">Strict negative inventory protection active</span>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
