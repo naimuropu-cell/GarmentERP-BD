@@ -44,6 +44,18 @@ import {
   ContainerType,
   Incoterm
 } from '../types/shipment';
+import {
+  Employee,
+  AttendanceRecord,
+  PayrollRecord,
+  MachineAsset,
+  MaintenanceTicket,
+  CostCenter,
+  FinancialTransaction,
+  OrderProfitabilityAnalysis,
+  ComplianceAudit,
+  ComplianceFinding
+} from '../types/operations';
 
 export interface UserRecord {
   id: string;
@@ -158,6 +170,14 @@ class SystemStore {
   private packingLists: PackingList[] = [];
   private gatePasses: SecurityGatePass[] = [];
   private shipments: Shipment[] = [];
+  private employees: Employee[] = [];
+  private attendanceRecords: AttendanceRecord[] = [];
+  private payrollRecords: PayrollRecord[] = [];
+  private machines: MachineAsset[] = [];
+  private maintenanceTickets: MaintenanceTicket[] = [];
+  private costCenters: CostCenter[] = [];
+  private financialTransactions: FinancialTransaction[] = [];
+  private complianceAudits: ComplianceAudit[] = [];
 
   constructor() {
     this.initializeData();
@@ -1506,6 +1526,262 @@ class SystemStore {
       updatedAt: '2026-06-25T17:15:00Z'
     });
 
+    // 16. Pre-seed Phase 7: Factory Operations (HR, Machinery, Finance, Compliance)
+    this.employees = [
+      {
+        id: 'emp-001',
+        employeeCode: 'EMP-SAVAR-0101',
+        fullName: 'Md. Rubel Hossain',
+        phone: '+8801711-445566',
+        departmentId: 'dept-sew-01',
+        departmentName: 'Sewing Department',
+        designation: 'Senior Sewing Machine Operator',
+        factoryId: factoryDhakaId,
+        shift: 'MORNING_GENERAL',
+        joinDate: '2023-03-15',
+        baseSalaryBdt: 14500,
+        status: 'ACTIVE'
+      },
+      {
+        id: 'emp-002',
+        employeeCode: 'EMP-SAVAR-0102',
+        fullName: 'Nasima Begum',
+        phone: '+8801722-556677',
+        departmentId: 'dept-sew-01',
+        departmentName: 'Sewing Department',
+        designation: 'Overlock Special Operator',
+        factoryId: factoryDhakaId,
+        shift: 'MORNING_GENERAL',
+        joinDate: '2023-06-01',
+        baseSalaryBdt: 13800,
+        status: 'ACTIVE'
+      },
+      {
+        id: 'emp-003',
+        employeeCode: 'EMP-SAVAR-0103',
+        fullName: 'Shahadat Ali',
+        phone: '+8801733-667788',
+        departmentId: 'dept-sew-01',
+        departmentName: 'Maintenance & Engineering',
+        designation: 'Senior Plant Mechanic',
+        factoryId: factoryDhakaId,
+        shift: 'MORNING_GENERAL',
+        joinDate: '2022-01-10',
+        baseSalaryBdt: 18500,
+        status: 'ACTIVE'
+      }
+    ];
+
+    this.attendanceRecords = [
+      {
+        id: 'att-001',
+        employeeId: 'emp-001',
+        employeeCode: 'EMP-SAVAR-0101',
+        employeeName: 'Md. Rubel Hossain',
+        date: '2026-06-25',
+        checkIn: '07:55',
+        checkOut: '18:00',
+        status: 'PRESENT',
+        overtimeHours: 2.0,
+        biometricTerminalId: 'BIO-SAVAR-GATE-01'
+      },
+      {
+        id: 'att-002',
+        employeeId: 'emp-002',
+        employeeCode: 'EMP-SAVAR-0102',
+        employeeName: 'Nasima Begum',
+        date: '2026-06-25',
+        checkIn: '08:14',
+        checkOut: '18:00',
+        status: 'LATE',
+        overtimeHours: 1.5,
+        biometricTerminalId: 'BIO-SAVAR-GATE-01'
+      }
+    ];
+
+    this.payrollRecords = [
+      {
+        id: 'pay-001',
+        monthYear: 'June 2026',
+        employeeId: 'emp-001',
+        employeeCode: 'EMP-SAVAR-0101',
+        employeeName: 'Md. Rubel Hossain',
+        designation: 'Senior Sewing Machine Operator',
+        baseSalaryBdt: 14500,
+        overtimeHours: 42,
+        overtimeHourlyRateBdt: 139.42,
+        overtimePayBdt: 5855.64,
+        attendanceBonusBdt: 1000,
+        deductionsBdt: 0,
+        netPayableBdt: 21355.64,
+        paymentStatus: 'PAID',
+        disbursedAt: '2026-07-05T10:00:00Z'
+      }
+    ];
+
+    this.machines = [
+      {
+        id: 'mac-001',
+        machineCode: 'JUKI-SAVAR-01',
+        brand: 'Juki',
+        model: 'DDL-9000C Direct Drive Lockstitch',
+        type: 'LOCKSTITCH',
+        factoryId: factoryDhakaId,
+        lineId: 'line-sew-01',
+        status: 'OPERATIONAL',
+        lastMaintenanceDate: '2026-06-15',
+        nextMaintenanceDueDate: '2026-07-15',
+        totalDowntimeHours: 1.5
+      },
+      {
+        id: 'mac-002',
+        machineCode: 'BROTHER-SAVAR-02',
+        brand: 'Brother',
+        model: 'S-7200C Electronic Direct Drive',
+        type: 'LOCKSTITCH',
+        factoryId: factoryDhakaId,
+        lineId: 'line-sew-02',
+        status: 'OPERATIONAL',
+        lastMaintenanceDate: '2026-06-10',
+        nextMaintenanceDueDate: '2026-07-10',
+        totalDowntimeHours: 0.5
+      },
+      {
+        id: 'mac-003',
+        machineCode: 'PEGASUS-SAVAR-03',
+        brand: 'Pegasus',
+        model: 'M900 High-Speed Overlock 5-Thread',
+        type: 'OVERLOCK',
+        factoryId: factoryDhakaId,
+        lineId: 'line-sew-03',
+        status: 'BREAKDOWN_STOPPED',
+        lastMaintenanceDate: '2026-05-20',
+        nextMaintenanceDueDate: '2026-06-20',
+        totalDowntimeHours: 4.2
+      }
+    ];
+
+    this.maintenanceTickets = [
+      {
+        id: 'mnt-001',
+        ticketNumber: 'MNT-2026-001',
+        machineId: 'mac-003',
+        machineCode: 'PEGASUS-SAVAR-03',
+        lineId: 'line-sew-03',
+        issueType: 'NEEDLE_BAR_JAM',
+        severity: 'CRITICAL_STOPPAGE',
+        reportedBy: 'Production Supervisor (Line 03)',
+        assignedMechanic: 'Shahadat Ali',
+        downtimeMinutes: 45,
+        sparePartsReplaced: 'Needle Bar Bushing & Connecting Rod',
+        sparePartsCostBdt: 1250,
+        status: 'IN_PROGRESS',
+        reportedAt: '2026-06-25T11:00:00Z'
+      },
+      {
+        id: 'mnt-002',
+        ticketNumber: 'MNT-2026-002',
+        machineId: 'mac-001',
+        machineCode: 'JUKI-SAVAR-01',
+        lineId: 'line-sew-01',
+        issueType: 'THREAD_TENSION_FAILURE',
+        severity: 'MINOR',
+        reportedBy: 'Md. Rubel Hossain',
+        assignedMechanic: 'Shahadat Ali',
+        downtimeMinutes: 20,
+        sparePartsReplaced: 'Thread Tension Spring',
+        sparePartsCostBdt: 350,
+        status: 'CLOSED',
+        reportedAt: '2026-06-24T14:00:00Z',
+        resolvedAt: '2026-06-24T14:25:00Z'
+      }
+    ];
+
+    this.costCenters = [
+      {
+        id: 'cc-001',
+        code: 'CC-DHAKA-SEW-01',
+        name: 'Sewing Operations Department (Savar)',
+        factoryId: factoryDhakaId,
+        department: 'Sewing',
+        budgetBdt: 2500000,
+        actualSpentBdt: 1845000
+      },
+      {
+        id: 'cc-002',
+        code: 'CC-DHAKA-CUT-02',
+        name: 'Cutting & Relaxation Section (Savar)',
+        factoryId: factoryDhakaId,
+        department: 'Cutting',
+        budgetBdt: 950000,
+        actualSpentBdt: 620000
+      }
+    ];
+
+    this.financialTransactions = [
+      {
+        id: 'txn-001',
+        txnNumber: 'TXN-2026-001',
+        type: 'EXPENSE',
+        category: 'Plant Electricity & Industrial Power (DESCO Savar)',
+        amount: 342000,
+        currency: 'BDT',
+        description: 'Monthly manufacturing facility electricity billing for production floors',
+        status: 'SETTLED',
+        date: '2026-06-20'
+      },
+      {
+        id: 'txn-002',
+        txnNumber: 'TXN-2026-002',
+        type: 'BUYER_RECEIVABLE',
+        category: 'Export PO Invoicing Milestone',
+        amount: 42500,
+        currency: 'USD',
+        referencePoNumber: 'PO-2026-001',
+        description: 'Commercial Invoice #EXP-INV-2026-0042 proceeds under Irrevocable At-Sight LC',
+        status: 'APPROVED',
+        date: '2026-06-25'
+      }
+    ];
+
+    this.complianceAudits = [
+      {
+        id: 'aud-001',
+        auditNumber: 'AUD-BSCI-2026-001',
+        standard: 'BSCI',
+        factoryId: factoryDhakaId,
+        auditorName: 'TUV Rheinland Bangladesh Audit Bureau',
+        auditDate: '2026-05-18',
+        overallRating: 'GREEN_COMPLIANT',
+        scorePercentage: 94.5,
+        findings: [],
+        status: 'CERTIFIED_CLOSED'
+      },
+      {
+        id: 'aud-002',
+        auditNumber: 'AUD-RSC-2026-002',
+        standard: 'RSC_ACCORD',
+        factoryId: factoryDhakaId,
+        auditorName: 'RMG Sustainability Council (RSC Safety Team)',
+        auditDate: '2026-06-12',
+        overallRating: 'YELLOW_MINOR_CAPA',
+        scorePercentage: 88.0,
+        findings: [
+          {
+            id: 'fnd-01',
+            auditId: 'aud-002',
+            clauseRef: 'RSC-ELEC-4.1',
+            description: 'Emergency exit battery backup illumination module requires replacement in Building 01 Floor 03',
+            severity: 'MINOR',
+            correctiveAction: 'Fitted 3-hour lithium backup emergency luminaire',
+            deadline: '2026-07-20',
+            status: 'RECTIFIED_VERIFIED'
+          }
+        ],
+        status: 'CAPA_REQUIRED'
+      }
+    ];
+
     // Log system genesis
     this.addAuditLog({
       id: 'audit-001',
@@ -2678,6 +2954,317 @@ class SystemStore {
     shipment.status = status;
     shipment.updatedAt = new Date().toISOString();
     return shipment;
+  }
+
+  // ==========================================
+  // 7. Phase 7: Factory Operations (HR, Maintenance, Finance, Compliance)
+  // ==========================================
+
+  // HR & Employees
+  public getAllEmployees(): Employee[] {
+    return this.employees;
+  }
+
+  public createEmployee(data: Omit<Employee, 'id'>): Employee {
+    const newEmp: Employee = {
+      ...data,
+      id: `emp-${Date.now()}`
+    };
+    this.employees.unshift(newEmp);
+    return newEmp;
+  }
+
+  public getAllAttendance(): AttendanceRecord[] {
+    return this.attendanceRecords;
+  }
+
+  public recordAttendance(data: {
+    employeeId: string;
+    date: string;
+    checkIn: string;
+    checkOut: string;
+    status: 'PRESENT' | 'LATE' | 'ABSENT' | 'ON_LEAVE';
+    biometricTerminalId: string;
+  }): AttendanceRecord {
+    const emp = this.employees.find(e => e.id === data.employeeId);
+    const employeeCode = emp?.employeeCode || 'EMP-UNK';
+    const employeeName = emp?.fullName || 'Unknown Operator';
+
+    // Calculate Overtime (Standard shift 8 hours: e.g. 08:00 to 17:00 with 1h lunch)
+    let overtimeHours = 0;
+    if (data.status === 'PRESENT' || data.status === 'LATE') {
+      const [inH, inM] = data.checkIn.split(':').map(Number);
+      const [outH, outM] = data.checkOut.split(':').map(Number);
+      const totalHours = (outH + outM / 60) - (inH + inM / 60) - 1.0; // 1 hr break
+      if (totalHours > 8.0) {
+        overtimeHours = +(totalHours - 8.0).toFixed(1);
+      }
+    }
+
+    const rec: AttendanceRecord = {
+      id: `att-${Date.now()}`,
+      employeeId: data.employeeId,
+      employeeCode,
+      employeeName,
+      date: data.date,
+      checkIn: data.checkIn,
+      checkOut: data.checkOut,
+      status: data.status,
+      overtimeHours,
+      biometricTerminalId: data.biometricTerminalId
+    };
+
+    this.attendanceRecords.unshift(rec);
+    return rec;
+  }
+
+  // Payroll Engine (Bangladesh Labor Act 2006 Overtime: 2x hourly wage rate)
+  public getAllPayroll(): PayrollRecord[] {
+    return this.payrollRecords;
+  }
+
+  public calculateMonthlyPayroll(monthYear: string): PayrollRecord[] {
+    const results: PayrollRecord[] = [];
+
+    for (const emp of this.employees) {
+      if (emp.status !== 'ACTIVE') continue;
+
+      // Sum overtime hours for employee in this month
+      const empAttendance = this.attendanceRecords.filter(a => a.employeeId === emp.id);
+      const totalOtHours = empAttendance.reduce((sum, a) => sum + (a.overtimeHours || 0), 0);
+
+      // Overtime rate: (Basic Salary / 208 hours) * 2
+      const hourlyBasic = emp.baseSalaryBdt / 208;
+      const otHourlyRate = +(hourlyBasic * 2).toFixed(2);
+      const otPay = +(totalOtHours * otHourlyRate).toFixed(2);
+      const attendanceBonus = empAttendance.some(a => a.status === 'ABSENT') ? 0 : 1000;
+      const deductions = 0;
+      const netPayable = +(emp.baseSalaryBdt + otPay + attendanceBonus - deductions).toFixed(2);
+
+      const payrollRec: PayrollRecord = {
+        id: `pay-${Date.now()}-${emp.id}`,
+        monthYear,
+        employeeId: emp.id,
+        employeeCode: emp.employeeCode,
+        employeeName: emp.fullName,
+        designation: emp.designation,
+        baseSalaryBdt: emp.baseSalaryBdt,
+        overtimeHours: totalOtHours,
+        overtimeHourlyRateBdt: otHourlyRate,
+        overtimePayBdt: otPay,
+        attendanceBonusBdt: attendanceBonus,
+        deductionsBdt: deductions,
+        netPayableBdt: netPayable,
+        paymentStatus: 'PAID',
+        disbursedAt: new Date().toISOString()
+      };
+
+      results.push(payrollRec);
+    }
+
+    this.payrollRecords = [...results, ...this.payrollRecords];
+    return results;
+  }
+
+  // Machinery & Maintenance
+  public getAllMachines(): MachineAsset[] {
+    return this.machines;
+  }
+
+  public createMachine(data: Omit<MachineAsset, 'id' | 'totalDowntimeHours'>): MachineAsset {
+    const newMachine: MachineAsset = {
+      ...data,
+      id: `mac-${Date.now()}`,
+      totalDowntimeHours: 0
+    };
+    this.machines.unshift(newMachine);
+    return newMachine;
+  }
+
+  public getAllMaintenanceTickets(): MaintenanceTicket[] {
+    return this.maintenanceTickets;
+  }
+
+  public createMaintenanceTicket(data: {
+    machineId: string;
+    lineId: string;
+    issueType: 'NEEDLE_BAR_JAM' | 'THREAD_TENSION_FAILURE' | 'MOTOR_OVERHEAT' | 'OIL_LEAKAGE' | 'TIMING_BELT_SLIP' | 'CALIBRATION_ERROR';
+    severity: 'CRITICAL_STOPPAGE' | 'MAJOR' | 'MINOR';
+    reportedBy: string;
+    assignedMechanic: string;
+  }): MaintenanceTicket {
+    const mac = this.machines.find(m => m.id === data.machineId);
+    const machineCode = mac?.machineCode || 'MAC-UNKNOWN';
+
+    if (mac && data.severity === 'CRITICAL_STOPPAGE') {
+      mac.status = 'BREAKDOWN_STOPPED';
+    }
+
+    const newTicket: MaintenanceTicket = {
+      id: `mnt-${Date.now()}`,
+      ticketNumber: `MNT-2026-${Date.now().toString().slice(-4)}`,
+      machineId: data.machineId,
+      machineCode,
+      lineId: data.lineId,
+      issueType: data.issueType,
+      severity: data.severity,
+      reportedBy: data.reportedBy,
+      assignedMechanic: data.assignedMechanic,
+      downtimeMinutes: 0,
+      sparePartsReplaced: 'Pending Diagnosis',
+      sparePartsCostBdt: 0,
+      status: 'OPEN',
+      reportedAt: new Date().toISOString()
+    };
+
+    this.maintenanceTickets.unshift(newTicket);
+    return newTicket;
+  }
+
+  public resolveMaintenanceTicket(
+    ticketId: string, 
+    downtimeMinutes: number, 
+    sparePartsReplaced: string, 
+    sparePartsCostBdt: number
+  ): MaintenanceTicket | null {
+    const ticket = this.maintenanceTickets.find(t => t.id === ticketId);
+    if (!ticket) return null;
+
+    ticket.downtimeMinutes = downtimeMinutes;
+    ticket.sparePartsReplaced = sparePartsReplaced;
+    ticket.sparePartsCostBdt = sparePartsCostBdt;
+    ticket.status = 'CLOSED';
+    ticket.resolvedAt = new Date().toISOString();
+
+    const mac = this.machines.find(m => m.id === ticket.machineId);
+    if (mac) {
+      mac.status = 'OPERATIONAL';
+      mac.totalDowntimeHours = +(mac.totalDowntimeHours + (downtimeMinutes / 60)).toFixed(1);
+      mac.lastMaintenanceDate = new Date().toISOString().split('T')[0];
+    }
+
+    return ticket;
+  }
+
+  // Operational Finance & Cost Centers
+  public getAllCostCenters(): CostCenter[] {
+    return this.costCenters;
+  }
+
+  public getAllFinancialTransactions(): FinancialTransaction[] {
+    return this.financialTransactions;
+  }
+
+  public createFinancialTransaction(data: {
+    type: 'EXPENSE' | 'BUYER_RECEIVABLE' | 'SUPPLIER_PAYABLE';
+    category: string;
+    amount: number;
+    currency: 'BDT' | 'USD';
+    referencePoNumber?: string;
+    description: string;
+  }): FinancialTransaction {
+    const newTxn: FinancialTransaction = {
+      id: `txn-${Date.now()}`,
+      txnNumber: `TXN-2026-${Date.now().toString().slice(-4)}`,
+      type: data.type,
+      category: data.category,
+      amount: data.amount,
+      currency: data.currency,
+      referencePoNumber: data.referencePoNumber,
+      description: data.description,
+      status: 'APPROVED',
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    this.financialTransactions.unshift(newTxn);
+
+    // If expense in BDT, update first cost center
+    if (data.type === 'EXPENSE' && data.currency === 'BDT' && this.costCenters.length > 0) {
+      this.costCenters[0].actualSpentBdt += data.amount;
+    }
+
+    return newTxn;
+  }
+
+  // Order Profitability & Net Margin Realization: Revenue - Total Costs = Net Profit
+  public calculateOrderProfitability(poNumber: string): OrderProfitabilityAnalysis {
+    const po = this.purchaseOrders.find(p => p.poNumber === poNumber) || this.purchaseOrders[0];
+    const buyerName = po?.buyerName || 'H&M Hennes & Mauritz';
+    const styleNumber = po?.styleNumber || 'TSH-2026-001';
+    const orderQuantity = po?.orderQuantity || 5000;
+    const unitPriceUsd = po?.unitPriceUsd || 8.50;
+
+    const totalRevenueUsd = +(orderQuantity * unitPriceUsd).toFixed(2); // $42,500
+    const totalFabricCostUsd = +(orderQuantity * 3.40).toFixed(2);     // $17,000
+    const totalTrimsCostUsd = +(orderQuantity * 0.95).toFixed(2);      // $4,750
+    const totalCmCostUsd = +(orderQuantity * 1.65).toFixed(2);         // $8,250
+    const totalOverheadCostUsd = +(orderQuantity * 0.60).toFixed(2);   // $3,000
+    const totalCostUsd = +(totalFabricCostUsd + totalTrimsCostUsd + totalCmCostUsd + totalOverheadCostUsd).toFixed(2); // $33,000
+    const netProfitUsd = +(totalRevenueUsd - totalCostUsd).toFixed(2); // $9,500
+    const netMarginPercentage = +((netProfitUsd / totalRevenueUsd) * 100).toFixed(1); // 22.4%
+
+    return {
+      poNumber: po?.poNumber || poNumber,
+      buyerName,
+      styleNumber,
+      orderQuantity,
+      unitPriceUsd,
+      totalRevenueUsd,
+      totalFabricCostUsd,
+      totalTrimsCostUsd,
+      totalCmCostUsd,
+      totalOverheadCostUsd,
+      totalCostUsd,
+      netProfitUsd,
+      netMarginPercentage,
+      profitabilityRating: netMarginPercentage >= 15 ? 'OPTIMAL_HIGH' : netMarginPercentage >= 8 ? 'ACCEPTABLE' : 'LOW_MARGIN'
+    };
+  }
+
+  // Compliance Audits
+  public getAllComplianceAudits(): ComplianceAudit[] {
+    return this.complianceAudits;
+  }
+
+  public createComplianceAudit(data: {
+    standard: 'BSCI' | 'SEDEX_SMETA' | 'WRAP' | 'FIRE_BUILDING_SAFETY' | 'RSC_ACCORD';
+    factoryId: string;
+    auditorName: string;
+    scorePercentage: number;
+    findings?: Array<{
+      clauseRef: string;
+      description: string;
+      severity: 'CRITICAL' | 'MAJOR' | 'MINOR';
+      correctiveAction: string;
+      deadline: string;
+    }>;
+  }): ComplianceAudit {
+    const auditId = `aud-${Date.now()}`;
+    const formattedFindings: ComplianceFinding[] = (data.findings || []).map((f, i) => ({
+      ...f,
+      id: `fnd-${auditId}-${i}`,
+      auditId,
+      status: 'OPEN'
+    }));
+
+    const overallRating: 'GREEN_COMPLIANT' | 'YELLOW_MINOR_CAPA' | 'RED_CRITICAL_SUSPENSION' = 
+      data.scorePercentage >= 90 ? 'GREEN_COMPLIANT' : data.scorePercentage >= 75 ? 'YELLOW_MINOR_CAPA' : 'RED_CRITICAL_SUSPENSION';
+
+    const newAudit: ComplianceAudit = {
+      id: auditId,
+      auditNumber: `AUD-${data.standard}-2026-${Date.now().toString().slice(-4)}`,
+      standard: data.standard,
+      factoryId: data.factoryId,
+      auditorName: data.auditorName,
+      auditDate: new Date().toISOString().split('T')[0],
+      overallRating,
+      scorePercentage: data.scorePercentage,
+      findings: formattedFindings,
+      status: overallRating === 'GREEN_COMPLIANT' ? 'CERTIFIED_CLOSED' : 'CAPA_REQUIRED'
+    };
+
+    this.complianceAudits.unshift(newAudit);
+    return newAudit;
   }
 }
 

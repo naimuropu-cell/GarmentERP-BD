@@ -18,7 +18,8 @@ import {
   Lock,
   Activity,
   RefreshCw,
-  Award
+  Award,
+  ShieldCheck
 } from 'lucide-react';
 import { User } from '../../types';
 
@@ -94,11 +95,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, user 
       ]
     },
     {
-      title: 'Phase 7 & 8 — Operations & Analytics',
+      title: 'Phase 7 — Factory Operations & Compliance',
       items: [
-        { id: 'hr', label: 'HR, Shifts & Biometric Payroll', icon: Users, disabled: true, phase: 'Phase 7' },
-        { id: 'finance', label: 'Operational Cost & Margins', icon: DollarSign, disabled: true, phase: 'Phase 7' },
-        { id: 'maintenance', label: 'Machine Preventive Tickets', icon: Wrench, disabled: true, phase: 'Phase 7' }
+        { id: 'hr', label: 'HR, Shifts & Biometric Payroll', icon: Users, permission: null },
+        { id: 'maintenance', label: 'Machinery Maintenance & Tickets', icon: Wrench, permission: null },
+        { id: 'finance', label: 'Cost Centers & Order Margins', icon: DollarSign, permission: null },
+        { id: 'compliance', label: 'Social & Safety Compliance Audits', icon: ShieldCheck, permission: null }
+      ]
+    },
+    {
+      title: 'Phase 8 — Executive BI & Analytics',
+      items: [
+        { id: 'analytics', label: 'Real-Time KPI & Plant BI Engine', icon: Activity, disabled: true, phase: 'Phase 8' }
       ]
     }
   ];

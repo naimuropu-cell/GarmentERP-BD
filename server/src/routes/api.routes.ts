@@ -350,6 +350,76 @@ router.put(
   ShipmentController.updateGatePassStatus
 );
 
+// ==========================================
+// 9. Phase 7: Factory Operations (HR, Maintenance, Finance, Compliance)
+// ==========================================
+import * as OpsController from '../modules/operations/operations.controller';
+
+// HR & Biometric Payroll
+router.get('/operations/hr/employees', authenticateToken, OpsController.getEmployees);
+router.post(
+  '/operations/hr/employees',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_HR),
+  OpsController.createEmployee
+);
+router.get('/operations/hr/attendance', authenticateToken, OpsController.getAttendance);
+router.post(
+  '/operations/hr/attendance',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_HR),
+  OpsController.recordAttendance
+);
+router.get('/operations/hr/payroll', authenticateToken, OpsController.getPayroll);
+router.post(
+  '/operations/hr/payroll/calculate',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_HR),
+  OpsController.calculateMonthlyPayroll
+);
+
+// Machinery & Preventive Maintenance
+router.get('/operations/maintenance/machines', authenticateToken, OpsController.getMachines);
+router.post(
+  '/operations/maintenance/machines',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_MAINTENANCE),
+  OpsController.createMachine
+);
+router.get('/operations/maintenance/tickets', authenticateToken, OpsController.getMaintenanceTickets);
+router.post(
+  '/operations/maintenance/tickets',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_MAINTENANCE),
+  OpsController.createMaintenanceTicket
+);
+router.put(
+  '/operations/maintenance/tickets/:id/resolve',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_MAINTENANCE),
+  OpsController.resolveMaintenanceTicket
+);
+
+// Operational Finance & Cost Centers
+router.get('/operations/finance/cost-centers', authenticateToken, OpsController.getCostCenters);
+router.get('/operations/finance/transactions', authenticateToken, OpsController.getFinancialTransactions);
+router.post(
+  '/operations/finance/transactions',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_FINANCE),
+  OpsController.createFinancialTransaction
+);
+router.get('/operations/finance/order-margin/:poNumber', authenticateToken, OpsController.getOrderProfitability);
+
+// Compliance Audits
+router.get('/operations/compliance/audits', authenticateToken, OpsController.getComplianceAudits);
+router.post(
+  '/operations/compliance/audits',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.MANAGE_ORGANIZATION),
+  OpsController.createComplianceAudit
+);
+
 export default router;
 
 

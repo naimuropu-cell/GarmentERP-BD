@@ -21,6 +21,7 @@ import { InlineQualityView } from './modules/qa/InlineQualityView';
 import { ReworkCapaView } from './modules/qa/ReworkCapaView';
 import { AqlSamplingView } from './modules/qa/AqlSamplingView';
 import { ShipmentView } from './modules/shipment/ShipmentView';
+import { OperationsView } from './modules/operations/OperationsView';
 import { DEMO_PROFILES } from './services/api';
 import { SystemRoleCode, User } from './types';
 
@@ -235,6 +236,13 @@ export const App: React.FC = () => {
 
           {currentTab === 'shipment' && (
             <ShipmentView />
+          )}
+
+          {['hr', 'maintenance', 'finance', 'compliance', 'operations'].includes(currentTab) && (
+            <OperationsView 
+              key={currentTab} 
+              initialSubTab={currentTab === 'operations' ? 'hr' : (currentTab as any)} 
+            />
           )}
         </main>
       </div>

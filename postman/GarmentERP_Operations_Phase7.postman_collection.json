@@ -1,0 +1,304 @@
+{
+  "info": {
+    "_postman_id": "9f3a1b8c-5d2e-4876-9c34-a719283e5246",
+    "name": "GarmentERP BD — Phase 7 Factory Operations Suite",
+    "description": "Automated SQA test collection for Phase 7: HR & Biometric Attendance, Overtime Engine (BD Labor Act 2006), Machinery Asset Maintenance & Breakdown Work Orders, Operational Cost Centers & Realized Order Profitability, and International Social & Safety Compliance Audits (BSCI, SEDEX, RSC/Accord).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "authToken", "value": "" },
+    { "key": "employeeId", "value": "EMP-SAV-010" },
+    { "key": "machineId", "value": "MC-SEW-01" },
+    { "key": "ticketId", "value": "" },
+    { "key": "poNumber", "value": "PO-2026-001" }
+  ],
+  "item": [
+    {
+      "name": "01 - Authenticate Plant Operations Admin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.success).to.be.true;",
+              "pm.collectionVariables.set('authToken', jsonData.data.accessToken);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@garmenterp.com\",\n  \"password\": \"Admin123!\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+      }
+    },
+    {
+      "name": "02 - List Factory Employees",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(1);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/operations/hr/employees", "host": ["{{baseUrl}}"], "path": ["operations", "hr", "employees"] }
+      }
+    },
+    {
+      "name": "03 - Register Certified Sewing Operator",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.department).to.eql('SEWING');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Rokeya Begum\",\n  \"department\": \"SEWING\",\n  \"designation\": \"Senior Overlock Machinist\",\n  \"lineAssignment\": \"Line 01\",\n  \"factoryUnit\": \"Savar Unit 1\",\n  \"shift\": \"DAY_GENERAL\",\n  \"baseSalary\": 14500,\n  \"phone\": \"+8801811223344\",\n  \"nidNumber\": \"19922615598765432\",\n  \"joiningDate\": \"2024-03-01\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/operations/hr/employees", "host": ["{{baseUrl}}"], "path": ["operations", "hr", "employees"] }
+      }
+    },
+    {
+      "name": "04 - Log Biometric Terminal Punch & Auto OT Hours",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.overtimeHours).to.be.at.least(2.0);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"employeeId\": \"{{employeeId}}\",\n  \"date\": \"2026-09-19\",\n  \"inTime\": \"08:00\",\n  \"outTime\": \"19:00\",\n  \"terminalId\": \"BIO-GATE-01\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/operations/hr/attendance", "host": ["{{baseUrl}}"], "path": ["operations", "hr", "attendance"] }
+      }
+    },
+    {
+      "name": "05 - Compute Monthly Payroll (BD Labor Act 2x OT)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.netPay).to.be.above(jsonData.data.grossSalary);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"employeeId\": \"{{employeeId}}\",\n  \"month\": \"2026-09\",\n  \"workingDays\": 26,\n  \"presentDays\": 26,\n  \"totalOtHours\": 32,\n  \"festivalBonus\": 0,\n  \"deductions\": 250\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/operations/hr/payroll/calculate", "host": ["{{baseUrl}}"], "path": ["operations", "hr", "payroll", "calculate"] }
+      }
+    },
+    {
+      "name": "06 - Query Machinery Asset Registry",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(1);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/operations/maintenance/machines", "host": ["{{baseUrl}}"], "path": ["operations", "maintenance", "machines"] }
+      }
+    },
+    {
+      "name": "07 - Issue Emergency Machine Breakdown Ticket",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.collectionVariables.set('ticketId', jsonData.data.id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"machineId\": \"{{machineId}}\",\n  \"issueDescription\": \"Needle plate fractured and looper thread guide jammed during high-speed run.\",\n  \"severity\": \"CRITICAL\",\n  \"reportedBy\": \"Line 01 Supervisor\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/operations/maintenance/tickets", "host": ["{{baseUrl}}"], "path": ["operations", "maintenance", "tickets"] }
+      }
+    },
+    {
+      "name": "08 - Resolve Maintenance Ticket & Restore Machine",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.status).to.eql('RESOLVED');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"assignedMechanic\": \"Master Mechanic Rahim\",\n  \"actionTaken\": \"Replaced damaged needle plate and aligned looper timing.\",\n  \"sparePartsCost\": 3500,\n  \"downtimeMinutes\": 45\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/operations/maintenance/tickets/{{ticketId}}/resolve", "host": ["{{baseUrl}}"], "path": ["operations", "maintenance", "tickets", "{{ticketId}}", "resolve"] }
+      }
+    },
+    {
+      "name": "09 - Record Factory Operational Expense Transaction",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.amountBdt).to.eql(45000);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"costCenterId\": \"CC-SEW-01\",\n  \"transactionType\": \"EXPENSE\",\n  \"category\": \"SEWING_SPARE_PARTS\",\n  \"amountBdt\": 45000,\n  \"description\": \"Bulk procurement of titanium sewing needles and presser feet\",\n  \"recordedBy\": \"Plant Accountant\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/operations/finance/transactions", "host": ["{{baseUrl}}"], "path": ["operations", "finance", "transactions"] }
+      }
+    },
+    {
+      "name": "10 - Compute Realized Order Profitability",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.orderRevenueUsd).to.eql(42500);",
+              "pm.expect(jsonData.data.profitMarginPercent).to.be.above(0);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/operations/finance/order-margin/{{poNumber}}", "host": ["{{baseUrl}}"], "path": ["operations", "finance", "order-margin", "{{poNumber}}"] }
+      }
+    },
+    {
+      "name": "11 - Certify Factory Compliance Audit (BSCI / SEDEX)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.overallResult).to.eql('COMPLIANT');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"auditType\": \"BSCI\",\n  \"auditingBody\": \"SGS Bangladesh Ltd\",\n  \"leadAuditor\": \"Dr. Shahriar Rahman\",\n  \"auditDate\": \"2026-09-15\",\n  \"validUntil\": \"2027-09-14\",\n  \"factoryUnit\": \"Savar Unit 1\",\n  \"score\": 94.5,\n  \"overallResult\": \"COMPLIANT\",\n  \"findings\": [\n    {\n      \"category\": \"HEALTH_AND_SAFETY\",\n      \"severity\": \"MINOR\",\n      \"findingDescription\": \"Two secondary fire extinguisher inspection tags required updated signatures.\",\n      \"capaRequired\": \"Update monthly HSE log and attach laminated inspection tags immediately.\",\n      \"targetClosureDate\": \"2026-09-25\",\n      \"status\": \"CLOSED\"\n    }\n  ],\n  \"notes\": \"Excellent social standard adherence, proper ventilation, and zero child labor detected.\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/operations/compliance/audits", "host": ["{{baseUrl}}"], "path": ["operations", "compliance", "audits"] }
+      }
+    }
+  ]
+}
