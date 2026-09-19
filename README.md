@@ -1,7 +1,8 @@
 # GarmentERP BD — Bangladesh Garment Manufacturing ERP & Quality Management System
 
 [![Build Status](https://img.shields.io/badge/Build-Passing-emerald)](https://github.com/naimuropu-cell/GarmentERP-BD)
-[![Phase](https://img.shields.io/badge/Phase%201%20%26%202-Commercial%20%26%20Orders%20Complete-emerald)](https://github.com/naimuropu-cell/GarmentERP-BD)
+[![Phases](https://img.shields.io/badge/Phases%201--8-100%25%20Enterprise%20Complete-emerald)](https://github.com/naimuropu-cell/GarmentERP-BD)
+[![SQA Tests](https://img.shields.io/badge/SQA%20Tests-96%2F96%20Passed-brightgreen)](https://github.com/naimuropu-cell/GarmentERP-BD)
 [![License](https://img.shields.io/badge/License-Proprietary%20%2F%20MIT-violet)](https://github.com/naimuropu-cell/GarmentERP-BD)
 
 **GarmentERP BD** is an enterprise-grade ERP and Quality Management System engineered around the authentic business, production, and quality assurance workflows of Bangladesh Ready-Made Garments (RMG) manufacturing factories.
@@ -47,7 +48,9 @@ GarmentERP-BD/
 │   ├── GarmentERP_SupplyChain_Phase3.postman_collection.json # Phase 3 SCM & Inventory
 │   ├── GarmentERP_Production_Phase4.postman_collection.json # Phase 4 Cutting & Sewing
 │   ├── GarmentERP_QA_QC_Phase5.postman_collection.json # Phase 5 QA/QC & AQL 2.5
-│   └── GarmentERP_Shipment_Phase6.postman_collection.json # Phase 6 Shipment & Gate Pass
+│   ├── GarmentERP_Shipment_Phase6.postman_collection.json # Phase 6 Shipment & Gate Pass
+│   ├── GarmentERP_Operations_Phase7.postman_collection.json # Phase 7 Operations & Labor Act 2006 Payroll
+│   └── GarmentERP_Intelligence_Phase8.postman_collection.json # Phase 8 Traceability 360° & BI Dashboard
 ├── server/
 │   ├── prisma/           # Prisma ORM schema
 │   ├── src/

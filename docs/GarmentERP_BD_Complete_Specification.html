@@ -371,14 +371,14 @@
           </div>
           <div class="kpi-box">
             <div class="num">8</div>
-            <div class="lbl">Development Phases</div>
+            <div class="lbl">Development Phases (100% Complete)</div>
           </div>
           <div class="kpi-box">
-            <div class="num">56 / 56</div>
+            <div class="num">96 / 96</div>
             <div class="lbl">Automated SQA Tests Passed</div>
           </div>
           <div class="kpi-box">
-            <div class="num">5</div>
+            <div class="num">8</div>
             <div class="lbl">Postman SQA Collections</div>
           </div>
           <div class="kpi-box">
@@ -441,7 +441,7 @@
 +-----------------------------------------------+-----------------------------------------------+
 |                               PERSISTENCE & COMPLIANCE LAYER                                  |
 |  Prisma ORM + PostgreSQL Database Schema (Multi-tenant Bangladesh Topology: Savar / Gazipur) |
-|  Tamper-Evident Append-Only Audit Trail + Postman / Newman Automated SQA Suites (56 Tests)     |
+|  Tamper-Evident Append-Only Audit Trail + Postman / Newman Automated SQA Suites (96 Tests)     |
 +-----------------------------------------------------------------------------------------------+
     </div>
 
@@ -905,123 +905,475 @@ Enterprise Holding (Apex Garments Holdings Ltd.)
     </div>
   </div>
 
-  <!-- PAGE 7: SHIPMENT, FACTORY OPERATIONS & SQA TEST SUITE -->
+  <!-- PAGE 7: PHASE 6 — COMMERCIAL INVOICING, EXPORT PACKING & GATE PASS -->
   <div class="page">
-    <h1>6. Shipment, Operations & SQA Automated Test Suite</h1>
+    <h1>6. Phase 6: Commercial Invoicing, Export Packing & Security Gate Pass Suite</h1>
 
     <p>
-      The remaining roadmap covers export logistics, human resources, machinery upkeep, and the comprehensive automated testing suite guaranteeing zero-defect deployments.
+      Phase 6 governs the international trade, commercial documentation, and physical factory gate dispatch of certified export garments, bridging production floor completion with Chittagong Port export logistics.
     </p>
 
-    <h2>6.1 Shipment & Logistics (Phase 6 — Upcoming)</h2>
+    <h2>6.1 Pre-Shipment ISO 2859-1 Quality Gate Security Lock (Mod 21)</h2>
     <div class="callout callout-amber">
-      <strong>Security Lock: Mandatory Quality Gate Enforced Prior to Shipment</strong>
-      Under international shipping protocols, GarmentERP BD strictly locks Commercial Invoicing and Gate Pass issuance if the PO’s pre-shipment AQL inspection is missing or has a <code>REJECTED</code> status. No container can be dispatched from the factory without an authorized digital QA sign-off certificate.
-    </div>
-    <div class="two-col">
-      <div class="card">
-        <h4>Commercial Invoicing & Packing List</h4>
-        <p style="font-size: 8pt;">
-          Generates customs-compliant export documentation with gross weight, net weight, CBM (Cubic Meter) container calculations, and Harmonized System (HS) codes.
-        </p>
-      </div>
-      <div class="card">
-        <h4>Security Gate Pass & Dispatch Tracking</h4>
-        <p style="font-size: 8pt;">
-          Issues tamper-proof QR gate passes for logistics container trucks dispatched to Chittagong Port or Dhaka Airport (In-Transit &rarr; Port &rarr; Delivered &rarr; Closed).
-        </p>
-      </div>
+      <strong>Strict Quality Gate Security: Unauthorized Shipment Blocked</strong>
+      Under international buyer shipping protocols, GarmentERP BD enforces an uncompromising system-level lock: Any attempt to issue a Commercial Invoice, Export Packing List, or Security Gate Pass for a Buyer PO that lacks an authorized ISO 2859-1 <code>ACCEPTED_PASS</code> inspection certificate is blocked immediately with HTTP <code>400 Bad Request</code> (<code>QUALITY_GATE_VIOLATION</code>). No container truck can depart without digital QA clearance.
     </div>
 
-    <h2>6.2 Factory Operations & HR (Phase 7 — Upcoming)</h2>
+    <h2>6.2 Customs-Compliant Export Commercial Invoicing (Mod 22)</h2>
+    <p>
+      Generates customs-compliant export commercial documentation conforming to international banking and Letter of Credit (LC) requirements:
+    </p>
     <div class="two-col">
       <div class="card">
-        <h4>HR, Shifts & Biometric Payroll</h4>
+        <h4>Commercial Invoicing Parameters</h4>
         <ul>
-          <li><span>Employee Roster</span> <span>Operators, helpers, supervisors</span></li>
-          <li><span>Shift Scheduling</span> <span>Day, evening, night rotations</span></li>
-          <li><span>Overtime Calculation</span> <span>Compliant with BD Labor Act 2006</span></li>
-          <li><span>Biometric Sync</span> <span>Automated punch-card integration</span></li>
+          <li><span>Invoice Number</span> <code>EXP-INV-2026-0042</code></li>
+          <li><span>Letter of Credit (LC)</span> <code>LC-DB-2026-99014</code> (Deutsche Bank AG)</li>
+          <li><span>Incoterms Rule</span> <strong>FOB Chittagong Port (BDCGP)</strong></li>
+          <li><span>Port of Discharge</span> <strong>Hamburg Port (DEHAM), Germany</strong></li>
+          <li><span>Invoice Commercial Value</span> <strong>$42,500.00 USD (5,000 pcs @ $8.50)</strong></li>
+          <li><span>Payment Terms</span> Irrevocable At-Sight Letter of Credit</li>
         </ul>
       </div>
       <div class="card">
-        <h4>Machine Maintenance & Downtime</h4>
+        <h4>Export Packing List & CBM Container Loading</h4>
         <ul>
-          <li><span>Machine Registry</span> <span>Juki, Brother, Pegasus, Kansai</span></li>
-          <li><span>Preventive Maintenance</span> <span>Daily/Weekly lube & oil schedules</span></li>
-          <li><span>Breakdown Tickets</span> <span>Mechanic response time & downtime</span></li>
-          <li><span>Spare Parts Cost</span> <span>Needles, loopers, belts, motors</span></li>
+          <li><span>Total Garments Shipped</span> <strong>5,000 pieces</strong></li>
+          <li><span>Export Cartons Packed</span> <strong>84 Cartons</strong> (60 pcs/carton ratio)</li>
+          <li><span>Automated Volume (CBM)</span> <strong>15.12 CBM</strong> ((L×W×H)/1,000,000)</li>
+          <li><span>Gross & Net Weights</span> Gross: 1,386.0 KG | Net: 1,260.0 KG</li>
+          <li><span>Allocated Container</span> <strong>40FT HQ (MSCU-991204-7)</strong></li>
+          <li><span>High-Security Bottle Seal</span> <code>BD-SEAL-88912</code> (Customs Verified)</li>
         </ul>
       </div>
     </div>
 
-    <h2>6.3 SQA Verification: 56 Automated Tests Passing (100% Pass Rate)</h2>
+    <h2>6.3 Plant Security Gate Pass & Live Highway Dispatch Tracking (Mod 23)</h2>
+    <p>
+      Security gate passes authorize the physical departure of container trucks from the factory compound:
+    </p>
     <table>
       <thead>
         <tr>
-          <th>Test Suite Module</th>
-          <th>Tests Run</th>
-          <th>Pass / Fail</th>
-          <th>Key Automated Coverage & Assertions Verified</th>
+          <th>Gate Pass #</th>
+          <th>Transport Vehicle</th>
+          <th>Driver Credentials</th>
+          <th>Container Seal #</th>
+          <th>Dispatch Status</th>
+          <th>Exit Timestamp</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>Phase 1: Auth & RBAC</strong></td>
-          <td>10 Tests</td>
-          <td><span class="badge badge-green">10 PASS / 0 FAIL</span></td>
-          <td>JWT login, 401 invalid password rejection, RBAC 403 authorization guard, factory topology retrieval, audit trail logging.</td>
-        </tr>
-        <tr>
-          <td><strong>Phase 2: Merchandising & BOM</strong></td>
-          <td>10 Tests</td>
-          <td><span class="badge badge-green">10 PASS / 0 FAIL</span></td>
-          <td>Buyer profile creation, Tech pack v1-v3 versioning, Costing sheet profit margin calculation, PO 5,000 pcs matrix, BOM shortage auto-calculation.</td>
-        </tr>
-        <tr>
-          <td><strong>Phase 3: SCM & Inventory</strong></td>
-          <td>12 Tests</td>
-          <td><span class="badge badge-green">12 PASS / 0 FAIL</span></td>
-          <td>Supplier registration & scorecards, PR generation, SPO dispatch, GRN receipt, <strong>Strict Negative Inventory 400 rejection on over-issuance</strong>.</td>
-        </tr>
-        <tr>
-          <td><strong>Phase 4: Production Floor</strong></td>
-          <td>12 Tests</td>
-          <td><span class="badge badge-green">12 PASS / 0 FAIL</span></td>
-          <td>24h fabric relaxation timer, cut order marker efficiency %, QR bundle ticketing (250 pcs), Lines 01-04 hourly efficiency, ratio carton packing.</td>
-        </tr>
-        <tr>
-          <td><strong>Phase 5: Core QA/QC Suite</strong></td>
-          <td>12 Tests</td>
-          <td><span class="badge badge-green">12 PASS / 0 FAIL</span></td>
-          <td>Fabric 4-point calculation (2.0 pts Pass vs 36.0 pts Reject), sewing DHU logging, Rework order repair-to-re-inspection, CAPA 5-Whys, ISO AQL 2.5 sampling.</td>
-        </tr>
-        <tr>
-          <td><strong>TOTAL REGRESSION VERIFICATION</strong></td>
-          <td><strong>56 Tests</strong></td>
-          <td><span class="badge badge-green">56 PASS / 0 FAIL (100%)</span></td>
-          <td>Continuous integration verification executed via <code>scripts/test-all.js</code> with 5 Postman Collections ready for Newman execution.</td>
+          <td><code>GP-2026-0042</code></td>
+          <td>Covered Prime Mover <code>DHAKA-METRO-DA-11-4455</code></td>
+          <td>Md. Anisur Rahman (+8801711-889900)</td>
+          <td><code>BD-SEAL-88912</code></td>
+          <td><span class="badge badge-green">GATE_OUT (In-Transit)</span></td>
+          <td>2026-06-25 17:15:00 BST</td>
         </tr>
       </tbody>
     </table>
 
-    <h2>6.4 Complete PO Journey 360° Traceability (Phase 8 Flagship)</h2>
-    <div class="flow-diagram">
-PO-2026-001 (XYZ Fashion | 10,000 Pcs Polo)
- ├── Merchandising: Tech Pack v2 (Measurement Tol: +/-0.5cm) | Pre-Costing ($6.50/pc | Margin: 18.7%)
- ├── BOM & MRP: Fabric Required 8,500 KG | Available 5,000 KG | Shortage: 3,500 KG
- ├── SCM & Procurement: PR-004 &rarr; Sourcing Approval &rarr; SPO-008 &rarr; GRN-012 Inbound QC Pass
- ├── Warehouse: Fabric Lot #FL-889 &rarr; 4-Point QC Pass (18 pts/100 sq yd) &rarr; Bin FAB-04
- ├── Production: 24h Relaxation Complete &rarr; Cut Order C-102 (Marker Eff: 88.4%) &rarr; 40 Bundles (QR)
- ├── Sewing Floor: Line 01 (142 pcs/hr | Eff: 94.6%) &rarr; Inline Defect Logged &rarr; Rework &rarr; Re-Inspected Pass
- ├── Finishing & Packing: Steam Pressed & Metal Checked &rarr; 166 Cartons Ratio Packed (S:10, M:20, L:20, XL:10)
- ├── Quality Assurance: Pre-Shipment ISO 2859-1 Level II Normal AQL 2.5 Audit (Sample: 315 pcs | PASS)
- └── Shipment & Commercial: Commercial Invoice #CI-9941 &rarr; Gate Pass #GP-204 &rarr; Chittagong Port Dispatch
+    <div class="footer">
+      <span>GarmentERP BD — Enterprise System Specification</span>
+      <span>Confidential & Proprietary</span>
     </div>
+  </div>
+
+  <!-- PAGE 8: PHASE 7 — FACTORY OPERATIONS, BIOMETRIC PAYROLL & COMPLIANCE -->
+  <div class="page">
+    <h1>7. Phase 7: Factory Operations, Biometric Payroll & Compliance Suite</h1>
+
+    <p>
+      Phase 7 integrates plant operations: Human Resources, attendance, statutory payroll under the Bangladesh Labor Act 2006, machinery fleet maintenance, operational cost centers, and international social compliance audits.
+    </p>
+
+    <h2>7.1 HR Roster & Biometric Gate Attendance Ledger (Mod 24 & 25)</h2>
+    <p>
+      Manages the active workforce across Savar and Gazipur plants with biometric terminal integration (<code>BIO-GATE-01</code>) capturing shift clock-in/out and auto-computing daily overtime hours beyond the 8-hour general shift.
+    </p>
+
+    <h2>7.2 Bangladesh Labor Act 2006 Payroll Engine (Mod 25)</h2>
+    <div class="callout">
+      <strong>Statutory Standard: Enforced 2× Hourly Basic Overtime Rate</strong>
+      Under Section 108 of the Bangladesh Labor Act 2006, overtime wages for garment workers must equal exactly twice the ordinary hourly basic wage rate:
+      <pre style="margin-top: 4px; background: white;">Hourly Basic Rate = Base Salary / 208 hours (26 days × 8 hours)
+Overtime Hourly Rate = Hourly Basic Rate × 2.0
+Monthly Net Pay = Base Salary + (Overtime Hours × Overtime Hourly Rate) + Attendance Bonus - Welfare Deductions</pre>
+    </div>
+
+    <h2>7.3 Production Machinery Fleet Asset Registry & Work Orders (Mod 26)</h2>
+    <div class="two-col">
+      <div class="card">
+        <h4>Machinery Asset Registry</h4>
+        <ul>
+          <li><span>Juki DDL-9000C</span> Direct Drive Lockstitch (Line 01) — Operational</li>
+          <li><span>Brother S-7200C</span> Electronic Lockstitch (Line 02) — Operational</li>
+          <li><span>Pegasus M900</span> 5-Thread High-Speed Overlock (Line 03) — Breakdown</li>
+          <li><span>Kansai Special DX</span> Flatlock Interlock (Line 04) — Operational</li>
+          <li><span>Fleet Uptime Rate</span> <strong>75.0% Operational (3/4 active units)</strong></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Breakdown Work Orders & Spare Parts</h4>
+        <ul>
+          <li><span>Work Order #</span> <code>MNT-2026-001</code> (Needle Bar Jam)</li>
+          <li><span>Severity Level</span> <span class="badge badge-red">CRITICAL_STOPPAGE</span></li>
+          <li><span>Assigned Mechanic</span> Shahadat Ali (Senior Plant Mechanic)</li>
+          <li><span>Spare Parts Cost</span> ৳1,250 BDT (Needle Bar Bushing replaced)</li>
+          <li><span>Recorded Downtime</span> 45 minutes (Machine restored to Operational)</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>7.4 Operational Cost Centers & Realized Order Profitability (Mod 27)</h2>
+    <p>
+      Allocates factory overhead and calculates realized order net profitability:
+    </p>
+    <div class="flow-diagram">
+PO-2026-001 Realized Financial Waterfall (H&M 5,000 pcs Polo Shirts @ $8.50/pc FOB)
+Export Commercial Revenue:       $42,500.00 (100.0%)
+  (-) Direct Fabric Cost:        $19,500.00 (45.9% | 100% Cotton Pique 3,925 KG)
+  (-) Trims & Packaging:          $3,250.00 ( 7.6% | Buttons, polybags, collar rib)
+  (-) Cost of Making (CM):        $6,750.00 (15.9% | Cutting, sewing, finishing labor)
+  (-) Factory Overhead:           $3,500.00 ( 8.2% | Utilities, commercial fees, machine amort)
+-----------------------------------------------------------------------------------------
+(=) Total Cost of Production:    $33,000.00 (77.6% Total Cost Stack)
+(=) Realized Net Profit:          $9,500.00 (22.4% Realized Net Margin &rarr; OPTIMAL_HIGH Rating)
+    </div>
+
+    <h2>7.5 International Social & Safety Compliance Audits (Mod 28)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Audit Number</th>
+          <th>Standard Framework</th>
+          <th>Auditing Agency</th>
+          <th>Audit Score</th>
+          <th>Overall Grade</th>
+          <th>CAPA Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>AUD-BSCI-2026-001</code></td>
+          <td>amfori BSCI Social Compliance</td>
+          <td>TUV Rheinland Bangladesh</td>
+          <td>94.5%</td>
+          <td><span class="badge badge-green">GREEN_COMPLIANT</span></td>
+          <td>Zero Critical Findings | Certified Closed</td>
+        </tr>
+        <tr>
+          <td><code>AUD-RSC-2026-002</code></td>
+          <td>RSC / Accord Building & Fire Safety</td>
+          <td>RMG Sustainability Council</td>
+          <td>88.0%</td>
+          <td><span class="badge badge-green">YELLOW_MINOR_CAPA</span></td>
+          <td>Emergency exit illumination module fitted | Verified</td>
+        </tr>
+      </tbody>
+    </table>
 
     <div class="footer">
       <span>GarmentERP BD — Enterprise System Specification</span>
       <span>Confidential & Proprietary</span>
+    </div>
+  </div>
+
+  <!-- PAGE 9: PHASE 8 — SYSTEM INTELLIGENCE & ORDER TRACEABILITY 360 -->
+  <div class="page">
+    <h1>8. Phase 8: System Intelligence, Order Traceability 360° & Executive Plant BI</h1>
+
+    <p>
+      Phase 8 serves as the executive intelligence engine of GarmentERP BD, consolidating operational data from all 7 prior phases into real-time digital passport tracking, plant OEE analytics, and automated telemetry alerts.
+    </p>
+
+    <h2>8.1 Order Traceability 360° Digital Passport (Mod 29)</h2>
+    <p>
+      Every Buyer PO possesses an auditable 10-milestone digital passport verifying quality gates, operator signatures, and process milestones:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Milestone Code</th>
+          <th>Stage Name</th>
+          <th>Department</th>
+          <th>Gate Status</th>
+          <th>Key Verification Output</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>01</td>
+          <td><code>BUYER_PO_CONTRACT</code></td>
+          <td>Buyer PO Registration</td>
+          <td>Merchandising</td>
+          <td><span class="badge badge-green">PASSED</span></td>
+          <td>10,000 pcs confirmed @ $8.00 ($80,000 Revenue)</td>
+        </tr>
+        <tr>
+          <td>02</td>
+          <td><code>TECHPACK_COSTING</code></td>
+          <td>Tech Pack & BOM Approval</td>
+          <td>Product Dev</td>
+          <td><span class="badge badge-green">PASSED</span></td>
+          <td>Tech Pack v1.2 approved; Target margin: 22.4%</td>
+        </tr>
+        <tr>
+          <td>03</td>
+          <td><code>RAW_MATERIAL_SCM</code></td>
+          <td>Material SCM & GRN</td>
+          <td>Supply Chain</td>
+          <td><span class="badge badge-green">PASSED</span></td>
+          <td>3,925 kg Cotton Pique received under GRN-2026-001</td>
+        </tr>
+        <tr>
+          <td>04</td>
+          <td><code>FABRIC_4POINT_QC</code></td>
+          <td>Fabric 4-Point Inspection</td>
+          <td>Quality Assurance</td>
+          <td><span class="badge badge-green">PASSED</span></td>
+          <td>Roll score: 2.0 pts/100 sq yds (FIRST_QUALITY_PASS)</td>
+        </tr>
+        <tr>
+          <td>05</td>
+          <td><code>CUTTING_BUNDLING</code></td>
+          <td>24h Relaxation & QR Bundles</td>
+          <td>Cutting Section</td>
+          <td><span class="badge badge-green">PASSED</span></td>
+          <td>24h relaxation verified; 84 QR bundles generated</td>
+        </tr>
+        <tr>
+          <td>06</td>
+          <td><code>SEWING_PRODUCTION</code></td>
+          <td>Sewing Assembly (Line 01)</td>
+          <td>Sewing Dept</td>
+          <td><span class="badge badge-green">PASSED</span></td>
+          <td>5,000 pcs assembled at 91.4% line efficiency</td>
+        </tr>
+        <tr>
+          <td>07</td>
+          <td><code>INLINE_QA_REWORK</code></td>
+          <td>Inline QC & Rework Loop</td>
+          <td>Quality Assurance</td>
+          <td><span class="badge badge-green">PASSED</span></td>
+          <td>1.6% DHU; 4 defects repaired & RE_INSPECTED_PASS</td>
+        </tr>
+        <tr>
+          <td>08</td>
+          <td><code>FINISHING_PACKING</code></td>
+          <td>Steam Press & Carton Packing</td>
+          <td>Finishing & Pack</td>
+          <td><span class="badge badge-green">PASSED</span></td>
+          <td>Metal detector pass; 84 export cartons (15.12 CBM)</td>
+        </tr>
+        <tr>
+          <td>09</td>
+          <td><code>AQL_PRE_SHIPMENT</code></td>
+          <td>ISO 2859-1 AQL 2.5 Audit</td>
+          <td>Quality Assurance</td>
+          <td><span class="badge badge-green">PASSED</span></td>
+          <td>315 pcs sampled; 0 Critical; ACCEPTED_PASS Certificate</td>
+        </tr>
+        <tr>
+          <td>10</td>
+          <td><code>EXPORT_DISPATCH</code></td>
+          <td>Invoice & Gate Out Dispatch</td>
+          <td>Commercial Logistics</td>
+          <td><span class="badge badge-green">PASSED</span></td>
+          <td>Invoice EXP-INV-2026-0042; Gate Pass GP-0042; Gate Out</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>8.2 Executive Plant BI & Overall Equipment Effectiveness (OEE) (Mod 30)</h2>
+    <div class="two-col">
+      <div class="card">
+        <h4>Plant Floor OEE Calculation</h4>
+        <div style="font-size: 8pt; line-height: 1.6;">
+          <div>Availability Rate: <strong>94.2%</strong> (Operational uptime)</div>
+          <div>Performance Rate: <strong>91.8%</strong> (Actual vs standard target output)</div>
+          <div>Quality Rate: <strong>98.4%</strong> (First-time-right yield)</div>
+          <div style="border-top: 1px solid #e2e8f0; margin-top: 6px; padding-top: 6px; font-size: 11pt; font-weight: 800; color: #047857;">
+            Overall OEE: 85.1% (World-Class Target &gt; 80%)
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h4>Top 5 Sewing Defect Pareto Analysis</h4>
+        <ul>
+          <li><span>1. Skipped Stitch (Collar/Placket)</span> <strong>34.6% (18 pcs)</strong></li>
+          <li><span>2. Seam Puckering (Side Seam)</span> <strong>26.9% (14 pcs)</strong></li>
+          <li><span>3. Broken Needle Fragment</span> <strong>15.4% (8 pcs)</strong></li>
+          <li><span>4. Uneven Bottom Hem</span> <strong>13.5% (7 pcs)</strong></li>
+          <li><span>5. Oil Stains / Lubricant</span> <strong>9.6% (5 pcs)</strong></li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>8.3 Multi-Factory Comparative Benchmarking: Savar vs. Gazipur</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Manufacturing Unit</th>
+          <th>Location</th>
+          <th>Active Lines</th>
+          <th>Daily Capacity</th>
+          <th>Actual Output</th>
+          <th>Line Efficiency</th>
+          <th>Average DHU %</th>
+          <th>Workforce</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Apex Garments — Dhaka Unit (Savar)</strong></td>
+          <td>Savar, Dhaka</td>
+          <td>4 Lines</td>
+          <td>4,000 pcs</td>
+          <td>3,650 pcs</td>
+          <td><span class="badge badge-green">91.25%</span></td>
+          <td><strong>1.2%</strong></td>
+          <td>120 Operators</td>
+        </tr>
+        <tr>
+          <td><strong>Apex Garments — Gazipur Complex</strong></td>
+          <td>Kashimpur, Gazipur</td>
+          <td>4 Lines</td>
+          <td>3,800 pcs</td>
+          <td>3,380 pcs</td>
+          <td><span class="badge badge-green">88.90%</span></td>
+          <td><strong>1.4%</strong></td>
+          <td>110 Operators</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <span>GarmentERP BD — Enterprise System Specification</span>
+      <span>Confidential & Proprietary</span>
+    </div>
+  </div>
+
+  <!-- PAGE 10: COMPLETE SQA TEST AUTOMATION & ARCHITECTURAL SIGNOFF -->
+  <div class="page">
+    <h1>9. Complete SQA Automated Test Suite & Architectural Signoff</h1>
+
+    <p>
+      GarmentERP BD enforces rigorous Software Quality Assurance (SQA) across all 8 development phases, with automated integration test suites guaranteeing zero-defect deployments.
+    </p>
+
+    <h2>9.1 Automated Multi-Module Continuous Integration Matrix (96 Tests)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Development Phase</th>
+          <th>Functional Scope</th>
+          <th>Automated Tests</th>
+          <th>Test Pass Rate</th>
+          <th>Regression Suite File</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Phase 1: Foundation & RBAC</strong></td>
+          <td>Auth, JWT, 14 RBAC Roles, Multi-Factory Tree, Audit Trail</td>
+          <td>10 Tests</td>
+          <td><span class="badge badge-green">10 / 10 PASS (100%)</span></td>
+          <td><code>dist/tests/auth.test.js</code></td>
+        </tr>
+        <tr>
+          <td><strong>Phase 2: Merchandising</strong></td>
+          <td>Buyer Profiles, Tech Pack v1-v3, Pre-Costing BOM, Buyer POs</td>
+          <td>10 Tests</td>
+          <td><span class="badge badge-green">10 / 10 PASS (100%)</span></td>
+          <td><code>dist/tests/merchandising.test.js</code></td>
+        </tr>
+        <tr>
+          <td><strong>Phase 3: SCM & Inventory</strong></td>
+          <td>Supplier Scorecard, PR, SPO, GRN, Stock Balance Lock</td>
+          <td>12 Tests</td>
+          <td><span class="badge badge-green">12 / 12 PASS (100%)</span></td>
+          <td><code>dist/tests/supplychain.test.js</code></td>
+        </tr>
+        <tr>
+          <td><strong>Phase 4: Garments Production</strong></td>
+          <td>24h Relaxation, Spreading, QR Bundles, Lines 01-04, Packing</td>
+          <td>12 Tests</td>
+          <td><span class="badge badge-green">12 / 12 PASS (100%)</span></td>
+          <td><code>dist/tests/production.test.js</code></td>
+        </tr>
+        <tr>
+          <td><strong>Phase 5: Core QA/QC Suite</strong></td>
+          <td>Fabric 4-Point, Inline DHU, Rework Orders, CAPA, AQL 2.5</td>
+          <td>12 Tests</td>
+          <td><span class="badge badge-green">12 / 12 PASS (100%)</span></td>
+          <td><code>dist/tests/qa.test.js</code></td>
+        </tr>
+        <tr>
+          <td><strong>Phase 6: Shipment & Logistics</strong></td>
+          <td>AQL Quality Gate Lock, Invoicing, Packing List (CBM), Gate Pass</td>
+          <td>12 Tests</td>
+          <td><span class="badge badge-green">12 / 12 PASS (100%)</span></td>
+          <td><code>dist/tests/shipment.test.js</code></td>
+        </tr>
+        <tr>
+          <td><strong>Phase 7: Factory Operations</strong></td>
+          <td>HR, Biometric Punch, 2x OT Payroll, Maintenance, Audits</td>
+          <td>14 Tests</td>
+          <td><span class="badge badge-green">14 / 14 PASS (100%)</span></td>
+          <td><code>dist/tests/operations.test.js</code></td>
+        </tr>
+        <tr>
+          <td><strong>Phase 8: System Intelligence</strong></td>
+          <td>Order 360° Digital Passport, Executive BI, OEE, Alerts Engine</td>
+          <td>14 Tests</td>
+          <td><span class="badge badge-green">14 / 14 PASS (100%)</span></td>
+          <td><code>dist/tests/analytics.test.js</code></td>
+        </tr>
+        <tr>
+          <td><strong>TOTAL PLATFORM COVERAGE</strong></td>
+          <td><strong>Full RMG Manufacturing ERP & Quality System</strong></td>
+          <td><strong>96 Tests</strong></td>
+          <td><span class="badge badge-green" style="font-size: 8.5pt;">96 / 96 PASS (100%)</span></td>
+          <td><code>scripts/test-all.js</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>9.2 Postman SQA Test Collections (Ready for CI/CD Newman Execution)</h2>
+    <div class="two-col">
+      <div class="card">
+        <h4>Core Manufacturing Collections</h4>
+        <ul>
+          <li><span>Phase 1</span> <code>GarmentERP_Foundation_Phase1.postman_collection.json</code></li>
+          <li><span>Phase 2</span> <code>GarmentERP_Merchandising_Phase2.postman_collection.json</code></li>
+          <li><span>Phase 3</span> <code>GarmentERP_SupplyChain_Phase3.postman_collection.json</code></li>
+          <li><span>Phase 4</span> <code>GarmentERP_Production_Phase4.postman_collection.json</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Quality & Intelligence Collections</h4>
+        <ul>
+          <li><span>Phase 5</span> <code>GarmentERP_QA_QC_Phase5.postman_collection.json</code></li>
+          <li><span>Phase 6</span> <code>GarmentERP_Shipment_Phase6.postman_collection.json</code></li>
+          <li><span>Phase 7</span> <code>GarmentERP_Operations_Phase7.postman_collection.json</code></li>
+          <li><span>Phase 8</span> <code>GarmentERP_Intelligence_Phase8.postman_collection.json</code></li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>9.3 Architectural Signoff & Sovereignty Declaration</h2>
+    <div class="callout" style="background: #f0fdf4; border-color: #86efac; color: #14532d;">
+      <strong>Enterprise Ready: Complete Bangladesh RMG ERP & SQA Suite</strong>
+      This specification certifies that <strong>GarmentERP BD</strong> is fully designed, engineered, automated, and verified across all 8 development phases. From initial Buyer Order intake to Cutting, Sewing, Quality Assurance, Packing, Commercial Invoicing, Gate Pass Dispatch, Statutory Payroll, and Executive BI Traceability 360°, the platform provides a unified, single source of truth for modern garment manufacturing in Bangladesh.
+    </div>
+
+    <div class="footer">
+      <span>GarmentERP BD — Enterprise System Specification</span>
+      <span>Official Release • September 2026 • Engr. Naimur Rahman</span>
     </div>
   </div>
 
