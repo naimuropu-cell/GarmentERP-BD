@@ -234,6 +234,8 @@ export function runQaTests(): Promise<{ passed: number; failed: number }> {
 
 if (require.main === module) {
   runQaTests().then(({ failed }) => {
-    process.exit(failed > 0 ? 1 : 0);
+    setTimeout(() => {
+      process.exit(failed > 0 ? 1 : 0);
+    }, 50);
   });
 }

@@ -1,0 +1,224 @@
+{
+  "info": {
+    "_postman_id": "8a4b2c1d-6e7f-4593-a825-f602394d8153",
+    "name": "GarmentERP BD — Phase 6 Shipment & Logistics Suite",
+    "description": "Automated SQA test collection for Phase 6: Commercial Invoicing, Export Packing Lists, CBM Container Loading, Security Gate Pass Issuance, and Pre-Shipment ISO 2859-1 AQL Quality Gate Verification.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "authToken", "value": "" },
+    { "key": "shipmentId", "value": "" },
+    { "key": "invoiceNo", "value": "" },
+    { "key": "gatePassId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01 - Authenticate Commercial Officer / Admin",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.success).to.be.true;",
+              "pm.collectionVariables.set('authToken', jsonData.data.accessToken);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@garmenterp.com\",\n  \"password\": \"Admin123!\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+      }
+    },
+    {
+      "name": "02 - List Export Shipments",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(1);",
+              "pm.expect(jsonData.data[0].aqlOverallResult).to.eql('ACCEPTED_PASS');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/shipments", "host": ["{{baseUrl}}"], "path": ["shipments"] }
+      }
+    },
+    {
+      "name": "03 - Verify Quality Gate - Passing PO",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.verified).to.be.true;"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/shipments/verify-gate?poNumber=PO-2026-001", "host": ["{{baseUrl}}"], "path": ["shipments", "verify-gate"], "query": [{"key": "poNumber", "value": "PO-2026-001"}] }
+      }
+    },
+    {
+      "name": "04 - Verify Quality Gate - Uninspected PO (Must Flag Violation)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.verified).to.be.false;",
+              "pm.expect(jsonData.data.error).to.include('Quality Gate Violation');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/shipments/verify-gate?poNumber=PO-UNINSPECTED-99", "host": ["{{baseUrl}}"], "path": ["shipments", "verify-gate"], "query": [{"key": "poNumber", "value": "PO-UNINSPECTED-99"}] }
+      }
+    },
+    {
+      "name": "05 - Create Shipment (Enforcing Strict Quality Gate)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.status).to.eql('PLANNED');",
+              "pm.collectionVariables.set('shipmentId', jsonData.data.id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"poId\": \"po-001\",\n  \"poNumber\": \"PO-2026-001\",\n  \"buyerId\": \"byr-001\",\n  \"buyerName\": \"H&M Hennes & Mauritz GBC AB\",\n  \"styleNumber\": \"TSH-2026-001\",\n  \"orderQuantity\": 5000,\n  \"shippedQuantity\": 5000,\n  \"vesselOrFlight\": \"EVER GIVEN (Voyage 099W)\",\n  \"etd\": \"2026-07-15\",\n  \"eta\": \"2026-08-10\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/shipments", "host": ["{{baseUrl}}"], "path": ["shipments"] }
+      }
+    },
+    {
+      "name": "06 - Issue Commercial Invoice (USD 42,500 FOB)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.totalAmount).to.eql(42500);",
+              "pm.collectionVariables.set('invoiceNo', jsonData.data.invoiceNumber);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"poId\": \"po-001\",\n  \"poNumber\": \"PO-2026-001\",\n  \"buyerId\": \"byr-001\",\n  \"buyerName\": \"H&M Hennes & Mauritz GBC AB\",\n  \"styleNumber\": \"TSH-2026-001\",\n  \"lcNumber\": \"LC-SE-2026-99014\",\n  \"issuingBank\": \"Deutsche Bank AG / HSBC Dhaka\",\n  \"incoterms\": \"FOB\",\n  \"portOfLoading\": \"Chittagong Sea Port, Bangladesh (BDCGP)\",\n  \"portOfDischarge\": \"Hamburg Port, Germany (DEHAM)\",\n  \"currency\": \"USD\",\n  \"invoicedQuantity\": 5000,\n  \"unitPrice\": 8.50,\n  \"paymentTerms\": \"100% Irrevocable At-Sight LC\",\n  \"commercialOfficerSignoff\": \"Kamrul Hasan (Head of Commercial)\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/shipments/docs/invoices", "host": ["{{baseUrl}}"], "path": ["shipments", "docs", "invoices"] }
+      }
+    },
+    {
+      "name": "07 - Create Export Packing List (84 Cartons with CBM)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.totalCartons).to.eql(84);",
+              "pm.expect(jsonData.data.totalGrossWeightKg).to.eql(1428);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"poId\": \"po-001\",\n  \"poNumber\": \"PO-2026-001\",\n  \"invoiceNumber\": \"{{invoiceNo}}\",\n  \"containerType\": \"40FT_HQ\",\n  \"containerNumber\": \"MSCU-992140-1\",\n  \"sealNumber\": \"BD-SEAL-99120\",\n  \"cartonBreakdown\": [\n    {\n      \"cartonRange\": \"CTN 001 - 042\",\n      \"sizeRatio\": \"S:10, M:20, L:20, XL:10 (60 pcs/ctn)\",\n      \"pcsPerCarton\": 60,\n      \"totalCartons\": 42,\n      \"totalPcs\": 2520,\n      \"grossWeightKg\": 714,\n      \"netWeightKg\": 630,\n      \"dimensionsCm\": \"60 x 40 x 30\"\n    },\n    {\n      \"cartonRange\": \"CTN 043 - 084\",\n      \"sizeRatio\": \"S:10, M:20, L:20, XL:10 (60 pcs/ctn)\",\n      \"pcsPerCarton\": 60,\n      \"totalCartons\": 42,\n      \"totalPcs\": 2480,\n      \"grossWeightKg\": 714,\n      \"netWeightKg\": 630,\n      \"dimensionsCm\": \"60 x 40 x 30\"\n    }\n  ]\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/shipments/docs/packing-lists", "host": ["{{baseUrl}}"], "path": ["shipments", "docs", "packing-lists"] }
+      }
+    },
+    {
+      "name": "08 - Authorize Security Gate Pass & Dispatch",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.status).to.eql('PENDING_EXIT');",
+              "pm.collectionVariables.set('gatePassId', jsonData.data.id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"shipmentId\": \"{{shipmentId}}\",\n  \"poNumber\": \"PO-2026-001\",\n  \"invoiceNumber\": \"{{invoiceNo}}\",\n  \"vehicleNumber\": \"DHAKA METRO-TA 12-9901\",\n  \"driverName\": \"Md. Shah Alam\",\n  \"driverPhone\": \"+8801711-223344\",\n  \"containerSealNumber\": \"BD-SEAL-99120\",\n  \"destination\": \"Chittagong Off-Dock CFS\",\n  \"securityOfficer\": \"Inspector Anisur Rahman\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/shipments/gate-passes", "host": ["{{baseUrl}}"], "path": ["shipments", "gate-passes"] }
+      }
+    }
+  ]
+}

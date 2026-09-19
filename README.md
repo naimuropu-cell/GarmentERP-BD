@@ -42,7 +42,12 @@ GarmentERP-BD/
 │   ├── API.md            # REST API Specification & Endpoint Catalog
 │   └── WORKFLOW.md       # Operational Lifecycles & QA Escalation Flows
 ├── postman/
-│   └── GarmentERP_Auth_RBAC.postman_collection.json # Automated SQA Test Suite
+│   ├── GarmentERP_Auth_RBAC.postman_collection.json # Phase 1 Auth & RBAC
+│   ├── GarmentERP_Commercial_Phase2.postman_collection.json # Phase 2 Merchandising & BOM
+│   ├── GarmentERP_SupplyChain_Phase3.postman_collection.json # Phase 3 SCM & Inventory
+│   ├── GarmentERP_Production_Phase4.postman_collection.json # Phase 4 Cutting & Sewing
+│   ├── GarmentERP_QA_QC_Phase5.postman_collection.json # Phase 5 QA/QC & AQL 2.5
+│   └── GarmentERP_Shipment_Phase6.postman_collection.json # Phase 6 Shipment & Gate Pass
 ├── server/
 │   ├── prisma/           # Prisma ORM schema
 │   ├── src/
@@ -115,7 +120,8 @@ npm start
 ```bash
 cd server
 npm test
-# Runs the 10 automated integration tests covering positive/negative auth, RBAC guards, and topology
+# Or run all 68 integration tests covering Phases 1 to 6:
+node ../scripts/test-all.js
 ```
 
 ### 4. Run Frontend Client
@@ -142,6 +148,6 @@ npm run dev
 - [x] **Phase 3: Supply Chain — Procurement Requisitions, Supplier Scorecard, Multi-Warehouse & Inventory Control**
 - [x] **Phase 4: Production — Line Allocation, Cutting Workflow, QR Bundling, Sewing Hourly Tracking, Finishing, Packing**
 - [x] **Phase 5: Core QA/QC Suite — Fabric 4-Point, Cutting Panels, Sewing Inline, Defect Severity, Rework Orders, CAPA 5-Whys, Configurable AQL Tables**
-- [ ] **Phase 6: Shipment & Logistics — Commercial Invoicing, Packing List, Security Gate Pass, Dispatch Tracking**
+- [x] **Phase 6: Shipment & Logistics — Commercial Invoicing, Packing List, Security Gate Pass, Dispatch Tracking**
 - [ ] **Phase 7: Factory Operations — HR/Roster, Biometric Payroll, Operational Finance, Machine Maintenance, Compliance Audits**
 - [ ] **Phase 8: System Intelligence — Order Traceability 360°, Executive Dashboards, Real-Time Socket Alerts, SQA Test Automation**

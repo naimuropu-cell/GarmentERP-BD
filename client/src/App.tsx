@@ -20,6 +20,7 @@ import { FabricInspectionView } from './modules/qa/FabricInspectionView';
 import { InlineQualityView } from './modules/qa/InlineQualityView';
 import { ReworkCapaView } from './modules/qa/ReworkCapaView';
 import { AqlSamplingView } from './modules/qa/AqlSamplingView';
+import { ShipmentView } from './modules/shipment/ShipmentView';
 import { DEMO_PROFILES } from './services/api';
 import { SystemRoleCode, User } from './types';
 
@@ -230,6 +231,10 @@ export const App: React.FC = () => {
 
           {currentTab === 'aql-audit' && (
             <AqlSamplingView />
+          )}
+
+          {currentTab === 'shipment' && (
+            <ShipmentView />
           )}
         </main>
       </div>

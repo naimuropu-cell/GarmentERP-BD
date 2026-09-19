@@ -34,6 +34,16 @@ import {
   CapaRecord,
   AqlSamplingInspection
 } from '../types/qa';
+import {
+  CommercialInvoice,
+  PackingList,
+  PackingListCartonItem,
+  SecurityGatePass,
+  Shipment,
+  ShipmentStatus,
+  ContainerType,
+  Incoterm
+} from '../types/shipment';
 
 export interface UserRecord {
   id: string;
@@ -144,6 +154,10 @@ class SystemStore {
   private reworkOrders: ReworkOrder[] = [];
   private capaRecords: CapaRecord[] = [];
   private aqlInspections: AqlSamplingInspection[] = [];
+  private commercialInvoices: CommercialInvoice[] = [];
+  private packingLists: PackingList[] = [];
+  private gatePasses: SecurityGatePass[] = [];
+  private shipments: Shipment[] = [];
 
   constructor() {
     this.initializeData();
@@ -1385,6 +1399,113 @@ class SystemStore {
       }
     ];
 
+    // 15. Pre-seed Phase 6: Commercial Invoice, Packing List, Gate Pass & Export Shipment
+    const seedInvoice: CommercialInvoice = {
+      id: 'inv-001',
+      invoiceNumber: 'EXP-INV-2026-0042',
+      poId: 'po-001',
+      poNumber: 'PO-2026-001',
+      buyerId: 'byr-001',
+      buyerName: 'H&M Hennes & Mauritz GBC AB',
+      styleNumber: 'TSH-2026-001',
+      lcNumber: 'LC-SE-2026-881920',
+      issuingBank: 'Skandinaviska Enskilda Banken AB (SEB) / HSBC Dhaka',
+      incoterms: 'FOB',
+      portOfLoading: 'Chittagong Sea Port, Bangladesh (BDCGP)',
+      portOfDischarge: 'Port of Gothenburg, Sweden (SEGOT)',
+      currency: 'USD',
+      invoicedQuantity: 5000,
+      unitPrice: 8.50,
+      totalAmount: 42500.00,
+      paymentTerms: '100% Irrevocable At-Sight LC',
+      commercialOfficerSignoff: 'Kamrul Hasan (Senior Commercial Manager)',
+      createdAt: '2026-06-25T15:00:00Z'
+    };
+    this.commercialInvoices.push(seedInvoice);
+
+    const seedPackingList: PackingList = {
+      id: 'pl-001',
+      packingListNumber: 'EXP-PL-2026-0042',
+      poId: 'po-001',
+      poNumber: 'PO-2026-001',
+      invoiceNumber: 'EXP-INV-2026-0042',
+      totalCartons: 84,
+      totalGrossWeightKg: 1428.00,
+      totalNetWeightKg: 1260.00,
+      totalCbm: 15.12,
+      containerType: '40FT_HQ',
+      containerNumber: 'MSCU-991204-7',
+      sealNumber: 'BD-SEAL-88912',
+      cartonBreakdown: [
+        {
+          cartonRange: 'CTN 001 - 042',
+          sizeRatio: 'S:10, M:20, L:20, XL:10 (60 pcs/ctn)',
+          pcsPerCarton: 60,
+          totalCartons: 42,
+          totalPcs: 2520,
+          grossWeightKg: 714.00,
+          netWeightKg: 630.00,
+          dimensionsCm: '60 x 40 x 30',
+          cbm: 7.56
+        },
+        {
+          cartonRange: 'CTN 043 - 084',
+          sizeRatio: 'S:10, M:20, L:20, XL:10 (60 pcs/ctn)',
+          pcsPerCarton: 60,
+          totalCartons: 42,
+          totalPcs: 2480,
+          grossWeightKg: 714.00,
+          netWeightKg: 630.00,
+          dimensionsCm: '60 x 40 x 30',
+          cbm: 7.56
+        }
+      ],
+      createdAt: '2026-06-25T15:30:00Z'
+    };
+    this.packingLists.push(seedPackingList);
+
+    const seedGatePass: SecurityGatePass = {
+      id: 'gp-001',
+      gatePassNumber: 'GP-SAVAR-2026-018',
+      shipmentId: 'shp-001',
+      poNumber: 'PO-2026-001',
+      invoiceNumber: 'EXP-INV-2026-0042',
+      vehicleNumber: 'DHAKA METRO-TA 11-8942 (Prime Mover)',
+      driverName: 'Md. Rafiqul Islam',
+      driverPhone: '+8801712-345678',
+      containerSealNumber: 'BD-SEAL-88912',
+      destination: 'Chittagong Off-Dock CFS (Summit Alliance Port Depot)',
+      dispatchTime: '2026-06-25T17:00:00Z',
+      securityOfficer: 'Sub-Inspector Anowar Hossain (Plant Security)',
+      status: 'DISPATCHED_GATE_OUT',
+      exitTimestamp: '2026-06-25T17:15:00Z',
+      createdAt: '2026-06-25T16:00:00Z'
+    };
+    this.gatePasses.push(seedGatePass);
+
+    this.shipments.push({
+      id: 'shp-001',
+      shipmentTrackingNumber: 'SHP-2026-0001',
+      poId: 'po-001',
+      poNumber: 'PO-2026-001',
+      buyerId: 'byr-001',
+      buyerName: 'H&M Hennes & Mauritz GBC AB',
+      styleNumber: 'TSH-2026-001',
+      orderQuantity: 5000,
+      shippedQuantity: 5000,
+      aqlCertificateNumber: 'AQL-CERT-2026-0001',
+      aqlOverallResult: 'ACCEPTED_PASS',
+      commercialInvoice: seedInvoice,
+      packingList: seedPackingList,
+      gatePass: seedGatePass,
+      status: 'GATE_OUT',
+      vesselOrFlight: 'MSC ARIES (Voyage 2608W)',
+      etd: '2026-07-02',
+      eta: '2026-07-28',
+      createdAt: '2026-06-25T15:00:00Z',
+      updatedAt: '2026-06-25T17:15:00Z'
+    });
+
     // Log system genesis
     this.addAuditLog({
       id: 'audit-001',
@@ -2267,6 +2388,296 @@ class SystemStore {
 
     this.aqlInspections.unshift(newAql);
     return newAql;
+  }
+
+  // ==========================================
+  // 6. Phase 6: Shipment & Export Logistics Operations
+  // ==========================================
+  public verifyAqlPassForPo(poNumber: string): { verified: boolean; aqlRecord?: AqlSamplingInspection; error?: string } {
+    const aql = this.aqlInspections.find(a => 
+      (a.poNumber === poNumber || a.buyerPo === poNumber) && a.overallResult === 'ACCEPTED_PASS'
+    );
+    if (!aql) {
+      return {
+        verified: false,
+        error: `Quality Gate Violation: Buyer PO '${poNumber}' has no certified ACCEPTED_PASS AQL 2.5 final inspection. Export shipment generation is strictly blocked.`
+      };
+    }
+    return { verified: true, aqlRecord: aql };
+  }
+
+  public getAllShipments(): Shipment[] {
+    return this.shipments;
+  }
+
+  public getShipmentById(id: string): Shipment | undefined {
+    return this.shipments.find(s => s.id === id);
+  }
+
+  public getAllCommercialInvoices(): CommercialInvoice[] {
+    return this.commercialInvoices;
+  }
+
+  public getAllPackingLists(): PackingList[] {
+    return this.packingLists;
+  }
+
+  public getAllGatePasses(): SecurityGatePass[] {
+    return this.gatePasses;
+  }
+
+  public createShipment(data: {
+    poId: string;
+    poNumber: string;
+    buyerId: string;
+    buyerName: string;
+    styleNumber: string;
+    orderQuantity: number;
+    shippedQuantity: number;
+    vesselOrFlight: string;
+    etd: string;
+    eta: string;
+  }): { shipment?: Shipment; error?: string } {
+    const gateCheck = this.verifyAqlPassForPo(data.poNumber);
+    if (!gateCheck.verified || !gateCheck.aqlRecord) {
+      return { error: gateCheck.error };
+    }
+
+    const newShipment: Shipment = {
+      id: `shp-${Date.now()}`,
+      shipmentTrackingNumber: `SHP-2026-${Date.now().toString().slice(-4)}`,
+      poId: data.poId,
+      poNumber: data.poNumber,
+      buyerId: data.buyerId,
+      buyerName: data.buyerName,
+      styleNumber: data.styleNumber,
+      orderQuantity: data.orderQuantity,
+      shippedQuantity: data.shippedQuantity,
+      aqlCertificateNumber: gateCheck.aqlRecord.certificateNumber,
+      aqlOverallResult: gateCheck.aqlRecord.overallResult,
+      status: 'PLANNED',
+      vesselOrFlight: data.vesselOrFlight,
+      etd: data.etd,
+      eta: data.eta,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    this.shipments.unshift(newShipment);
+
+    const po = this.purchaseOrders.find(p => p.id === data.poId || p.poNumber === data.poNumber);
+    if (po) {
+      po.status = 'SHIPPED';
+    }
+
+    return { shipment: newShipment };
+  }
+
+  public createCommercialInvoice(data: {
+    poId: string;
+    poNumber: string;
+    buyerId: string;
+    buyerName: string;
+    styleNumber: string;
+    lcNumber: string;
+    issuingBank: string;
+    incoterms: Incoterm;
+    portOfLoading: string;
+    portOfDischarge: string;
+    currency: 'USD' | 'EUR' | 'GBP' | 'BDT';
+    invoicedQuantity: number;
+    unitPrice: number;
+    paymentTerms: string;
+    commercialOfficerSignoff: string;
+  }): { invoice?: CommercialInvoice; error?: string } {
+    const gateCheck = this.verifyAqlPassForPo(data.poNumber);
+    if (!gateCheck.verified) {
+      return { error: gateCheck.error };
+    }
+
+    const newInvoice: CommercialInvoice = {
+      id: `inv-${Date.now()}`,
+      invoiceNumber: `EXP-INV-2026-${Date.now().toString().slice(-4)}`,
+      poId: data.poId,
+      poNumber: data.poNumber,
+      buyerId: data.buyerId,
+      buyerName: data.buyerName,
+      styleNumber: data.styleNumber,
+      lcNumber: data.lcNumber,
+      issuingBank: data.issuingBank,
+      incoterms: data.incoterms,
+      portOfLoading: data.portOfLoading,
+      portOfDischarge: data.portOfDischarge,
+      currency: data.currency,
+      invoicedQuantity: data.invoicedQuantity,
+      unitPrice: data.unitPrice,
+      totalAmount: +(data.invoicedQuantity * data.unitPrice).toFixed(2),
+      paymentTerms: data.paymentTerms,
+      commercialOfficerSignoff: data.commercialOfficerSignoff,
+      createdAt: new Date().toISOString()
+    };
+
+    this.commercialInvoices.unshift(newInvoice);
+
+    const shipment = this.shipments.find(s => s.poNumber === data.poNumber || s.poId === data.poId);
+    if (shipment) {
+      shipment.commercialInvoice = newInvoice;
+      if (shipment.status === 'PLANNED') {
+        shipment.status = 'DOCS_PREPARED';
+      }
+      shipment.updatedAt = new Date().toISOString();
+    }
+
+    return { invoice: newInvoice };
+  }
+
+  public createPackingList(data: {
+    poId: string;
+    poNumber: string;
+    invoiceNumber: string;
+    containerType: ContainerType;
+    containerNumber: string;
+    sealNumber: string;
+    cartonBreakdown: Array<{
+      cartonRange: string;
+      sizeRatio: string;
+      pcsPerCarton: number;
+      totalCartons: number;
+      totalPcs: number;
+      grossWeightKg: number;
+      netWeightKg: number;
+      dimensionsCm: string;
+    }>;
+  }): { packingList?: PackingList; error?: string } {
+    const gateCheck = this.verifyAqlPassForPo(data.poNumber);
+    if (!gateCheck.verified) {
+      return { error: gateCheck.error };
+    }
+
+    let totalCartons = 0;
+    let totalGrossWeight = 0;
+    let totalNetWeight = 0;
+    let totalCbm = 0;
+
+    const formattedBreakdown: PackingListCartonItem[] = data.cartonBreakdown.map(item => {
+      const parts = item.dimensionsCm.split('x').map(n => parseFloat(n.trim()) || 0);
+      const l = parts[0] || 60;
+      const w = parts[1] || 40;
+      const h = parts[2] || 30;
+      const cbmPerCarton = (l * w * h) / 1000000;
+      const cbmTotal = +(cbmPerCarton * item.totalCartons).toFixed(3);
+
+      totalCartons += item.totalCartons;
+      totalGrossWeight += item.grossWeightKg;
+      totalNetWeight += item.netWeightKg;
+      totalCbm += cbmTotal;
+
+      return {
+        ...item,
+        cbm: cbmTotal
+      };
+    });
+
+    const newPackingList: PackingList = {
+      id: `pl-${Date.now()}`,
+      packingListNumber: `EXP-PL-2026-${Date.now().toString().slice(-4)}`,
+      poId: data.poId,
+      poNumber: data.poNumber,
+      invoiceNumber: data.invoiceNumber,
+      totalCartons,
+      totalGrossWeightKg: +totalGrossWeight.toFixed(2),
+      totalNetWeightKg: +totalNetWeight.toFixed(2),
+      totalCbm: +totalCbm.toFixed(2),
+      containerType: data.containerType,
+      containerNumber: data.containerNumber,
+      sealNumber: data.sealNumber,
+      cartonBreakdown: formattedBreakdown,
+      createdAt: new Date().toISOString()
+    };
+
+    this.packingLists.unshift(newPackingList);
+
+    const shipment = this.shipments.find(s => s.poNumber === data.poNumber || s.poId === data.poId);
+    if (shipment) {
+      shipment.packingList = newPackingList;
+      shipment.updatedAt = new Date().toISOString();
+    }
+
+    return { packingList: newPackingList };
+  }
+
+  public createSecurityGatePass(data: {
+    shipmentId: string;
+    poNumber: string;
+    invoiceNumber: string;
+    vehicleNumber: string;
+    driverName: string;
+    driverPhone: string;
+    containerSealNumber: string;
+    destination: string;
+    dispatchTime: string;
+    securityOfficer: string;
+  }): { gatePass?: SecurityGatePass; error?: string } {
+    const gateCheck = this.verifyAqlPassForPo(data.poNumber);
+    if (!gateCheck.verified) {
+      return { error: gateCheck.error };
+    }
+
+    const newGatePass: SecurityGatePass = {
+      id: `gp-${Date.now()}`,
+      gatePassNumber: `GP-SAVAR-2026-${Date.now().toString().slice(-4)}`,
+      shipmentId: data.shipmentId,
+      poNumber: data.poNumber,
+      invoiceNumber: data.invoiceNumber,
+      vehicleNumber: data.vehicleNumber,
+      driverName: data.driverName,
+      driverPhone: data.driverPhone,
+      containerSealNumber: data.containerSealNumber,
+      destination: data.destination,
+      dispatchTime: data.dispatchTime || new Date().toISOString(),
+      securityOfficer: data.securityOfficer,
+      status: 'PENDING_EXIT',
+      createdAt: new Date().toISOString()
+    };
+
+    this.gatePasses.unshift(newGatePass);
+
+    const shipment = this.shipments.find(s => s.id === data.shipmentId || s.poNumber === data.poNumber);
+    if (shipment) {
+      shipment.gatePass = newGatePass;
+      shipment.updatedAt = new Date().toISOString();
+    }
+
+    return { gatePass: newGatePass };
+  }
+
+  public updateGatePassStatus(id: string, status: 'DISPATCHED_GATE_OUT' | 'DELIVERED'): SecurityGatePass | null {
+    const gp = this.gatePasses.find(g => g.id === id);
+    if (!gp) return null;
+    gp.status = status;
+    if (status === 'DISPATCHED_GATE_OUT') {
+      gp.exitTimestamp = new Date().toISOString();
+      const shipment = this.shipments.find(s => s.id === gp.shipmentId || s.poNumber === gp.poNumber);
+      if (shipment) {
+        shipment.status = 'GATE_OUT';
+        shipment.updatedAt = new Date().toISOString();
+      }
+    } else if (status === 'DELIVERED') {
+      const shipment = this.shipments.find(s => s.id === gp.shipmentId || s.poNumber === gp.poNumber);
+      if (shipment) {
+        shipment.status = 'PORT_DELIVERED';
+        shipment.updatedAt = new Date().toISOString();
+      }
+    }
+    return gp;
+  }
+
+  public updateShipmentStatus(id: string, status: ShipmentStatus): Shipment | null {
+    const shipment = this.shipments.find(s => s.id === id);
+    if (!shipment) return null;
+    shipment.status = status;
+    shipment.updatedAt = new Date().toISOString();
+    return shipment;
   }
 }
 

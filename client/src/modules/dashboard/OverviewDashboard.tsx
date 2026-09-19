@@ -9,8 +9,8 @@ import {
   GitBranch, 
   Sparkles, 
   Award,
-  Activity,
-  Scissors
+  Scissors,
+  Ship
 } from 'lucide-react';
 import { User } from '../../types';
 
@@ -36,7 +36,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-950 border border-amber-300 flex items-center gap-1.5 shadow-sm">
                 <Sparkles className="w-3 h-3 text-slate-950" />
-                Phase 5 Active • Core QA/QC Suite & ISO AQL 2.5 Sampling
+                Phase 6 Active • Shipment, Invoicing & Export Gate Pass
               </span>
               <span className="text-xs text-emerald-200 font-mono">Bangladesh Garments ERP</span>
             </div>
@@ -50,19 +50,19 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
 
           <div className="flex flex-wrap items-center gap-3">
             <button
-              onClick={() => onNavigate('fabric-qc')}
+              onClick={() => onNavigate('shipment')}
               className="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-emerald-900 text-xs font-bold shadow-md flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
             >
-              <Scissors className="w-4 h-4 text-emerald-700" />
-              <span>Fabric 4-Point QC</span>
+              <Ship className="w-4 h-4 text-emerald-700" />
+              <span>Export Shipment & Gate Pass</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
             <button
-              onClick={() => onNavigate('sewing-qc')}
+              onClick={() => onNavigate('fabric-qc')}
               className="px-4 py-2.5 rounded-xl bg-emerald-700/80 hover:bg-emerald-600 text-white text-xs font-bold border border-emerald-600 flex items-center gap-2 transition-all cursor-pointer"
             >
-              <Activity className="w-4 h-4 text-emerald-300" />
-              <span>Inline Sewing QC & DHU</span>
+              <Scissors className="w-4 h-4 text-emerald-300" />
+              <span>Fabric 4-Point QC</span>
             </button>
             <button
               onClick={() => onNavigate('aql-audit')}

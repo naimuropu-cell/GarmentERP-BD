@@ -23,7 +23,10 @@ try {
   console.log('\n▶ Running Phase 5 (Core QA/QC: 4-Point, Inline, Rework, CAPA & AQL 2.5) Tests...');
   execSync('node dist/tests/qa.test.js', { cwd: serverDir, stdio: 'inherit' });
 
-  console.log('\n🎉 ALL 56 Integration Tests Passed with Zero Errors across all modules!');
+  console.log('\n▶ Running Phase 6 (Shipment, Export Invoices, Packing & Gate Pass) Tests...');
+  execSync('node dist/tests/shipment.test.js', { cwd: serverDir, stdio: 'inherit' });
+
+  console.log('\n🎉 ALL 68 Integration Tests Passed with Zero Errors across all modules!');
   process.exit(0);
 } catch (err) {
   console.error('\n❌ Test suite failed:', err);

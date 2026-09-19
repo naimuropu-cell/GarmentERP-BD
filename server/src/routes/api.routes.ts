@@ -295,6 +295,61 @@ router.post(
   QaController.calculateAndCreateAqlSampling
 );
 
+// ==========================================
+// 8. Phase 6: Shipment, Export Invoices & Logistics
+// ==========================================
+import * as ShipmentController from '../modules/shipment/shipment.controller';
+
+// Shipment registry & Quality Gate check
+router.get('/shipments', authenticateToken, ShipmentController.getShipments);
+router.get('/shipments/verify-gate', authenticateToken, ShipmentController.verifyAqlQualityGate);
+router.get('/shipments/:id', authenticateToken, ShipmentController.getShipmentById);
+router.post(
+  '/shipments',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.APPROVE_SHIPMENT),
+  ShipmentController.createShipment
+);
+router.put(
+  '/shipments/:id/status',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.APPROVE_SHIPMENT),
+  ShipmentController.updateShipmentStatus
+);
+
+// Commercial Invoices
+router.get('/shipments/docs/invoices', authenticateToken, ShipmentController.getCommercialInvoices);
+router.post(
+  '/shipments/docs/invoices',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.APPROVE_SHIPMENT),
+  ShipmentController.createCommercialInvoice
+);
+
+// Export Packing Lists
+router.get('/shipments/docs/packing-lists', authenticateToken, ShipmentController.getPackingLists);
+router.post(
+  '/shipments/docs/packing-lists',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.APPROVE_SHIPMENT),
+  ShipmentController.createPackingList
+);
+
+// Security Gate Passes
+router.get('/shipments/gate-passes', authenticateToken, ShipmentController.getGatePasses);
+router.post(
+  '/shipments/gate-passes',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.APPROVE_SHIPMENT),
+  ShipmentController.createGatePass
+);
+router.put(
+  '/shipments/gate-passes/:id/status',
+  authenticateToken,
+  requirePermission(SYSTEM_PERMISSIONS.APPROVE_SHIPMENT),
+  ShipmentController.updateGatePassStatus
+);
+
 export default router;
 
 

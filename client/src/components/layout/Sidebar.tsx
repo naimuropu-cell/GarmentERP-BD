@@ -88,9 +88,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, user 
       ]
     },
     {
-      title: 'Phase 6, 7 & 8 — Commercial & Ops',
+      title: 'Phase 6 — Logistics & Export',
       items: [
-        { id: 'shipment', label: 'Shipment & Gate Pass', icon: Ship, disabled: true, phase: 'Phase 6' },
+        { id: 'shipment', label: 'Shipment & Gate Pass', icon: Ship, permission: 'shipment:approve' }
+      ]
+    },
+    {
+      title: 'Phase 7 & 8 — Operations & Analytics',
+      items: [
         { id: 'hr', label: 'HR, Shifts & Biometric Payroll', icon: Users, disabled: true, phase: 'Phase 7' },
         { id: 'finance', label: 'Operational Cost & Margins', icon: DollarSign, disabled: true, phase: 'Phase 7' },
         { id: 'maintenance', label: 'Machine Preventive Tickets', icon: Wrench, disabled: true, phase: 'Phase 7' }
