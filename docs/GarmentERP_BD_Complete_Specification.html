@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GarmentERP BD — Complete System Blueprint & Operational Specifications</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+    @page {
+      size: A4 portrait;
+      margin: 14mm 14mm 14mm 14mm;
+      @bottom-right {
+        content: counter(page);
+        font-family: 'Inter', sans-serif;
+        font-size: 8pt;
+        color: #64748b;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-size: 9.5pt;
+      line-height: 1.5;
+      color: #0f172a;
+      background-color: #ffffff;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page {
+      page-break-after: always;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    .page:last-child {
+      page-break-after: avoid;
+    }
+
+    /* Cover Page */
+    .cover-page {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 30px 10px 20px 10px;
+    }
+
+    .cover-header {
+      border-bottom: 2px solid #047857;
+      padding-bottom: 16px;
+    }
+
+    .brand-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+      font-size: 8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .cover-title {
+      font-size: 28pt;
+      font-weight: 800;
+      color: #064e3b;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+    }
+
+    .cover-subtitle {
+      font-size: 13pt;
+      font-weight: 500;
+      color: #334155;
+      margin-top: 10px;
+      max-width: 650px;
+    }
+
+    .cover-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+    }
+
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .kpi-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+    }
+
+    .kpi-box .num {
+      font-size: 16pt;
+      font-weight: 800;
+      color: #047857;
+    }
+
+    .kpi-box .lbl {
+      font-size: 7.5pt;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    .cover-meta {
+      border-top: 1px solid #e2e8f0;
+      padding-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      font-size: 8.5pt;
+      color: #475569;
+    }
+
+    .meta-item strong {
+      display: block;
+      color: #0f172a;
+      font-size: 9pt;
+      margin-bottom: 2px;
+    }
+
+    /* Headings */
+    h1 {
+      font-size: 17pt;
+      font-weight: 800;
+      color: #064e3b;
+      border-bottom: 1.5px solid #047857;
+      padding-bottom: 6px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h2 {
+      font-size: 12pt;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 16px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    h3 {
+      font-size: 10pt;
+      font-weight: 600;
+      color: #1e293b;
+      margin-top: 12px;
+      margin-bottom: 6px;
+    }
+
+    p {
+      margin-bottom: 8px;
+      color: #334155;
+      text-align: justify;
+    }
+
+    /* Badge & Tags */
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 7.5pt;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-green { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+    .badge-amber { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .badge-blue  { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .badge-slate { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+    .badge-red   { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8pt;
+      margin: 10px 0 14px 0;
+      page-break-inside: avoid;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #0f172a;
+      font-weight: 700;
+      text-align: left;
+      padding: 6px 8px;
+      border-top: 1px solid #cbd5e1;
+      border-bottom: 1.5px solid #047857;
+      text-transform: uppercase;
+      font-size: 7pt;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #334155;
+      vertical-align: top;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #fafbfd;
+    }
+
+    /* Code Blocks / Monospace */
+    code, pre {
+      font-family: 'JetBrains Mono', Consolas, Monaco, monospace;
+    }
+
+    pre {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 3px solid #047857;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 7.5pt;
+      line-height: 1.4;
+      margin: 8px 0;
+      overflow-x: auto;
+      color: #0f172a;
+    }
+
+    /* Diagram / Flow Boxes */
+    .flow-diagram {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+      margin: 12px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.5pt;
+      color: #064e3b;
+      white-space: pre;
+      line-height: 1.4;
+    }
+
+    /* Alert / Callout Box */
+    .callout {
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      border-left: 4px solid #047857;
+      border-radius: 6px;
+      padding: 10px 14px;
+      margin: 10px 0;
+      font-size: 8.5pt;
+      color: #064e3b;
+    }
+
+    .callout strong {
+      color: #047857;
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .callout-amber {
+      background: #fffbeb;
+      border-color: #fde68a;
+      border-left-color: #f59e0b;
+      color: #78350f;
+    }
+
+    .callout-amber strong {
+      color: #b45309;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 10px 0;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .card h4 {
+      font-size: 8.5pt;
+      font-weight: 700;
+      color: #047857;
+      margin-bottom: 6px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 4px;
+    }
+
+    .card ul {
+      list-style-type: none;
+      padding-left: 0;
+      font-size: 8pt;
+    }
+
+    .card li {
+      padding: 2.5px 0;
+      border-bottom: 1px dashed #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .card li:last-child {
+      border-bottom: none;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 6px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 7pt;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- PAGE 1: COVER PAGE -->
+  <div class="page cover-page">
+    <div>
+      <div class="cover-header">
+        <span class="brand-tag">🇧🇩 Bangladesh RMG Manufacturing ERP & SQA Suite</span>
+        <h1 class="cover-title">GarmentERP BD</h1>
+        <p class="cover-subtitle">Complete Enterprise Resource Planning & Quality Assurance System Architecture Specification</p>
+      </div>
+
+      <div class="cover-card">
+        <p style="font-size: 10pt; line-height: 1.6; color: #1e293b;">
+          <strong>GarmentERP BD</strong> is a mission-critical, enterprise-grade ERP and Quality Management System engineered specifically around the authentic operational workflows of the Bangladesh Ready-Made Garments (RMG) manufacturing sector. It unites the complete factory journey from <strong>Buyer Inquiries & POs</strong> to <strong>Costing, BOM, Procurement, Warehouse Inventory, Production (Cutting, Sewing, Finishing), Carton Ratio Packing, Comprehensive QA/QC (Fabric 4-Point, Inline DHU, Rework, CAPA, AQL 2.5)</strong>, and <strong>Commercial Shipment</strong>.
+        </p>
+        
+        <div class="cover-grid">
+          <div class="kpi-box">
+            <div class="num">31</div>
+            <div class="lbl">Integrated Workflows</div>
+          </div>
+          <div class="kpi-box">
+            <div class="num">14</div>
+            <div class="lbl">Role-Based Personas</div>
+          </div>
+          <div class="kpi-box">
+            <div class="num">8</div>
+            <div class="lbl">Development Phases</div>
+          </div>
+          <div class="kpi-box">
+            <div class="num">56 / 56</div>
+            <div class="lbl">Automated SQA Tests Passed</div>
+          </div>
+          <div class="kpi-box">
+            <div class="num">5</div>
+            <div class="lbl">Postman SQA Collections</div>
+          </div>
+          <div class="kpi-box">
+            <div class="num">100%</div>
+            <div class="lbl">Traceable PO Pipeline</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Executive Architecture Principle: Interconnected Single Source of Truth</strong>
+        GarmentERP BD is engineered as an interconnected business ecosystem. Quantities and specifications are logically coupled across departments—a quantity adjustment in a Buyer PO automatically cascades into BOM requirements, triggers Procurement shortage alerts, governs Production cut plies, enforces Finishing carton limits, gates Quality thresholds, and controls Export commercial invoices.
+      </div>
+    </div>
+
+    <div class="cover-meta">
+      <div class="meta-item">
+        <strong>Architect & Author</strong>
+        Engr. Naimur Rahman (System Architect & SQA Engineer)
+      </div>
+      <div class="meta-item">
+        <strong>Target Industry</strong>
+        Bangladesh RMG Garment Manufacturing (Savar, Gazipur, Chattogram)
+      </div>
+      <div class="meta-item">
+        <strong>Document Version & Date</strong>
+        v1.0.0 Enterprise Release • September 2026
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE 2: EXECUTIVE SUMMARY & ARCHITECTURE -->
+  <div class="page">
+    <h1>1. Executive Summary & System Architecture</h1>
+    
+    <p>
+      The Ready-Made Garments industry in Bangladesh represents over 84% of national exports. However, modern manufacturing plants often suffer from operational silos, where Merchandising, Commercial, Stores, Production, and Quality teams operate on disparate spreadsheets, paper tickets, and disconnected software. GarmentERP BD replaces this fragmentation with an auditable, real-time platform.
+    </p>
+
+    <h2>1.1 Architectural Topology</h2>
+    <div class="flow-diagram">
++-----------------------------------------------------------------------------------------------+
+|                                      CLIENT LAYER (SPA)                                       |
+|  React 18 + TypeScript + Vite + Tailwind CSS (Executive Light Theme #F7F8FA / White Canvas)   |
+|  TanStack Query (Async State) + Recharts (KPI Data Viz) + Lucide Enterprise SVG Icons         |
++-----------------------------------------------+-----------------------------------------------+
+                                                |  HTTP/REST (Bearer JWT) + Socket.IO Alerts
++-----------------------------------------------+-----------------------------------------------+
+|                                     SECURITY & RBAC GATE                                      |
+|  JWT Verification + Refresh Token Rotation + 14 Granular Role Guards + Zod Schema Validation   |
++-----------------------------------------------+-----------------------------------------------+
+                                                |
++-----------------------------------------------+-----------------------------------------------+
+|                                      BACKEND ENGINE (API)                                     |
+|  Node.js + Express.js + TypeScript Modular Architecture (Controllers, Services, Store)       |
+|  - Merchandising & BOM Engine       - Procurement & SCM           - Multi-Warehouse Engine    |
+|  - Production Floor & Bundling      - QA/QC & AQL 2.5 Engine      - Audit Trail Ledger        |
++-----------------------------------------------+-----------------------------------------------+
+                                                |
++-----------------------------------------------+-----------------------------------------------+
+|                               PERSISTENCE & COMPLIANCE LAYER                                  |
+|  Prisma ORM + PostgreSQL Database Schema (Multi-tenant Bangladesh Topology: Savar / Gazipur) |
+|  Tamper-Evident Append-Only Audit Trail + Postman / Newman Automated SQA Suites (56 Tests)     |
++-----------------------------------------------------------------------------------------------+
+    </div>
+
+    <h2>1.2 Core Technology Stack Summary</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Tier</th>
+          <th>Technology</th>
+          <th>Specification & Architectural Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Frontend</strong></td>
+          <td>React 18, TypeScript, Vite, Tailwind CSS</td>
+          <td>Zero-lag Single Page Application built on modern enterprise light theme design guidelines (#F7F8FA background, #FFFFFF cards, Deep Green #047857 primary accent).</td>
+        </tr>
+        <tr>
+          <td><strong>State & Forms</strong></td>
+          <td>TanStack Query, React Hook Form, Zod</td>
+          <td>Optimistic server-state caching, strict client-side validation schemas, and real-time query invalidation.</td>
+        </tr>
+        <tr>
+          <td><strong>Backend API</strong></td>
+          <td>Node.js, Express.js, TypeScript</td>
+          <td>Type-safe RESTful API architecture with strict modular domain separation, centralized middleware, and error handling.</td>
+        </tr>
+        <tr>
+          <td><strong>Security</strong></td>
+          <td>JWT, bcryptjs, RBAC Middleware</td>
+          <td>Stateless access tokens with refresh tokens, password hashing, and segregation of duties across 14 personas.</td>
+        </tr>
+        <tr>
+          <td><strong>Database</strong></td>
+          <td>PostgreSQL & Prisma ORM</td>
+          <td>Relational schema modeling Bangladesh factories, buildings, floors, lines, and warehouses.</td>
+        </tr>
+        <tr>
+          <td><strong>Quality Assurance</strong></td>
+          <td>Node Test Runner, Postman, Newman</td>
+          <td>Automated regression test suites covering positive, negative, and boundary conditions across all ERP endpoints.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>1.3 UI/UX Design System Guidelines</h2>
+    <p>
+      In accordance with enterprise ERP standards, GarmentERP BD strictly avoids gimmicky dark dashboards, neon accents, or bloated admin templates. It adheres to an <strong>Executive Light Theme</strong>:
+    </p>
+    <div class="two-col">
+      <div class="card">
+        <h4>Design Tokens & Palette</h4>
+        <ul>
+          <li><span>Background Canvas</span> <code>#F7F8FA (Very Light Gray)</code></li>
+          <li><span>Surfaces & Cards</span> <code>#FFFFFF (Pure White)</code></li>
+          <li><span>Primary Brand</span> <code>#047857 / #065F46 (Deep Green)</code></li>
+          <li><span>Secondary / Badges</span> <code>#ECFDF5 (Soft Tint Green)</code></li>
+          <li><span>Alerts / Warnings</span> <code>#F59E0B (Amber / Gold)</code></li>
+          <li><span>Text & Typography</span> <code>#0F172A (Dark Slate / Inter)</code></li>
+          <li><span>Borders</span> <code>#E2E8F0 (Subtle Slate Border)</code></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Enterprise Principles</h4>
+        <ul>
+          <li><span>Collapsible Navigation</span> <span>Thin right border, grouped modules</span></li>
+          <li><span>Compact KPI Cards</span> <span>Large numbers with subtle percentage indicators</span></li>
+          <li><span>Data-Dense Tables</span> <span>Search, filter, badges, and export actions</span></li>
+          <li><span>Order Details Tabs</span> <span>Comprehensive 360° progress pipeline</span></li>
+          <li><span>Role Switcher</span> <span>1-click instant persona switching for testing</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer">
+      <span>GarmentERP BD — Enterprise System Specification</span>
+      <span>Confidential & Proprietary</span>
+    </div>
+  </div>
+
+  <!-- PAGE 3: 14 ROLE PERSONAS & FACTORY TOPOLOGY -->
+  <div class="page">
+    <h1>2. 14 Role-Based Access Personas & Factory Topology</h1>
+
+    <p>
+      Strict segregation of duties is mandatory under international social compliance standards (WRAP, BSCI, SEDEX). GarmentERP BD enforces role-based access control across 14 factory roles:
+    </p>
+
+    <h2>2.1 The 14 Specialized Personas</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Role Persona</th>
+          <th>Code</th>
+          <th>Factory Scope & Segregated Operational Responsibilities</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Super Administrator</strong></td>
+          <td><code>SUPER_ADMIN</code></td>
+          <td>Complete platform sovereignty, user provisioning, global permissions, and audit log administration.</td>
+        </tr>
+        <tr>
+          <td><strong>Factory Administrator</strong></td>
+          <td><code>FACTORY_ADMIN</code></td>
+          <td>Factory layout management (Savar & Gazipur units), floor and line setup, and staff roster assignments.</td>
+        </tr>
+        <tr>
+          <td><strong>Executive Management</strong></td>
+          <td><code>MANAGEMENT</code></td>
+          <td>Overall operational oversight, order profitability, costing sheet sign-offs, and shipment authorizations.</td>
+        </tr>
+        <tr>
+          <td><strong>Merchandiser</strong></td>
+          <td><code>MERCHANDISER</code></td>
+          <td>Buyer relationships, style masters, tech pack versioning, consumption BOMs, and order tracking.</td>
+        </tr>
+        <tr>
+          <td><strong>Purchase Officer</strong></td>
+          <td><code>PURCHASE_OFFICER</code></td>
+          <td>Purchase requisitions, supplier scorecards, supplier PO issuance, and raw material procurement.</td>
+        </tr>
+        <tr>
+          <td><strong>Store Officer</strong></td>
+          <td><code>STORE_OFFICER</code></td>
+          <td>Multi-warehouse stock control (Fabric, Trims, Accessories, FG), GRN entry, negative stock prevention.</td>
+        </tr>
+        <tr>
+          <td><strong>Production Planner</strong></td>
+          <td><code>PROD_PLANNER</code></td>
+          <td>Line capacity allocation, target SMV calculations, cutting schedules, and sewing plan balancing.</td>
+        </tr>
+        <tr>
+          <td><strong>Production Supervisor</strong></td>
+          <td><code>PROD_SUPERVISOR</code></td>
+          <td>Hourly sewing floor tracking (Lines 01-04), cut bundle intake, machine downtime, and output verification.</td>
+        </tr>
+        <tr>
+          <td><strong>QA Manager</strong></td>
+          <td><code>QA_MANAGER</code></td>
+          <td>Quality standards enforcement, CAPA 5-Whys verification, AQL audit approvals, and shipment quality gates.</td>
+        </tr>
+        <tr>
+          <td><strong>QC Inspector</strong></td>
+          <td><code>QC_INSPECTOR</code></td>
+          <td>4-Point fabric inspection, cutting panel QC, inline sewing defect logging (DHU), and rework inspection.</td>
+        </tr>
+        <tr>
+          <td><strong>Commercial Officer</strong></td>
+          <td><code>COMMERCIAL_OFFICER</code></td>
+          <td>Export documentation, Letters of Credit (LC), customs invoices, packing lists, and security gate passes.</td>
+        </tr>
+        <tr>
+          <td><strong>HR Officer</strong></td>
+          <td><code>HR_OFFICER</code></td>
+          <td>Employee attendance, shift rosters, overtime computation, biometric integration, and monthly payroll.</td>
+        </tr>
+        <tr>
+          <td><strong>Finance Officer</strong></td>
+          <td><code>FINANCE_OFFICER</code></td>
+          <td>Cost center allocations, supplier payables, buyer receivables, CM earnings, and order net margin analysis.</td>
+        </tr>
+        <tr>
+          <td><strong>Maintenance Officer</strong></td>
+          <td><code>MAINTENANCE_OFFICER</code></td>
+          <td>Sewing machine maintenance schedules, breakdown work orders, spare parts consumption, and downtime.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>2.2 Factory Topology & Spatial Hierarchy (Module 02)</h2>
+    <div class="flow-diagram">
+Enterprise Holding (Apex Garments Holdings Ltd.)
+ ├── Plant 01: Savar Manufacturing Complex (Code: AG-SAVAR-01)
+ │    ├── Building 01 (Main Production Block)
+ │    │    ├── Floor 01: Warehouse & Fabric Store (Bins: FAB-01 to FAB-18)
+ │    │    ├── Floor 02: Automated Spreading & Cutting Floor (Tables C1 - C6, 24h Relaxation Zone)
+ │    │    ├── Floor 03: Sewing Department (Production Lines 01 to 04 with Juki DDL-9000C)
+ │    │    └── Floor 04: Finishing, Metal Detection & Export Packing Section
+ │    └── Building 02 (Commercial & Admin Center)
+ └── Plant 02: Gazipur Washing & Denim Unit (Code: AG-GAZI-02)
+      ├── Floor 01: Wet Processing & Sustainable Washing Department
+      └── Floor 02: Finishing, AQL Final Audit Bay & Finished Goods Bonded Store
+    </div>
+
+    <div class="footer">
+      <span>GarmentERP BD — Enterprise System Specification</span>
+      <span>Confidential & Proprietary</span>
+    </div>
+  </div>
+
+  <!-- PAGE 4: COMMERCIAL & SUPPLY CHAIN DEEP DIVE -->
+  <div class="page">
+    <h1>3. Commercial & Supply Chain Modules (Phases 2 & 3)</h1>
+
+    <p>
+      The commercial and supply chain backbone ensures that every yard of fabric and button ordered matches the exact requirements of international buyer contracts, preventing stock hoarding and negative inventory.
+    </p>
+
+    <h2>3.1 Commercial Workflow (Buyer PO, Tech Pack & Costing)</h2>
+    <div class="two-col">
+      <div class="card">
+        <h4>Buyer & Tech Pack Engine (Mod 04 & 05)</h4>
+        <p style="font-size: 8pt;">
+          Supports global buyers (e.g., H&M, Zara, PVH, XYZ Fashion) with multi-currency (USD, EUR, GBP, BDT) and international payment terms (At-Sight LC, Usance LC). Tech packs feature strict <strong>version control (v1, v2, v3)</strong>, ensuring that revision changes in measurement charts or tolerances (+/- 0.5cm) notify production supervisors immediately.
+        </p>
+      </div>
+      <div class="card">
+        <h4>BOM & Pre-Costing Engine (Mod 07 & 08)</h4>
+        <p style="font-size: 8pt;">
+          Calculates comprehensive garment unit costs: Fabric, Trims, CM (Cost of Making), Wash, Print/Embroidery, Commercial Overhead, and Net Profit Margin. The BOM explosion multiplies item consumption (e.g. 0.85 KG single jersey/piece) by PO volume to compute gross requirements and auto-detect raw material shortages.
+        </p>
+      </div>
+    </div>
+
+    <h2>3.2 Supply Chain & Inventory Control (Mod 09 & 10)</h2>
+    <p>
+      Raw materials represent 60–70% of RMG order value. GarmentERP BD automates procurement from shortage detection to warehouse bin allocation:
+    </p>
+    <div class="flow-diagram">
+[BOM Shortage Detected] ---> [Purchase Requisition (PR)] ---> [Management Approval Gate]
+                                                                        |
+                                                                        v
+[Bonded Warehouse Bin] <--- [Inbound QC Pass & GRN] <--- [Supplier Purchase Order (SPO)]
+    </div>
+
+    <h2>3.3 Strict Negative Inventory Protection Engine</h2>
+    <div class="callout callout-amber">
+      <strong>Core Guard: Hard Negative Stock Prevention</strong>
+      The system strictly disallows stock balance deductions that would result in negative quantities. If a supervisor attempts to issue 8,000 meters from a fabric lot containing only 5,000 meters, the API transaction is immediately rejected with <code>400 Bad Request: Insufficient Stock Available</code> and an audit violation is logged. Over-issuance is strictly locked unless an authorized Factory Administrator enters a certified override code.
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Transaction Type</th>
+          <th>Trigger Event</th>
+          <th>Source Location</th>
+          <th>Destination</th>
+          <th>Validation Rules</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>GRN Receive</strong></td>
+          <td>Vendor delivery at security gate</td>
+          <td>Supplier Inbound Truck</td>
+          <td>Quarantine Inspection Bay</td>
+          <td>Matches SPO quantity (+/- 5% allowance) & QA certificate.</td>
+        </tr>
+        <tr>
+          <td><strong>QC Bin Transfer</strong></td>
+          <td>Fabric 4-point inspection pass</td>
+          <td>Quarantine Bay</td>
+          <td>Bonded Fabric Warehouse</td>
+          <td>Roll tagged with barcode, length, and dye lot number.</td>
+        </tr>
+        <tr>
+          <td><strong>Line Issue</strong></td>
+          <td>Daily production cutting plan</td>
+          <td>Fabric Warehouse</td>
+          <td>Cutting Floor Lay Table</td>
+          <td>Deduction must be $\le$ Available Unreserved Stock.</td>
+        </tr>
+        <tr>
+          <td><strong>Stock Adjustment</strong></td>
+          <td>Monthly physical inventory count</td>
+          <td>Warehouse Bin</td>
+          <td>Adjustment Ledger</td>
+          <td>Requires dual-signature from Store Officer and Finance.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <span>GarmentERP BD — Enterprise System Specification</span>
+      <span>Confidential & Proprietary</span>
+    </div>
+  </div>
+
+  <!-- PAGE 5: PRODUCTION FLOOR & WORKFLOW -->
+  <div class="page">
+    <h1>4. Garments Production Management (Phase 4)</h1>
+
+    <p>
+      Production execution requires synchronized coordination across Cutting, Sewing, Finishing, and Carton Packing. GarmentERP BD provides end-to-end floor visibility and automated bundle routing.
+    </p>
+
+    <h2>4.1 Cutting Workflow & 24-Hour Fabric Relaxation Timer (Mod 12)</h2>
+    <p>
+      In knitted garment manufacturing, elastane/cotton fabric rolls undergo high mechanical tension during knitting and dyeing. Spreading rolls immediately causes post-cut shrinkage and dimensional failures.
+    </p>
+    <div class="two-col">
+      <div class="card">
+        <h4>24h Relaxation Countdown Engine</h4>
+        <p style="font-size: 8pt;">
+          Upon receiving fabric from the warehouse, the roll enters the unrolling cradle and a <strong>24-Hour Digital Relaxation Timer</strong> is initiated. The system locks cut order generation against that roll until the tension-release countdown reaches zero and QC certifies dimensional stability.
+        </p>
+      </div>
+      <div class="card">
+        <h4>Marker Efficiency & Spreading Lay</h4>
+        <p style="font-size: 8pt;">
+          Tracks marker length, fabric width, plies count, and marker efficiency percentage (typically 84–89%). Minimizes end-loss wastage and generates automated piece yield summaries for fabric reconciliation against BOM standards.
+        </p>
+      </div>
+    </div>
+
+    <h2>4.2 QR / Barcode Bundle Ticketing Registry</h2>
+    <p>
+      Once cutting is executed, cut panels are bundled into standard lots (e.g., 250 pieces per bundle). Each bundle receives a tamper-evident QR code ticket encoding: <code>Cut Order ID</code>, <code>Bundle #</code>, <code>Size</code>, <code>Color</code>, and <code>Piece Serial Range</code> (e.g., #001 to #250). Bundles are scanned as they move across workstations for real-time WIP (Work-in-Progress) tracking.
+    </p>
+
+    <h2>4.3 Sewing Line Hourly Tracking (Mod 13)</h2>
+    <p>
+      Tracks production floor output hour-by-hour across lines (e.g., Lines 01 to 04 in Savar Unit) against target Standard Minute Values (SMV):
+    </p>
+    <div class="flow-diagram">
++---------+-------------------+----------------+-------------+-------------+------------------+
+| Line ID | Assigned Garment  | Hourly Target  | Actual Made | Rejects/Rwk | Line Efficiency  |
++---------+-------------------+----------------+-------------+-------------+------------------+
+| Line 01 | Mens Polo Shirt   | 150 pcs/hr     | 142 pcs/hr  | 3 / 2 pcs   | 94.6% (On Target)|
+| Line 02 | Basic Crewneck    | 180 pcs/hr     | 175 pcs/hr  | 4 / 3 pcs   | 97.2% (Optimal)  |
+| Line 03 | Raglan Hoodie     | 120 pcs/hr     | 102 pcs/hr  | 6 / 5 pcs   | 85.0% (Warning)  |
+| Line 04 | Chino Trouser     | 110 pcs/hr     | 105 pcs/hr  | 2 / 1 pcs   | 95.4% (Optimal)  |
++---------+-------------------+----------------+-------------+-------------+------------------+
+    </div>
+
+    <h2>4.4 Finishing Section & Ratio Carton Packing (Mod 14 & 15)</h2>
+    <p>
+      Stitched garments move through 4 finishing stages: <strong>Thread Trimming & Suction</strong> &rarr; <strong>Steam Pressing & Ironing</strong> &rarr; <strong>Folding & Hangtag Attachment</strong> &rarr; <strong>Calibrated Needle/Metal Detection</strong>.
+    </p>
+    <div class="callout">
+      <strong>Packing Ratio Assortment & Over-Packing Security Guard</strong>
+      GarmentERP BD enforces buyer-specified carton ratio matrices (e.g., Carton #001: Size S:10, M:20, L:20, XL:10 = 60 pieces). Furthermore, the packing module strictly prevents <code>Packed Quantity > Available Finished Quantity</code>, guaranteeing zero phantom carton records.
+    </div>
+
+    <div class="footer">
+      <span>GarmentERP BD — Enterprise System Specification</span>
+      <span>Confidential & Proprietary</span>
+    </div>
+  </div>
+
+  <!-- PAGE 6: CORE QA/QC SUITE (FLAGSHIP) -->
+  <div class="page">
+    <h1>5. Core QA/QC Suite — The Quality Flagship (Phase 5)</h1>
+
+    <p>
+      Quality assurance is the crown jewel of GarmentERP BD. It embeds international inspection methodologies across raw materials, in-process sewing, rework loops, root-cause CAPA, and pre-shipment AQL auditing.
+    </p>
+
+    <h2>5.1 Fabric 4-Point Inspection Engine (ASTM D5430 / Mod 16)</h2>
+    <p>
+      Every incoming fabric roll undergoes 4-point penalty inspection. Defects are assigned points based on physical defect size:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Defect Length / Size Range</th>
+          <th>Penalty Points</th>
+          <th>Industry Standard Formula & Acceptance Threshold</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Defects up to 3 inches</td>
+          <td><strong>1 Point</strong></td>
+          <td rowspan="4" style="vertical-align: middle;">
+            $$\text{Points per } 100 \text{ Sq. Yards} = \frac{\text{Total Penalty Points} \times 3600}{\text{Inspected Yards} \times \text{Fabric Width (Inches)}}$$
+            <br>
+            <span class="badge badge-green">FIRST QUALITY PASS: &le; 28.0 Points</span><br>
+            <span class="badge badge-red">REJECTED / SECOND QUALITY: &gt; 28.0 Points</span>
+          </td>
+        </tr>
+        <tr>
+          <td>Defects over 3 inches up to 6 inches</td>
+          <td><strong>2 Points</strong></td>
+        </tr>
+        <tr>
+          <td>Defects over 6 inches up to 9 inches</td>
+          <td><strong>3 Points</strong></td>
+        </tr>
+        <tr>
+          <td>Defects over 9 inches or any hole</td>
+          <td><strong>4 Points</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>5.2 Inline Sewing Quality & Real-Time DHU Engine (Mod 17)</h2>
+    <p>
+      QC roving inspectors record defects at operator stations in real-time. Defect categories include Broken Stitch, Skip Stitch, Open Seam, Puckering, Shading, and Oil Stains. The system automatically computes:
+    </p>
+    <pre>DHU (Defects per Hundred Units) % = (Total Defect Count / Total Inspected Pieces) * 100</pre>
+
+    <h2>5.3 Closed-Loop Rework Quarantine & Re-Inspection (Mod 18)</h2>
+    <div class="flow-diagram">
+[Inline Defect Logged] ---> [Auto-Generated Rework Order] ---> [Defective Garment to Rework Zone]
+                                                                            |
+                                                                            v
+[Returned to Production] <--- [QC Re-Inspection Passed] <--- [Operator Repairs & Replaces Seam]
+    </div>
+
+    <h2>5.4 Root-Cause CAPA 5-Whys Analysis (Mod 19)</h2>
+    <p>
+      When high-severity defect patterns emerge, QA Managers launch Corrective and Preventive Actions (CAPA) utilizing the standardized <strong>5-Whys Root-Cause Methodology</strong>:
+    </p>
+    <div class="card" style="margin-bottom: 10px;">
+      <h4>Case Study: Excessive Skip Stitches on Sewing Line 02</h4>
+      <ul>
+        <li><span>1. Why did the defect happen?</span> <span>Needle thread skipped bobbin hook during placket stitch.</span></li>
+        <li><span>2. Why did it skip the hook?</span> <span>Needle temperature was too high, causing thermal thread deflection.</span></li>
+        <li><span>3. Why was temperature high?</span> <span>Wrong needle point geometry (Standard R used instead of SES ballpoint).</span></li>
+        <li><span>4. Why was wrong needle used?</span> <span>Mechanic ran out of SES needles and fitted standard needle.</span></li>
+        <li><span>5. Root Cause (5th Why):</span> <span>Preventive maintenance store had no automatic re-order point for SES needles.</span></li>
+      </ul>
+      <p style="font-size: 7.5pt; margin-top: 6px; color: #047857;">
+        <strong>Corrective Action:</strong> Fitted titanium SES ballpoint needle. | <strong>Preventive Action:</strong> Established minimum safety stock in ERP with automated purchase triggers. | <strong>Verified by:</strong> QA Manager.
+      </p>
+    </div>
+
+    <h2>5.5 ISO 2859-1 / ANSI ASQ Z1.4 Normal Level II AQL Sampling (Mod 20)</h2>
+    <p>
+      Pre-shipment final audits calculate sampling batches dynamically based on production lot sizes:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Order Lot Size Range</th>
+          <th>Inspection Level</th>
+          <th>Sample Size</th>
+          <th>Critical (AQL 0)</th>
+          <th>Major (AQL 2.5)</th>
+          <th>Minor (AQL 4.0)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>3,201 to 10,000 pcs (Code K)</td>
+          <td>Level II Normal</td>
+          <td><strong>200 pieces</strong></td>
+          <td>Ac: 0 | Re: 1</td>
+          <td>Ac: 10 | Re: 11</td>
+          <td>Ac: 14 | Re: 15</td>
+        </tr>
+        <tr>
+          <td>10,001 to 35,000 pcs (Code L)</td>
+          <td>Level II Normal</td>
+          <td><strong>315 pieces</strong></td>
+          <td>Ac: 0 | Re: 1</td>
+          <td>Ac: 14 | Re: 15</td>
+          <td>Ac: 21 | Re: 22</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <span>GarmentERP BD — Enterprise System Specification</span>
+      <span>Confidential & Proprietary</span>
+    </div>
+  </div>
+
+  <!-- PAGE 7: SHIPMENT, FACTORY OPERATIONS & SQA TEST SUITE -->
+  <div class="page">
+    <h1>6. Shipment, Operations & SQA Automated Test Suite</h1>
+
+    <p>
+      The remaining roadmap covers export logistics, human resources, machinery upkeep, and the comprehensive automated testing suite guaranteeing zero-defect deployments.
+    </p>
+
+    <h2>6.1 Shipment & Logistics (Phase 6 — Upcoming)</h2>
+    <div class="callout callout-amber">
+      <strong>Security Lock: Mandatory Quality Gate Enforced Prior to Shipment</strong>
+      Under international shipping protocols, GarmentERP BD strictly locks Commercial Invoicing and Gate Pass issuance if the PO’s pre-shipment AQL inspection is missing or has a <code>REJECTED</code> status. No container can be dispatched from the factory without an authorized digital QA sign-off certificate.
+    </div>
+    <div class="two-col">
+      <div class="card">
+        <h4>Commercial Invoicing & Packing List</h4>
+        <p style="font-size: 8pt;">
+          Generates customs-compliant export documentation with gross weight, net weight, CBM (Cubic Meter) container calculations, and Harmonized System (HS) codes.
+        </p>
+      </div>
+      <div class="card">
+        <h4>Security Gate Pass & Dispatch Tracking</h4>
+        <p style="font-size: 8pt;">
+          Issues tamper-proof QR gate passes for logistics container trucks dispatched to Chittagong Port or Dhaka Airport (In-Transit &rarr; Port &rarr; Delivered &rarr; Closed).
+        </p>
+      </div>
+    </div>
+
+    <h2>6.2 Factory Operations & HR (Phase 7 — Upcoming)</h2>
+    <div class="two-col">
+      <div class="card">
+        <h4>HR, Shifts & Biometric Payroll</h4>
+        <ul>
+          <li><span>Employee Roster</span> <span>Operators, helpers, supervisors</span></li>
+          <li><span>Shift Scheduling</span> <span>Day, evening, night rotations</span></li>
+          <li><span>Overtime Calculation</span> <span>Compliant with BD Labor Act 2006</span></li>
+          <li><span>Biometric Sync</span> <span>Automated punch-card integration</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Machine Maintenance & Downtime</h4>
+        <ul>
+          <li><span>Machine Registry</span> <span>Juki, Brother, Pegasus, Kansai</span></li>
+          <li><span>Preventive Maintenance</span> <span>Daily/Weekly lube & oil schedules</span></li>
+          <li><span>Breakdown Tickets</span> <span>Mechanic response time & downtime</span></li>
+          <li><span>Spare Parts Cost</span> <span>Needles, loopers, belts, motors</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>6.3 SQA Verification: 56 Automated Tests Passing (100% Pass Rate)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Test Suite Module</th>
+          <th>Tests Run</th>
+          <th>Pass / Fail</th>
+          <th>Key Automated Coverage & Assertions Verified</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Phase 1: Auth & RBAC</strong></td>
+          <td>10 Tests</td>
+          <td><span class="badge badge-green">10 PASS / 0 FAIL</span></td>
+          <td>JWT login, 401 invalid password rejection, RBAC 403 authorization guard, factory topology retrieval, audit trail logging.</td>
+        </tr>
+        <tr>
+          <td><strong>Phase 2: Merchandising & BOM</strong></td>
+          <td>10 Tests</td>
+          <td><span class="badge badge-green">10 PASS / 0 FAIL</span></td>
+          <td>Buyer profile creation, Tech pack v1-v3 versioning, Costing sheet profit margin calculation, PO 5,000 pcs matrix, BOM shortage auto-calculation.</td>
+        </tr>
+        <tr>
+          <td><strong>Phase 3: SCM & Inventory</strong></td>
+          <td>12 Tests</td>
+          <td><span class="badge badge-green">12 PASS / 0 FAIL</span></td>
+          <td>Supplier registration & scorecards, PR generation, SPO dispatch, GRN receipt, <strong>Strict Negative Inventory 400 rejection on over-issuance</strong>.</td>
+        </tr>
+        <tr>
+          <td><strong>Phase 4: Production Floor</strong></td>
+          <td>12 Tests</td>
+          <td><span class="badge badge-green">12 PASS / 0 FAIL</span></td>
+          <td>24h fabric relaxation timer, cut order marker efficiency %, QR bundle ticketing (250 pcs), Lines 01-04 hourly efficiency, ratio carton packing.</td>
+        </tr>
+        <tr>
+          <td><strong>Phase 5: Core QA/QC Suite</strong></td>
+          <td>12 Tests</td>
+          <td><span class="badge badge-green">12 PASS / 0 FAIL</span></td>
+          <td>Fabric 4-point calculation (2.0 pts Pass vs 36.0 pts Reject), sewing DHU logging, Rework order repair-to-re-inspection, CAPA 5-Whys, ISO AQL 2.5 sampling.</td>
+        </tr>
+        <tr>
+          <td><strong>TOTAL REGRESSION VERIFICATION</strong></td>
+          <td><strong>56 Tests</strong></td>
+          <td><span class="badge badge-green">56 PASS / 0 FAIL (100%)</span></td>
+          <td>Continuous integration verification executed via <code>scripts/test-all.js</code> with 5 Postman Collections ready for Newman execution.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>6.4 Complete PO Journey 360° Traceability (Phase 8 Flagship)</h2>
+    <div class="flow-diagram">
+PO-2026-001 (XYZ Fashion | 10,000 Pcs Polo)
+ ├── Merchandising: Tech Pack v2 (Measurement Tol: +/-0.5cm) | Pre-Costing ($6.50/pc | Margin: 18.7%)
+ ├── BOM & MRP: Fabric Required 8,500 KG | Available 5,000 KG | Shortage: 3,500 KG
+ ├── SCM & Procurement: PR-004 &rarr; Sourcing Approval &rarr; SPO-008 &rarr; GRN-012 Inbound QC Pass
+ ├── Warehouse: Fabric Lot #FL-889 &rarr; 4-Point QC Pass (18 pts/100 sq yd) &rarr; Bin FAB-04
+ ├── Production: 24h Relaxation Complete &rarr; Cut Order C-102 (Marker Eff: 88.4%) &rarr; 40 Bundles (QR)
+ ├── Sewing Floor: Line 01 (142 pcs/hr | Eff: 94.6%) &rarr; Inline Defect Logged &rarr; Rework &rarr; Re-Inspected Pass
+ ├── Finishing & Packing: Steam Pressed & Metal Checked &rarr; 166 Cartons Ratio Packed (S:10, M:20, L:20, XL:10)
+ ├── Quality Assurance: Pre-Shipment ISO 2859-1 Level II Normal AQL 2.5 Audit (Sample: 315 pcs | PASS)
+ └── Shipment & Commercial: Commercial Invoice #CI-9941 &rarr; Gate Pass #GP-204 &rarr; Chittagong Port Dispatch
+    </div>
+
+    <div class="footer">
+      <span>GarmentERP BD — Enterprise System Specification</span>
+      <span>Confidential & Proprietary</span>
+    </div>
+  </div>
+
+</body>
+</html>

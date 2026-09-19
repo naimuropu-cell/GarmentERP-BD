@@ -36,6 +36,7 @@ React 18 + TypeScript + Vite + Tailwind CSS (Client SPA)
 ```text
 GarmentERP-BD/
 ├── docs/
+│   ├── GarmentERP_BD_Complete_System_Specification.pdf # Master Enterprise Blueprint (All Modules & Workflows)
 │   ├── SRS.md            # Software Requirements Specification (31 Workflows)
 │   ├── ERD.md            # Complete Database Schema & Entity Relationships
 │   ├── API.md            # REST API Specification & Endpoint Catalog
@@ -140,7 +141,7 @@ npm run dev
 - [x] **Phase 2: Commercial — Buyer & Merchandising, Style & Tech Pack Versioning, Buyer POs, Pre-Costing & BOM**
 - [x] **Phase 3: Supply Chain — Procurement Requisitions, Supplier Scorecard, Multi-Warehouse & Inventory Control**
 - [x] **Phase 4: Production — Line Allocation, Cutting Workflow, QR Bundling, Sewing Hourly Tracking, Finishing, Packing**
-- [ ] **Phase 5: Core QA/QC Suite — Fabric 4-Point, Cutting Panels, Sewing Inline, Defect Severity, Rework Orders, CAPA 5-Whys, Configurable AQL Tables**
+- [x] **Phase 5: Core QA/QC Suite — Fabric 4-Point, Cutting Panels, Sewing Inline, Defect Severity, Rework Orders, CAPA 5-Whys, Configurable AQL Tables**
 - [ ] **Phase 6: Shipment & Logistics — Commercial Invoicing, Packing List, Security Gate Pass, Dispatch Tracking**
 - [ ] **Phase 7: Factory Operations — HR/Roster, Biometric Payroll, Operational Finance, Machine Maintenance, Compliance Audits**
 - [ ] **Phase 8: System Intelligence — Order Traceability 360°, Executive Dashboards, Real-Time Socket Alerts, SQA Test Automation**
