@@ -29,7 +29,10 @@ try {
   console.log('\n▶ Running Phase 7 (Factory Operations: HR, Maintenance, Finance & Compliance) Tests...');
   execSync('node dist/tests/operations.test.js', { cwd: serverDir, stdio: 'inherit' });
 
-  console.log('\n🎉 ALL 82 Integration Tests Passed with Zero Errors across all 7 modules!');
+  console.log('\n▶ Running Phase 8 (System Intelligence, 360° Traceability & Executive BI) Tests...');
+  execSync('node dist/tests/analytics.test.js', { cwd: serverDir, stdio: 'inherit' });
+
+  console.log('\n🎉 ALL 96 Integration Tests Passed with Zero Errors across all 8 modules!');
   process.exit(0);
 } catch (err) {
   console.error('\n❌ Test suite failed:', err);

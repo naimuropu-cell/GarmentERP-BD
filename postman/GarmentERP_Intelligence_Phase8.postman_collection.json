@@ -1,0 +1,228 @@
+{
+  "info": {
+    "_postman_id": "7b5c3d2e-9f1a-4284-b816-c50394e71829",
+    "name": "GarmentERP BD — Phase 8 System Intelligence & Executive BI",
+    "description": "Automated SQA test collection for Phase 8: End-to-End Order Traceability 360° (Digital Passport), Multi-Department Executive Plant BI & OEE Analytics, Real-Time Event Stream Alerts Engine, Top Defect Pareto Analytics, and Multi-Factory Benchmarks (Savar vs Gazipur).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api/v1" },
+    { "key": "authToken", "value": "" },
+    { "key": "poNumber", "value": "PO-2026-001" },
+    { "key": "alertId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "01 - Authenticate Executive Authority",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.success).to.be.true;",
+              "pm.collectionVariables.set('authToken', jsonData.data.accessToken);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@garmenterp.com\",\n  \"password\": \"Admin123!\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+      }
+    },
+    {
+      "name": "02 - Order Traceability 360 (Digital Passport)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.poNumber).to.eql('PO-2026-001');",
+              "pm.expect(jsonData.data.milestones.length).to.eql(10);",
+              "pm.expect(jsonData.data.overallHealth).to.eql('HEALTHY_ON_TRACK');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/analytics/order-traceability/{{poNumber}}", "host": ["{{baseUrl}}"], "path": ["analytics", "order-traceability", "{{poNumber}}"] }
+      }
+    },
+    {
+      "name": "03 - Executive Plant BI & OEE Summary",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.efficiency.overallOeePercentage).to.be.at.least(80);",
+              "pm.expect(jsonData.data.efficiency.linesEfficiency.length).to.eql(4);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/analytics/executive-summary", "host": ["{{baseUrl}}"], "path": ["analytics", "executive-summary"] }
+      }
+    },
+    {
+      "name": "04 - Query Factory Event Stream Alerts",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(1);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/analytics/alerts", "host": ["{{baseUrl}}"], "path": ["analytics", "alerts"] }
+      }
+    },
+    {
+      "name": "05 - Filter Alerts by CRITICAL Severity",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.every(function(a) { return a.severity === 'CRITICAL'; })).to.be.true;"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/analytics/alerts?severity=CRITICAL", "host": ["{{baseUrl}}"], "path": ["analytics", "alerts"], "query": [{ "key": "severity", "value": "CRITICAL" }] }
+      }
+    },
+    {
+      "name": "06 - Simulate Real-Time Alert Event",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201', function () { pm.response.to.have.status(201); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.severity).to.eql('WARNING');",
+              "pm.collectionVariables.set('alertId', jsonData.data.id);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"severity\": \"WARNING\",\n  \"category\": \"QUALITY\",\n  \"sourceModule\": \"SEWING_QC\",\n  \"title\": \"Inline Stitch Tension Drift Detected\",\n  \"message\": \"Tension imbalance flagged on Sewing Line 02 needle thread.\",\n  \"referenceId\": \"PO-2026-001\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/analytics/alerts/simulate", "host": ["{{baseUrl}}"], "path": ["analytics", "alerts", "simulate"] }
+      }
+    },
+    {
+      "name": "07 - Acknowledge Factory Alert",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.acknowledged).to.be.true;"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{authToken}}" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"alertId\": \"{{alertId}}\",\n  \"acknowledgedBy\": \"Quality Control Director\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/analytics/alerts/acknowledge", "host": ["{{baseUrl}}"], "path": ["analytics", "alerts", "acknowledge"] }
+      }
+    },
+    {
+      "name": "08 - Top Defect Pareto Distribution",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.be.at.least(3);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/analytics/defects-pareto", "host": ["{{baseUrl}}"], "path": ["analytics", "defects-pareto"] }
+      }
+    },
+    {
+      "name": "09 - Multi-Factory Benchmarks (Savar vs Gazipur)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 200', function () { pm.response.to.have.status(200); });",
+              "var jsonData = pm.response.json();",
+              "pm.expect(jsonData.data.length).to.eql(2);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Authorization", "value": "Bearer {{authToken}}" }],
+        "url": { "raw": "{{baseUrl}}/analytics/factory-comparison", "host": ["{{baseUrl}}"], "path": ["analytics", "factory-comparison"] }
+      }
+    }
+  ]
+}

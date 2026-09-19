@@ -120,7 +120,7 @@ npm start
 ```bash
 cd server
 npm test
-# Or run all 82 integration tests covering Phases 1 to 7:
+# Or run all 96 integration tests covering Phases 1 to 8:
 node ../scripts/test-all.js
 ```
 
@@ -150,4 +150,4 @@ npm run dev
 - [x] **Phase 5: Core QA/QC Suite — Fabric 4-Point, Cutting Panels, Sewing Inline, Defect Severity, Rework Orders, CAPA 5-Whys, Configurable AQL Tables**
 - [x] **Phase 6: Shipment & Logistics — Commercial Invoicing, Packing List, Security Gate Pass, Dispatch Tracking**
 - [x] **Phase 7: Factory Operations — HR/Roster, Biometric Payroll (BD Labor Act 2006), Operational Finance, Machine Maintenance, Compliance Audits**
-- [ ] **Phase 8: System Intelligence — Order Traceability 360°, Executive Dashboards, Real-Time Socket Alerts, SQA Test Automation**
+- [x] **Phase 8: System Intelligence — Order Traceability 360°, Executive Dashboards, Real-Time Socket Alerts, SQA Test Automation**

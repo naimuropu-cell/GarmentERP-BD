@@ -56,6 +56,14 @@ import {
   ComplianceAudit,
   ComplianceFinding
 } from '../types/operations';
+import {
+  OrderTraceability360,
+  ExecutiveBiSummary,
+  SystemAlert,
+  FactoryUnitComparison,
+  DefectParetoItem,
+  OrderMilestone
+} from '../types/analytics';
 
 export interface UserRecord {
   id: string;
@@ -178,6 +186,7 @@ class SystemStore {
   private costCenters: CostCenter[] = [];
   private financialTransactions: FinancialTransaction[] = [];
   private complianceAudits: ComplianceAudit[] = [];
+  private systemAlerts: SystemAlert[] = [];
 
   constructor() {
     this.initializeData();
@@ -1596,6 +1605,18 @@ class SystemStore {
         status: 'LATE',
         overtimeHours: 1.5,
         biometricTerminalId: 'BIO-SAVAR-GATE-01'
+      },
+      {
+        id: 'att-003',
+        employeeId: 'emp-003',
+        employeeCode: 'EMP-SAVAR-0103',
+        employeeName: 'Shahadat Ali',
+        date: '2026-06-25',
+        checkIn: '07:50',
+        checkOut: '18:00',
+        status: 'PRESENT',
+        overtimeHours: 2.0,
+        biometricTerminalId: 'BIO-SAVAR-GATE-01'
       }
     ];
 
@@ -1658,6 +1679,19 @@ class SystemStore {
         lastMaintenanceDate: '2026-05-20',
         nextMaintenanceDueDate: '2026-06-20',
         totalDowntimeHours: 4.2
+      },
+      {
+        id: 'mac-004',
+        machineCode: 'KANSAI-SAVAR-04',
+        brand: 'Kansai Special',
+        model: 'DX-9904 Flatlock Interlock Machine',
+        type: 'FLATLOCK',
+        factoryId: factoryDhakaId,
+        lineId: 'line-sew-04',
+        status: 'OPERATIONAL',
+        lastMaintenanceDate: '2026-06-18',
+        nextMaintenanceDueDate: '2026-07-18',
+        totalDowntimeHours: 0.2
       }
     ];
 
@@ -1779,6 +1813,56 @@ class SystemStore {
           }
         ],
         status: 'CAPA_REQUIRED'
+      }
+    ];
+
+    // 17. Pre-seed Phase 8: Real-Time Plant Alerts
+    this.systemAlerts = [
+      {
+        id: 'alt-001',
+        timestamp: '2026-06-25T14:30:00Z',
+        severity: 'CRITICAL',
+        category: 'MACHINERY',
+        sourceModule: 'MAINTENANCE',
+        title: 'Emergency Machine Breakdown on Line 01',
+        message: 'Juki DDL-9000C (MC-SEW-01) needle plate fractured and looper jammed. Work order MNT-2026-001 issued.',
+        referenceId: 'MC-SEW-01',
+        acknowledged: false
+      },
+      {
+        id: 'alt-002',
+        timestamp: '2026-06-25T15:10:00Z',
+        severity: 'WARNING',
+        category: 'QUALITY',
+        sourceModule: 'QA_QC',
+        title: 'Sewing Line 01 DHU Quality Warning',
+        message: 'Sewing Line 01 DHU rate reached 1.6% (threshold 2.0%). Skipped stitches detected on collar plackets.',
+        referenceId: 'PO-2026-001',
+        acknowledged: false
+      },
+      {
+        id: 'alt-003',
+        timestamp: '2026-06-25T15:45:00Z',
+        severity: 'WARNING',
+        category: 'SCM',
+        sourceModule: 'INVENTORY',
+        title: 'Low Stock Level for Garment Polybags',
+        message: 'Recycled LDPE Garment Polybags stock is at 12,000 pcs (reorder trigger level 5,000 pcs).',
+        referenceId: 'PKG-POLY-LDPE',
+        acknowledged: false
+      },
+      {
+        id: 'alt-004',
+        timestamp: '2026-06-25T17:15:00Z',
+        severity: 'INFO',
+        category: 'SHIPMENT',
+        sourceModule: 'LOGISTICS',
+        title: 'Container Dispatched to Chittagong Port',
+        message: 'Container MSCU-991204-7 (PO-2026-001) exited plant gate with Security Gate Pass #GP-2026-0042.',
+        referenceId: 'PO-2026-001',
+        acknowledged: true,
+        acknowledgedBy: 'Security Officer Karim',
+        acknowledgedAt: '2026-06-25T17:20:00Z'
       }
     ];
 
@@ -3265,6 +3349,311 @@ class SystemStore {
 
     this.complianceAudits.unshift(newAudit);
     return newAudit;
+  }
+
+  // ==========================================
+  // Phase 8: System Intelligence & Analytics
+  // ==========================================
+
+  public getOrderTraceability360(poNumber: string): OrderTraceability360 {
+    const po = this.purchaseOrders.find(p => p.poNumber === poNumber);
+    if (!po) {
+      throw new Error(`Purchase order ${poNumber} not found in manufacturing records.`);
+    }
+
+    const buyer = this.buyers.find(b => b.id === po.buyerId);
+    const style = this.styles.find(s => s.id === po.styleId);
+    const fabricQc = this.fabricInspections[0];
+    const cut = this.cutOrders.find(c => c.poNumber === poNumber);
+    const aql = this.aqlInspections.find(a => a.poNumber === poNumber);
+    const shipment = this.shipments.find(s => s.poNumber === poNumber);
+    const rework = this.reworkOrders.find(r => r.poNumber === poNumber);
+
+    const milestones: OrderMilestone[] = [
+      {
+        stageNumber: 1,
+        stageCode: 'BUYER_PO_CONTRACT',
+        stageName: 'Buyer Order & Commercial Contract',
+        department: 'Merchandising & Sales',
+        status: 'COMPLETED',
+        completedAt: po.createdAt || '2026-05-01T10:00:00Z',
+        actor: 'Tahmid Merchandiser',
+        summary: `PO Confirmed: ${po.orderQuantity.toLocaleString()} pcs of ${style?.styleNumber || 'Polo Shirt'} at $${po.unitPriceUsd.toFixed(2)} FOB.`,
+        metrics: { orderQty: po.orderQuantity, unitPriceUsd: po.unitPriceUsd, totalRevenue: po.orderQuantity * po.unitPriceUsd },
+        passedQualityGate: true
+      },
+      {
+        stageNumber: 2,
+        stageCode: 'TECHPACK_AND_COSTING',
+        stageName: 'Style Tech Pack & Pre-Costing BOM',
+        department: 'Product Development',
+        status: 'COMPLETED',
+        completedAt: '2026-05-05T14:30:00Z',
+        actor: 'Design Studio Head',
+        summary: `Approved Tech Pack v1.2 with 5 approved BOM items. Pre-costing target net margin: 22.4%.`,
+        metrics: { bomItemCount: 5, targetCostUsd: 6.60, targetMarginPct: 22.4 },
+        passedQualityGate: true
+      },
+      {
+        stageNumber: 3,
+        stageCode: 'RAW_MATERIAL_PROCUREMENT',
+        stageName: 'Material Requisition, SCM & GRN Receiving',
+        department: 'Supply Chain & Warehouse',
+        status: 'COMPLETED',
+        completedAt: '2026-05-18T16:00:00Z',
+        actor: 'Kazi Farhan (Warehouse Lead)',
+        summary: `Received 3,925 kg 100% Cotton Pique fabric from Paramount Textile under GRN-2026-001. Polybags & buttons secured.`,
+        metrics: { grnNumber: 'GRN-2026-001', fabricReceivedKg: 3925, warehouse: 'Central Bonded Store' },
+        passedQualityGate: true
+      },
+      {
+        stageNumber: 4,
+        stageCode: 'FABRIC_4POINT_INSPECTION',
+        stageName: 'Fabric ASTM 4-Point Quality Inspection',
+        department: 'Quality Assurance (QA)',
+        status: fabricQc ? 'COMPLETED' : 'COMPLETED',
+        completedAt: fabricQc?.inspectedAt || '2026-05-20T11:00:00Z',
+        actor: fabricQc?.inspectorName || 'Nasreen Akter (Fabric QC)',
+        summary: fabricQc 
+          ? `Roll inspected: ${fabricQc.totalDefectPoints} penalty points (2.0 pts/100 sq yds). Certified FIRST_QUALITY_PASS.` 
+          : 'Roll inspected with penalty points below 28.0 pts/100 sq yds threshold. Certified FIRST_QUALITY_PASS.',
+        metrics: { pointsPer100SqYd: fabricQc?.pointsPer100SqYards || 2.0, result: 'FIRST_QUALITY_PASS' },
+        passedQualityGate: true
+      },
+      {
+        stageNumber: 5,
+        stageCode: 'CUTTING_AND_QR_BUNDLING',
+        stageName: 'Fabric Relaxation, Spreading & QR Bundles',
+        department: 'Cutting Section',
+        status: 'COMPLETED',
+        completedAt: cut?.createdAt || '2026-05-26T17:00:00Z',
+        actor: 'Master Cutter Jalal',
+        summary: `24-hour tension relaxation certified. Spread 100 plies across Table 01. 5,000 garment panels sliced and QR-barcoded.`,
+        metrics: { cutQuantity: 5000, bundleCount: 84, relaxationHours: 24 },
+        passedQualityGate: true
+      },
+      {
+        stageNumber: 6,
+        stageCode: 'SEWING_LINE_PRODUCTION',
+        stageName: 'High-Speed Sewing Production (Line 01)',
+        department: 'Sewing Department',
+        status: 'COMPLETED',
+        completedAt: '2026-06-15T18:00:00Z',
+        actor: 'Line 01 Supervisor Enamul',
+        summary: `Sewing Line 01 completed 5,000 pcs assembly with average line efficiency of 91.4% against target.`,
+        metrics: { line: 'Sewing Line 01', actualSewn: 5000, efficiencyPercent: 91.4 },
+        passedQualityGate: true
+      },
+      {
+        stageNumber: 7,
+        stageCode: 'INLINE_QA_AND_REWORK',
+        stageName: 'Inline Defect Monitoring & Rework Station',
+        department: 'Quality Assurance (QA)',
+        status: 'COMPLETED',
+        completedAt: rework?.createdAt || '2026-06-16T12:00:00Z',
+        actor: 'Sultana Razia (QC Inspector)',
+        summary: `4 skipped stitch defects detected during inline audit (1.6% DHU). Repaired at Station 08 and verified RE_INSPECTED_PASS.`,
+        metrics: { dhuPercent: 1.6, defectsLogged: 4, reworkStatus: 'RE_INSPECTED_PASS' },
+        passedQualityGate: true
+      },
+      {
+        stageNumber: 8,
+        stageCode: 'FINISHING_AND_CARTON_PACKING',
+        stageName: 'Thread Trimming, Steam Press & Assortment Packing',
+        department: 'Finishing & Packing',
+        status: 'COMPLETED',
+        completedAt: '2026-06-22T15:30:00Z',
+        actor: 'Finishing In-Charge Kabir',
+        summary: `100% 9-point metal detector cleared. 5,000 pcs packed into 84 export cartons (assortment ratio S:10, M:20, L:20, XL:10). Total CBM: 15.12 CBM.`,
+        metrics: { cartonsPacked: 84, metalDetection: 'CLEARED_PASS', totalCbm: 15.12 },
+        passedQualityGate: true
+      },
+      {
+        stageNumber: 9,
+        stageCode: 'AQL_PRE_SHIPMENT_AUDIT',
+        stageName: 'ISO 2859-1 Level II AQL 2.5 Audit Gate',
+        department: 'Quality Assurance (QA)',
+        status: 'COMPLETED',
+        completedAt: aql?.inspectionDate || '2026-06-24T16:00:00Z',
+        actor: aql?.qaManagerSignoff || 'Tariqul Islam (QA Manager)',
+        summary: `Statistical sampling audit of 315 garments (Normal Level II). Found 0 Critical, 3 Major (Ac 14), 2 Minor (Ac 21). Official ACCEPTED_PASS Certificate issued.`,
+        metrics: { sampleSize: aql?.sampleSize || 315, result: 'ACCEPTED_PASS', certificate: aql?.certificateNumber || 'AQL-CERT-2026-0001' },
+        passedQualityGate: true
+      },
+      {
+        stageNumber: 10,
+        stageCode: 'EXPORT_DISPATCH_AND_MARGIN',
+        stageName: 'Commercial Invoicing, Container Seal & Gate Pass',
+        department: 'Commercial & Logistics',
+        status: shipment ? 'COMPLETED' : 'IN_PROGRESS',
+        completedAt: shipment?.updatedAt || '2026-06-25T17:15:00Z',
+        actor: 'Security Officer Karim & Commercial Lead',
+        summary: shipment 
+          ? `Commercial Invoice EXP-INV-2026-0042 ($42,500.00). Container MSCU-991204-7 sealed with BD-SEAL-88912 and dispatched to Chittagong Port under Gate Pass #GP-2026-0042. Realized Net Profit: $9,500 (22.4% Net Margin).`
+          : 'Pending final container sealing and port dispatch authorization.',
+        metrics: { 
+          invoiceValueUsd: 42500, 
+          containerNo: 'MSCU-991204-7', 
+          sealNo: 'BD-SEAL-88912', 
+          shipmentStatus: shipment?.status || 'GATE_OUT',
+          netMarginPercent: 22.4 
+        },
+        passedQualityGate: true
+      }
+    ];
+
+    return {
+      poNumber: po.poNumber,
+      buyerName: buyer?.name || 'H&M Hennes & Mauritz GBC AB',
+      styleNumber: style?.styleNumber || 'TSH-2026-001',
+      orderQuantity: po.orderQuantity,
+      unitPriceUsd: po.unitPriceUsd,
+      totalRevenueUsd: po.orderQuantity * po.unitPriceUsd,
+      deliveryDate: po.exFactoryDeliveryDate,
+      currentStage: shipment?.status === 'GATE_OUT' ? 'EXPORT_DISPATCH' : 'FINISHING_AND_CARTON_PACKING',
+      overallHealth: 'HEALTHY_ON_TRACK',
+      milestones,
+      bottleneckAlert: undefined
+    };
+  }
+
+  public getExecutiveBiSummary(): ExecutiveBiSummary {
+    const totalUnits = this.purchaseOrders.reduce((sum, p) => sum + p.orderQuantity, 0);
+    const totalRevenueUsd = this.purchaseOrders.reduce((sum, p) => sum + (p.orderQuantity * p.unitPriceUsd), 0);
+    const shippedOrders = this.shipments.filter(s => s.status === 'GATE_OUT' || s.status === 'COMPLETED' || s.status === 'PORT_DELIVERED').length;
+    const activeProductionOrders = Math.max(1, this.purchaseOrders.length - shippedOrders);
+
+    const operationalMachines = this.machines.filter(m => m.status === 'OPERATIONAL').length;
+    const breakdownMachines = this.machines.filter(m => m.status === 'BREAKDOWN_STOPPED').length;
+    const uptimePct = Math.round((operationalMachines / (this.machines.length || 1)) * 100);
+
+    const presentWorkers = this.attendanceRecords.filter(a => a.status === 'PRESENT' || a.status === 'LATE').length;
+    const totalEmployees = Math.max(1, this.employees.length);
+    const attendancePct = Number(((presentWorkers / totalEmployees) * 100).toFixed(1));
+    const totalOtHours = this.attendanceRecords.reduce((sum, a) => sum + a.overtimeHours, 0);
+
+    return {
+      pipeline: {
+        totalOrders: this.purchaseOrders.length,
+        totalUnits,
+        totalRevenueUsd,
+        shippedOrders,
+        activeProductionOrders
+      },
+      efficiency: {
+        overallOeePercentage: 85.1,
+        availabilityPercentage: 94.2,
+        performancePercentage: 91.8,
+        qualityPercentage: 98.4,
+        activeLinesCount: 4,
+        linesEfficiency: [
+          { lineNumber: 'Line 01', efficiencyPercent: 91.4, outputPcs: 622, targetPcs: 680, dhuPercent: 1.6 },
+          { lineNumber: 'Line 02', efficiencyPercent: 88.7, outputPcs: 580, targetPcs: 654, dhuPercent: 1.0 },
+          { lineNumber: 'Line 03', efficiencyPercent: 93.1, outputPcs: 450, targetPcs: 483, dhuPercent: 0.56 },
+          { lineNumber: 'Line 04', efficiencyPercent: 86.5, outputPcs: 510, targetPcs: 590, dhuPercent: 1.0 }
+        ]
+      },
+      quality: {
+        factoryDhuPercentage: 1.18,
+        aqlPassRatePercentage: 100.0,
+        reworkResolvedCount: this.reworkOrders.filter(r => r.status === 'RE_INSPECTED_PASS').length || 2,
+        capaActiveCount: this.capaRecords.length || 2
+      },
+      workforce: {
+        enrolledEmployees: this.employees.length,
+        presentToday: presentWorkers,
+        attendanceRatePercentage: attendancePct,
+        overtimeHoursToday: totalOtHours
+      },
+      machinery: {
+        totalFleetMachines: this.machines.length,
+        operationalCount: operationalMachines,
+        breakdownCount: breakdownMachines,
+        operationalUptimePercentage: uptimePct
+      },
+      compliance: {
+        rating: 'GREEN_COMPLIANT',
+        lastAuditScore: 94.5,
+        criticalFindings: 0
+      }
+    };
+  }
+
+  public getSystemAlerts(severity?: string): SystemAlert[] {
+    if (severity && severity !== 'ALL') {
+      return this.systemAlerts.filter(a => a.severity === severity);
+    }
+    return this.systemAlerts;
+  }
+
+  public acknowledgeAlert(alertId: string, acknowledgedBy: string = 'Operations Director'): SystemAlert | null {
+    const alert = this.systemAlerts.find(a => a.id === alertId);
+    if (!alert) return null;
+    alert.acknowledged = true;
+    alert.acknowledgedBy = acknowledgedBy;
+    alert.acknowledgedAt = new Date().toISOString();
+    return alert;
+  }
+
+  public createAlert(data: {
+    severity: 'CRITICAL' | 'WARNING' | 'INFO';
+    category: 'QUALITY' | 'MACHINERY' | 'SCM' | 'LABOR' | 'SHIPMENT';
+    sourceModule: string;
+    title: string;
+    message: string;
+    referenceId?: string;
+  }): SystemAlert {
+    const newAlert: SystemAlert = {
+      id: `alt-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      severity: data.severity,
+      category: data.category,
+      sourceModule: data.sourceModule,
+      title: data.title,
+      message: data.message,
+      referenceId: data.referenceId,
+      acknowledged: false
+    };
+
+    this.systemAlerts.unshift(newAlert);
+    return newAlert;
+  }
+
+  public getDefectsPareto(): DefectParetoItem[] {
+    return [
+      { defectName: 'Skipped Stitch on Collar / Placket', category: 'SEWING_WORKMANSHIP', count: 18, percentageOfTotal: 34.6, affectedLines: ['Line 01', 'Line 02'] },
+      { defectName: 'Seam Puckering along Side Seam', category: 'FEED_DOG_TENSION', count: 14, percentageOfTotal: 26.9, affectedLines: ['Line 04'] },
+      { defectName: 'Broken Needle Fragment in Seam', category: 'SAFETY_CRITICAL', count: 8, percentageOfTotal: 15.4, affectedLines: ['Line 03'] },
+      { defectName: 'Uneven Bottom Hem Twin Needle', category: 'OPERATOR_HANDLING', count: 7, percentageOfTotal: 13.5, affectedLines: ['Line 02'] },
+      { defectName: 'Oil Stains / Lubricant Drop', category: 'MACHINE_MAINTENANCE', count: 5, percentageOfTotal: 9.6, affectedLines: ['Line 01', 'Line 04'] }
+    ];
+  }
+
+  public getFactoryComparison(): FactoryUnitComparison[] {
+    return [
+      {
+        unitName: 'Apex Garments — Dhaka Unit (Savar)',
+        code: 'AG-SAVAR-01',
+        location: 'Savar, Dhaka',
+        activeLines: 4,
+        dailyCapacityPcs: 4000,
+        actualOutputPcs: 3650,
+        efficiencyPercent: 91.25,
+        dhuPercent: 1.2,
+        operatorCount: 120
+      },
+      {
+        unitName: 'Apex Garments — Gazipur Complex',
+        code: 'AG-GAZI-02',
+        location: 'Kashimpur, Gazipur',
+        activeLines: 4,
+        dailyCapacityPcs: 3800,
+        actualOutputPcs: 3380,
+        efficiencyPercent: 88.9,
+        dhuPercent: 1.4,
+        operatorCount: 110
+      }
+    ];
   }
 }
 

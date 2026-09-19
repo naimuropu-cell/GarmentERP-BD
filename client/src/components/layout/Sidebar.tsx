@@ -106,7 +106,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab, user 
     {
       title: 'Phase 8 — Executive BI & Analytics',
       items: [
-        { id: 'analytics', label: 'Real-Time KPI & Plant BI Engine', icon: Activity, disabled: true, phase: 'Phase 8' }
+        { id: 'analytics', label: 'Order 360° & Executive Plant BI', icon: Activity, permission: null }
       ]
     }
   ];

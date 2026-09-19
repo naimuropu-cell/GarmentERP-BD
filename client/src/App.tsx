@@ -22,6 +22,7 @@ import { ReworkCapaView } from './modules/qa/ReworkCapaView';
 import { AqlSamplingView } from './modules/qa/AqlSamplingView';
 import { ShipmentView } from './modules/shipment/ShipmentView';
 import { OperationsView } from './modules/operations/OperationsView';
+import { AnalyticsView } from './modules/analytics/AnalyticsView';
 import { DEMO_PROFILES } from './services/api';
 import { SystemRoleCode, User } from './types';
 
@@ -243,6 +244,10 @@ export const App: React.FC = () => {
               key={currentTab} 
               initialSubTab={currentTab === 'operations' ? 'hr' : (currentTab as any)} 
             />
+          )}
+
+          {currentTab === 'analytics' && (
+            <AnalyticsView />
           )}
         </main>
       </div>

@@ -420,6 +420,26 @@ router.post(
   OpsController.createComplianceAudit
 );
 
+// ==========================================
+// 10. Phase 8: System Intelligence & Executive BI Routes (/analytics)
+// ==========================================
+import * as AnalyticsController from '../modules/analytics/analytics.controller';
+
+// Order 360 Traceability
+router.get('/analytics/order-traceability/:poNumber', authenticateToken, AnalyticsController.getOrderTraceability);
+
+// Executive BI & OEE Summary
+router.get('/analytics/executive-summary', authenticateToken, AnalyticsController.getExecutiveSummary);
+
+// Real-Time System Alerts
+router.get('/analytics/alerts', authenticateToken, AnalyticsController.getAlerts);
+router.post('/analytics/alerts/acknowledge', authenticateToken, AnalyticsController.acknowledgeAlert);
+router.post('/analytics/alerts/simulate', authenticateToken, AnalyticsController.simulateAlert);
+
+// Pareto & Comparative Benchmarks
+router.get('/analytics/defects-pareto', authenticateToken, AnalyticsController.getDefectsPareto);
+router.get('/analytics/factory-comparison', authenticateToken, AnalyticsController.getFactoryComparison);
+
 export default router;
 
 
