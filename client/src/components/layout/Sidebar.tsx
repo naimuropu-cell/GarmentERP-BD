@@ -13,6 +13,7 @@ import {
   findModuleByTab, 
   getBadgeColorClass 
 } from '../../navigation/navConfig';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface SidebarProps {
   currentTab: string;
@@ -31,6 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isCollapsed = false,
   onToggleCollapse
 }) => {
+  const { t } = useLanguage();
   // Track open accordion menus (module IDs)
   const activeMod = findModuleByTab(currentTab, currentSubTab);
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -118,7 +120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
             <Layers className="w-3.5 h-3.5 text-emerald-700" />
-            Navigation Tree
+            {t('nav_tree', 'Navigation Tree')}
           </span>
           <div className="flex items-center gap-1">
             <button
@@ -126,7 +128,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               className="text-[10px] text-slate-400 hover:text-slate-700 px-1.5 py-0.5 rounded hover:bg-slate-200/50 cursor-pointer"
               title="Expand all sections"
             >
-              Expand
+              {t('expand', 'Expand')}
             </button>
             <span className="text-slate-300">|</span>
             <button
@@ -134,7 +136,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               className="text-[10px] text-slate-400 hover:text-slate-700 px-1.5 py-0.5 rounded hover:bg-slate-200/50 cursor-pointer"
               title="Collapse non-active sections"
             >
-              Collapse
+              {t('collapse', 'Collapse')}
             </button>
             {onToggleCollapse && (
               <button
@@ -155,7 +157,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             type="text"
             value={sidebarFilter}
             onChange={(e) => setSidebarFilter(e.target.value)}
-            placeholder="Filter menus & submenus..."
+            placeholder={t('filter_menus', 'Filter menus & submenus...')}
             className="w-full pl-7 pr-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-600 shadow-2xs"
           />
         </div>
@@ -230,7 +232,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }`}>
                     <Icon className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-xs truncate">{menu.shortTitle}</span>
+                  <span className="text-xs truncate">{t('module_' + menu.id, menu.shortTitle)}</span>
                 </div>
 
                 <div className="flex items-center gap-1.5 shrink-0">
@@ -260,7 +262,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         >
                           <div className="flex items-center gap-2 truncate">
                             <SubIcon className="w-3.5 h-3.5 shrink-0 text-slate-400" />
-                            <span className="truncate text-[11px]">{item.shortLabel || item.label}</span>
+                            <span className="truncate text-[11px]">{t('sub_' + item.id.replace(/-/g, '_'), item.shortLabel || item.label)}</span>
                           </div>
                           <Lock className="w-3 h-3 text-slate-400" />
                         </div>
@@ -281,7 +283,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       >
                         <div className="flex items-center gap-2 truncate">
                           <SubIcon className={`w-3.5 h-3.5 shrink-0 ${isCurrent ? 'text-emerald-200' : 'text-slate-400'}`} />
-                          <span className="truncate text-[11px]">{item.shortLabel || item.label}</span>
+                          <span className="truncate text-[11px]">{t('sub_' + item.id.replace(/-/g, '_'), item.shortLabel || item.label)}</span>
                         </div>
 
                         {item.badge && (

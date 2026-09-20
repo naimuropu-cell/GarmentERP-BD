@@ -18,6 +18,7 @@ import {
   Cpu 
 } from 'lucide-react';
 import { User } from '../../types';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface OverviewDashboardProps {
   user: User;
@@ -25,38 +26,39 @@ interface OverviewDashboardProps {
 }
 
 export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNavigate }) => {
+  const { t } = useLanguage();
   const kpis = [
     { 
-      label: 'Active Production Lines', 
+      label: t('kpi_active_lines', 'Active Production Lines'), 
       val: '8 Lines', 
-      sub: 'Savar + Gazipur Units', 
+      sub: t('kpi_active_lines_sub', 'Savar + Gazipur Units'), 
       change: '+2 lines active', 
       icon: Layers, 
       color: 'text-emerald-700', 
       bg: 'bg-emerald-50' 
     },
     { 
-      label: 'Plant Overall OEE Target', 
+      label: t('kpi_oee_target', 'Plant Overall OEE Target'), 
       val: '85.1%', 
-      sub: 'Availability × Performance × Quality', 
+      sub: t('kpi_oee_sub', 'Availability × Performance × Quality'), 
       change: '+3.2% vs target', 
       icon: TrendingUp, 
       color: 'text-emerald-700', 
       bg: 'bg-emerald-50' 
     },
     { 
-      label: 'Plant Average Defect Rate (DHU)', 
+      label: t('kpi_dhu_rate', 'Plant Average Defect Rate (DHU)'), 
       val: '1.18%', 
-      sub: 'Benchmark < 2.0% (AQL Passed)', 
+      sub: t('kpi_dhu_sub', 'Benchmark < 2.0% (AQL Passed)'), 
       change: '-0.3% this shift', 
       icon: ShieldCheck, 
       color: 'text-emerald-700', 
       bg: 'bg-emerald-50' 
     },
     { 
-      label: 'Enterprise Compliance Rating', 
+      label: t('kpi_compliance', 'Enterprise Compliance Rating'), 
       val: 'Grade A', 
-      sub: 'BSCI, Sedex & Accord Certified', 
+      sub: t('kpi_compliance_sub', 'BSCI, Sedex & Accord Certified'), 
       change: '100% Compliant', 
       icon: Award, 
       color: 'text-amber-600', 
@@ -176,15 +178,15 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-950 border border-amber-300 flex items-center gap-1.5 shadow-sm">
                 <Sparkles className="w-3 h-3 text-slate-950" />
-                Live Manufacturing Floor Operations
+                {t('live_floor_operations', 'Live Manufacturing Floor Operations')}
               </span>
               <span className="text-xs text-emerald-300 font-mono">Apex Garments • Dhaka Unit 1</span>
             </div>
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              Welcome back, {user.fullName}
+              {t('welcome_back', 'Welcome back')}, {user.fullName}
             </h1>
             <p className="text-xs text-emerald-100/90 max-w-2xl leading-relaxed">
-              Authenticated with <span className="font-bold text-white underline decoration-amber-400">{user.role.name}</span> privileges. All 8 manufacturing suites are operational with real-time floor telemetry.
+              {t('banner_subtitle', 'All 8 manufacturing suites are operational with real-time floor telemetry.')}
             </p>
           </div>
 
@@ -195,7 +197,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
               className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-emerald-950 text-xs font-bold shadow-sm flex items-center gap-2 transition-all hover:scale-102 cursor-pointer"
             >
               <Activity className="w-3.5 h-3.5 text-emerald-700" />
-              <span>Order 360° Passport</span>
+              <span>{t('sub_traceability', 'Order 360° Passport')}</span>
               <ArrowRight className="w-3 h-3" />
             </button>
             <button
@@ -203,21 +205,21 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
               className="px-3.5 py-2 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 text-white text-xs font-bold border border-emerald-600 flex items-center gap-2 transition-all cursor-pointer"
             >
               <Ship className="w-3.5 h-3.5 text-emerald-300" />
-              <span>Export Gate Out</span>
+              <span>{t('sub_gatepass', 'Export Gate Out')}</span>
             </button>
             <button
               onClick={() => onNavigate('fabric-qc')}
               className="px-3.5 py-2 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 text-white text-xs font-bold border border-emerald-600 flex items-center gap-2 transition-all cursor-pointer"
             >
               <Scissors className="w-3.5 h-3.5 text-emerald-300" />
-              <span>Fabric 4-Point QC</span>
+              <span>{t('sub_fabric_qc', 'Fabric 4-Point QC')}</span>
             </button>
             <button
               onClick={() => onNavigate('aql-audit')}
               className="px-3.5 py-2 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 text-white text-xs font-bold border border-emerald-600 flex items-center gap-2 transition-all cursor-pointer"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-amber-300" />
-              <span>ISO AQL 2.5</span>
+              <span>{t('sub_aql_audit', 'ISO AQL 2.5')}</span>
             </button>
           </div>
         </div>
@@ -260,15 +262,15 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
                   <Layers className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Sewing Lines 01–04 Live Floor Output</h3>
-                  <p className="text-[11px] text-slate-500">Real-time operator output, efficiency & defect rates (DHU %)</p>
+                  <h3 className="text-sm font-bold text-slate-900">{t('sewing_floor_title', 'Sewing Lines 01–04 Live Floor Output')}</h3>
+                  <p className="text-[11px] text-slate-500">{t('sewing_floor_desc', 'Real-time operator output, efficiency & defect rates (DHU %)')}</p>
                 </div>
               </div>
               <button
                 onClick={() => onNavigate('sewing')}
                 className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 cursor-pointer"
               >
-                <span>Live Sewing Floor</span>
+                <span>{t('view_sewing_floor', 'Live Sewing Floor')}</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -300,7 +302,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
 
                   <div className="space-y-1.5 text-[11px]">
                     <div className="flex justify-between text-slate-500">
-                      <span>Hourly Output:</span>
+                      <span>{t('hourly_output', 'Hourly Output:')}</span>
                       <span className="font-bold text-slate-900">{line.actualPerHour} / {line.targetPerHour} pcs</span>
                     </div>
                     {/* Progress Bar */}
@@ -311,8 +313,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
                       />
                     </div>
                     <div className="flex justify-between text-slate-500 pt-0.5">
-                      <span>Line DHU: <strong className="text-slate-800">{line.dhu}%</strong></span>
-                      <span>Operators: <strong className="text-slate-800">{line.operatorCount}</strong></span>
+                      <span>{t('line_dhu', 'Line DHU:')} <strong className="text-slate-800">{line.dhu}%</strong></span>
+                      <span>{t('operators', 'Operators:')} <strong className="text-slate-800">{line.operatorCount}</strong></span>
                     </div>
                   </div>
                 </div>
@@ -328,15 +330,15 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
                   <Package className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-slate-900">Active Export Purchase Orders Pipeline</h3>
-                  <p className="text-[11px] text-slate-500">Buyer contracts, confirmed revenue & production progression</p>
+                  <h3 className="text-sm font-bold text-slate-900">{t('orders_pipeline_title', 'Active Export Purchase Orders Pipeline')}</h3>
+                  <p className="text-[11px] text-slate-500">{t('orders_pipeline_desc', 'Buyer contracts, confirmed revenue & production progression')}</p>
                 </div>
               </div>
               <button
                 onClick={() => onNavigate('orders')}
                 className="text-xs font-semibold text-blue-700 hover:text-blue-900 flex items-center gap-1 cursor-pointer"
               >
-                <span>All Orders</span>
+                <span>{t('view_all_orders', 'All Orders')}</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -355,7 +357,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
                     </div>
                     <div className="flex items-center gap-3 text-xs">
                       <span className="font-bold text-emerald-800">{order.value}</span>
-                      <span className="text-slate-400 font-mono text-[11px]">Ex-Factory: {order.delivery}</span>
+                      <span className="text-slate-400 font-mono text-[11px]">{t('ex_factory', 'Ex-Factory:')} {order.delivery}</span>
                     </div>
                   </div>
 
@@ -363,7 +365,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
 
                   <div className="space-y-1">
                     <div className="flex justify-between text-[10px] text-slate-500">
-                      <span>Status: <strong className="text-slate-800">{order.stage}</strong></span>
+                      <span>{t('status', 'Status:')} <strong className="text-slate-800">{order.stage}</strong></span>
                       <span className="font-bold text-slate-700">{order.progress}%</span>
                     </div>
                     <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
@@ -387,14 +389,14 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
-                  Live Factory Alerts
+                  {t('live_factory_alerts', 'Live Factory Alerts')}
                 </h3>
               </div>
               <button 
                 onClick={() => onNavigate('analytics', 'alerts')}
                 className="text-[11px] text-emerald-700 hover:text-emerald-900 font-semibold cursor-pointer"
               >
-                View Feed
+                {t('view_feed', 'View Feed')}
               </button>
             </div>
 
@@ -434,9 +436,9 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
             <div className="pb-2 border-b border-slate-100">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
                 <Cpu className="w-3.5 h-3.5 text-emerald-700" />
-                Quick Action Hub
+                {t('quick_action_hub', 'Quick Action Hub')}
               </h3>
-              <p className="text-[10px] text-slate-400">Direct factory operational tasks</p>
+              <p className="text-[10px] text-slate-400">{t('quick_action_subtitle', 'Direct factory operational tasks')}</p>
             </div>
 
             <div className="space-y-1.5">
@@ -446,7 +448,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
               >
                 <div className="flex items-center gap-2.5">
                   <Package className="w-4 h-4 text-slate-500 group-hover:text-emerald-700" />
-                  <span>Issue Raw Materials & Trims</span>
+                  <span>{t('action_issue_materials', 'Issue Raw Materials & Trims')}</span>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-700" />
               </button>
@@ -457,7 +459,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
               >
                 <div className="flex items-center gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-slate-500 group-hover:text-emerald-700" />
-                  <span>Perform Fabric 4-Point QC</span>
+                  <span>{t('action_fabric_qc', 'Perform Fabric 4-Point QC')}</span>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-700" />
               </button>
@@ -468,7 +470,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
               >
                 <div className="flex items-center gap-2.5">
                   <Layers className="w-4 h-4 text-slate-500 group-hover:text-emerald-700" />
-                  <span>Log Hourly Sewing Output</span>
+                  <span>{t('action_log_sewing', 'Log Hourly Sewing Output')}</span>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-700" />
               </button>
@@ -479,7 +481,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
               >
                 <div className="flex items-center gap-2.5">
                   <Truck className="w-4 h-4 text-slate-500 group-hover:text-emerald-700" />
-                  <span>Dispatch Security Gate Pass</span>
+                  <span>{t('action_dispatch_gatepass', 'Dispatch Security Gate Pass')}</span>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-700" />
               </button>
@@ -490,7 +492,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
               >
                 <div className="flex items-center gap-2.5">
                   <Users className="w-4 h-4 text-slate-500 group-hover:text-emerald-700" />
-                  <span>Biometric Attendance & Payroll</span>
+                  <span>{t('action_biometric_payroll', 'Biometric Attendance & Payroll')}</span>
                 </div>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-700" />
               </button>

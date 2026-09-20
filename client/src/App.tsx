@@ -26,6 +26,7 @@ import { AnalyticsView } from './modules/analytics/AnalyticsView';
 import { DEMO_PROFILES } from './services/api';
 import { SystemRoleCode, User } from './types';
 import { ToastProvider } from './context/ToastContext';
+import { LanguageProvider } from './context/LanguageContext';
 
 export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
@@ -147,132 +148,134 @@ export const App: React.FC = () => {
   }
 
   return (
-    <ToastProvider>
-      <div className="min-h-screen bg-[#F7F8FA] text-slate-900 flex flex-col">
-        {/* Top Navbar */}
-        <Navbar
-          user={currentUser}
-          currentTab={currentTab}
-          currentSubTab={currentSubTab}
-          onSelectTab={handleSelectTab}
-          onLogout={handleLogout}
-          onSwitchRole={handleSwitchRole}
-          selectedFactory={selectedFactoryId}
-          onSelectFactory={(id) => setSelectedFactoryId(id)}
-        />
-
-        {/* Main Workspace Layout */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Left Sidebar */}
-          <Sidebar
+    <LanguageProvider>
+      <ToastProvider>
+        <div className="min-h-screen bg-[#F7F8FA] text-slate-900 flex flex-col">
+          {/* Top Navbar */}
+          <Navbar
+            user={currentUser}
             currentTab={currentTab}
             currentSubTab={currentSubTab}
             onSelectTab={handleSelectTab}
-            user={currentUser}
-            isCollapsed={isSidebarCollapsed}
-            onToggleCollapse={() => setIsSidebarCollapsed(prev => !prev)}
+            onLogout={handleLogout}
+            onSwitchRole={handleSwitchRole}
+            selectedFactory={selectedFactoryId}
+            onSelectFactory={(id) => setSelectedFactoryId(id)}
           />
 
-          {/* Content Area */}
-          <main className="flex-1 overflow-y-auto bg-[#F7F8FA] pb-16">
-            {currentTab === 'overview' && (
-              <OverviewDashboard user={currentUser} onNavigate={(tab) => handleSelectTab(tab)} />
-            )}
+          {/* Main Workspace Layout */}
+          <div className="flex-1 flex overflow-hidden">
+            {/* Left Sidebar */}
+            <Sidebar
+              currentTab={currentTab}
+              currentSubTab={currentSubTab}
+              onSelectTab={handleSelectTab}
+              user={currentUser}
+              isCollapsed={isSidebarCollapsed}
+              onToggleCollapse={() => setIsSidebarCollapsed(prev => !prev)}
+            />
 
-            {currentTab === 'organization' && (
-              <OrganizationView selectedFactoryId={selectedFactoryId} />
-            )}
+            {/* Content Area */}
+            <main className="flex-1 overflow-y-auto bg-[#F7F8FA] pb-16">
+              {currentTab === 'overview' && (
+                <OverviewDashboard user={currentUser} onNavigate={(tab, sub) => handleSelectTab(tab, sub)} />
+              )}
 
-            {currentTab === 'rbac' && (
-              <RbacMatrixView
-                currentUser={currentUser}
-                onSimulateRole={(code) => handleSwitchRole(code)}
-              />
-            )}
+              {currentTab === 'organization' && (
+                <OrganizationView selectedFactoryId={selectedFactoryId} />
+              )}
 
-            {currentTab === 'audit' && (
-              <AuditView />
-            )}
+              {currentTab === 'rbac' && (
+                <RbacMatrixView
+                  currentUser={currentUser}
+                  onSimulateRole={(code) => handleSwitchRole(code)}
+                />
+              )}
 
-            {currentTab === 'buyers' && (
-              <BuyerView />
-            )}
+              {currentTab === 'audit' && (
+                <AuditView />
+              )}
 
-            {currentTab === 'styles' && (
-              <StyleTechPackView />
-            )}
+              {currentTab === 'buyers' && (
+                <BuyerView />
+              )}
 
-            {currentTab === 'orders' && (
-              <PurchaseOrderView />
-            )}
+              {currentTab === 'styles' && (
+                <StyleTechPackView />
+              )}
 
-            {currentTab === 'costing' && (
-              <CostingView user={currentUser} />
-            )}
+              {currentTab === 'orders' && (
+                <PurchaseOrderView />
+              )}
 
-            {currentTab === 'suppliers' && (
-              <SupplierView />
-            )}
+              {currentTab === 'costing' && (
+                <CostingView user={currentUser} />
+              )}
 
-            {currentTab === 'procurement' && (
-              <ProcurementView />
-            )}
+              {currentTab === 'suppliers' && (
+                <SupplierView />
+              )}
 
-            {currentTab === 'warehouse' && (
-              <InventoryView />
-            )}
+              {currentTab === 'procurement' && (
+                <ProcurementView />
+              )}
 
-            {currentTab === 'cutting' && (
-              <CuttingView />
-            )}
+              {currentTab === 'warehouse' && (
+                <InventoryView />
+              )}
 
-            {currentTab === 'sewing' && (
-              <SewingView />
-            )}
+              {currentTab === 'cutting' && (
+                <CuttingView />
+              )}
 
-            {currentTab === 'finishing' && (
-              <FinishingPackingView />
-            )}
+              {currentTab === 'sewing' && (
+                <SewingView />
+              )}
 
-            {currentTab === 'fabric-qc' && (
-              <FabricInspectionView />
-            )}
+              {currentTab === 'finishing' && (
+                <FinishingPackingView />
+              )}
 
-            {currentTab === 'sewing-qc' && (
-              <InlineQualityView />
-            )}
+              {currentTab === 'fabric-qc' && (
+                <FabricInspectionView />
+              )}
 
-            {currentTab === 'rework-capa' && (
-              <ReworkCapaView />
-            )}
+              {currentTab === 'sewing-qc' && (
+                <InlineQualityView />
+              )}
 
-            {currentTab === 'aql-audit' && (
-              <AqlSamplingView />
-            )}
+              {currentTab === 'rework-capa' && (
+                <ReworkCapaView />
+              )}
 
-            {currentTab === 'shipment' && (
-              <ShipmentView 
-                key={currentSubTab || 'shipments'} 
-                initialSubTab={(currentSubTab as any) || 'shipments'} 
-              />
-            )}
+              {currentTab === 'aql-audit' && (
+                <AqlSamplingView />
+              )}
 
-            {['hr', 'maintenance', 'finance', 'compliance', 'operations'].includes(currentTab) && (
-              <OperationsView 
-                key={`${currentTab}-${currentSubTab || ''}`} 
-                initialSubTab={currentTab === 'operations' ? (currentSubTab as any || 'hr') : (currentTab as any)} 
-              />
-            )}
+              {currentTab === 'shipment' && (
+                <ShipmentView 
+                  key={currentSubTab || 'shipments'} 
+                  initialSubTab={(currentSubTab as any) || 'shipments'} 
+                />
+              )}
 
-            {currentTab === 'analytics' && (
-              <AnalyticsView 
-                key={currentSubTab || 'traceability'} 
-                initialSubTab={(currentSubTab as any) || 'traceability'} 
-              />
-            )}
-          </main>
+              {['hr', 'maintenance', 'finance', 'compliance', 'operations'].includes(currentTab) && (
+                <OperationsView 
+                  key={`${currentTab}-${currentSubTab || ''}`} 
+                  initialSubTab={currentTab === 'operations' ? (currentSubTab as any || 'hr') : (currentTab as any)} 
+                />
+              )}
+
+              {currentTab === 'analytics' && (
+                <AnalyticsView 
+                  key={currentSubTab || 'traceability'} 
+                  initialSubTab={(currentSubTab as any) || 'traceability'} 
+                />
+              )}
+            </main>
+          </div>
         </div>
-      </div>
-    </ToastProvider>
+      </ToastProvider>
+    </LanguageProvider>
   );
 };
