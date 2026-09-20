@@ -30,8 +30,15 @@ import { ToastProvider } from './context/ToastContext';
 export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [currentTab, setCurrentTab] = useState<string>('overview');
+  const [currentSubTab, setCurrentSubTab] = useState<string | undefined>(undefined);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
   const [selectedFactoryId, setSelectedFactoryId] = useState<string>('fac-dhaka-01');
   const [loading, setLoading] = useState(true);
+
+  const handleSelectTab = (tabId: string, subTab?: string) => {
+    setCurrentTab(tabId);
+    setCurrentSubTab(subTab);
+  };
 
   // Initialize session
   useEffect(() => {
@@ -145,6 +152,9 @@ export const App: React.FC = () => {
         {/* Top Navbar */}
         <Navbar
           user={currentUser}
+          currentTab={currentTab}
+          currentSubTab={currentSubTab}
+          onSelectTab={handleSelectTab}
           onLogout={handleLogout}
           onSwitchRole={handleSwitchRole}
           selectedFactory={selectedFactoryId}
@@ -156,14 +166,17 @@ export const App: React.FC = () => {
           {/* Left Sidebar */}
           <Sidebar
             currentTab={currentTab}
-            onSelectTab={(tab) => setCurrentTab(tab)}
+            currentSubTab={currentSubTab}
+            onSelectTab={handleSelectTab}
             user={currentUser}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={() => setIsSidebarCollapsed(prev => !prev)}
           />
 
           {/* Content Area */}
           <main className="flex-1 overflow-y-auto bg-[#F7F8FA] pb-16">
             {currentTab === 'overview' && (
-              <OverviewDashboard user={currentUser} onNavigate={(tab) => setCurrentTab(tab)} />
+              <OverviewDashboard user={currentUser} onNavigate={(tab) => handleSelectTab(tab)} />
             )}
 
             {currentTab === 'organization' && (
@@ -238,18 +251,24 @@ export const App: React.FC = () => {
             )}
 
             {currentTab === 'shipment' && (
-              <ShipmentView />
+              <ShipmentView 
+                key={currentSubTab || 'shipments'} 
+                initialSubTab={(currentSubTab as any) || 'shipments'} 
+              />
             )}
 
             {['hr', 'maintenance', 'finance', 'compliance', 'operations'].includes(currentTab) && (
               <OperationsView 
-                key={currentTab} 
-                initialSubTab={currentTab === 'operations' ? 'hr' : (currentTab as any)} 
+                key={`${currentTab}-${currentSubTab || ''}`} 
+                initialSubTab={currentTab === 'operations' ? (currentSubTab as any || 'hr') : (currentTab as any)} 
               />
             )}
 
             {currentTab === 'analytics' && (
-              <AnalyticsView />
+              <AnalyticsView 
+                key={currentSubTab || 'traceability'} 
+                initialSubTab={(currentSubTab as any) || 'traceability'} 
+              />
             )}
           </main>
         </div>

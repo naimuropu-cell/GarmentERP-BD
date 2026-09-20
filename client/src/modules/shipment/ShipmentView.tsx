@@ -28,9 +28,20 @@ import { PrintableGatePass } from './PrintableGatePass';
 import { PrintableInvoice } from './PrintableInvoice';
 import { ConfirmModal } from '../../components/common/ConfirmModal';
 
-export const ShipmentView: React.FC = () => {
+interface ShipmentViewProps {
+  initialSubTab?: 'shipments' | 'invoices' | 'packing' | 'gatepass';
+}
+
+export const ShipmentView: React.FC<ShipmentViewProps> = ({ initialSubTab = 'shipments' }) => {
   const toast = useToast();
-  const [activeTab, setActiveTab] = useState<'shipments' | 'invoices' | 'packing' | 'gatepass'>('shipments');
+  const [activeTab, setActiveTab] = useState<'shipments' | 'invoices' | 'packing' | 'gatepass'>(initialSubTab);
+
+  useEffect(() => {
+    if (initialSubTab) {
+      setActiveTab(initialSubTab);
+    }
+  }, [initialSubTab]);
+
   const [shipments, setShipments] = useState<Shipment[]>([]);
   const [invoices, setInvoices] = useState<CommercialInvoice[]>([]);
   const [packingLists, setPackingLists] = useState<PackingList[]>([]);

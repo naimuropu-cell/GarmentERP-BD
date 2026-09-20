@@ -22,8 +22,19 @@ import {
   OrderMilestone 
 } from '../../types/analytics';
 
-export const AnalyticsView: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'traceability' | 'bi' | 'alerts' | 'benchmark'>('traceability');
+interface AnalyticsViewProps {
+  initialSubTab?: 'traceability' | 'bi' | 'alerts' | 'benchmark';
+}
+
+export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ initialSubTab = 'traceability' }) => {
+  const [activeTab, setActiveTab] = useState<'traceability' | 'bi' | 'alerts' | 'benchmark'>(initialSubTab);
+
+  useEffect(() => {
+    if (initialSubTab) {
+      setActiveTab(initialSubTab);
+    }
+  }, [initialSubTab]);
+
   const [loading, setLoading] = useState(true);
   const [selectedPo, setSelectedPo] = useState('PO-2026-001');
 
