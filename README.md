@@ -25,6 +25,8 @@ It unites the end-to-end journey from **Buyer Inquiry & Purchase Order (PO)** to
   - **Worker Payslip**: Official salary slip enforcing the **Bangladesh Labor Act 2006** overtime rate formula: $\text{OT Rate} = \frac{\text{Basic Salary}}{208} \times 2$.
 - **Universal RFC-4180 Excel/CSV Data Export**: One-click export with UTF-8 BOM (`\uFEFF`) across Orders, Inventory, Attendance, Payroll, Defect Logs, Invoices, and Gate Passes.
 - **Enterprise Toast Notification HUD & Action Guards**: Non-blocking toast notifications (`success`, `error`, `warning`, `info`) with modal confirmation safeguards for irreversible factory actions.
+- **Bilingual English & Bengali (বাংলা) Localization**: Instant `[ 🌐 EN | বাংলা ]` toggle across navigation menubar, floating submenus, breadcrumbs, command search palette, sidebar, and dashboard using authentic Bangladesh RMG industry terminology.
+
 
 ---
 
@@ -94,7 +96,8 @@ GarmentERP-BD/
 │   ├── src/
 │   │   ├── components/   # Common components, ConfirmModal, ToastHUD
 │   │   │   └── layout/   # Two-Tier Navbar, Accordion Sidebar
-│   │   ├── context/      # ToastContext notification engine
+│   │   ├── context/      # ToastContext & LanguageContext (i18n engine)
+│   │   ├── i18n/         # translations.ts (Bilingual English / বাংলা dictionary)
 │   │   ├── navigation/   # Centralized navConfig (9 Modules, 26 Submenus)
 │   │   ├── modules/      # 8 Full Phase Enterprise Frontend Modules
 │   │   ├── utils/        # RFC-4180 Excel CSV Exporter
