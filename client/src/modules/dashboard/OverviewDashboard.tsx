@@ -2,82 +2,222 @@ import React from 'react';
 import { 
   ShieldCheck, 
   Layers, 
-  CheckCircle2, 
   TrendingUp, 
-  Clock, 
   ArrowRight, 
-  GitBranch, 
   Sparkles, 
-  Award,
-  Scissors,
-  Ship,
-  Activity
+  Award, 
+  Scissors, 
+  Ship, 
+  Activity, 
+  AlertTriangle, 
+  Package, 
+  Users, 
+  CheckCircle2, 
+  ChevronRight, 
+  Truck, 
+  Cpu 
 } from 'lucide-react';
 import { User } from '../../types';
 
 interface OverviewDashboardProps {
   user: User;
-  onNavigate: (tabId: string) => void;
+  onNavigate: (tabId: string, subTab?: string) => void;
 }
 
 export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNavigate }) => {
   const kpis = [
-    { label: 'Active Production Lines', val: '8 Lines', sub: 'Savar + Gazipur units', change: '+2 lines live', icon: Layers, color: 'text-emerald-700', bg: 'bg-emerald-50' },
-    { label: 'Factory Efficiency Target', val: '91.4%', sub: 'Target vs actual output', change: '+3.2% this week', icon: TrendingUp, color: 'text-emerald-700', bg: 'bg-emerald-50' },
-    { label: 'Quality & Defect Rate (AQL)', val: '1.4%', sub: 'Well within 2.5% AQL threshold', change: '0.4% lower defects', icon: ShieldCheck, color: 'text-emerald-700', bg: 'bg-emerald-50' },
-    { label: 'RBAC Personas Enforced', val: '14 Roles', sub: '45+ granular permissions', change: '100% compliant', icon: Award, color: 'text-amber-600', bg: 'bg-amber-50' }
+    { 
+      label: 'Active Production Lines', 
+      val: '8 Lines', 
+      sub: 'Savar + Gazipur Units', 
+      change: '+2 lines active', 
+      icon: Layers, 
+      color: 'text-emerald-700', 
+      bg: 'bg-emerald-50' 
+    },
+    { 
+      label: 'Plant Overall OEE Target', 
+      val: '85.1%', 
+      sub: 'Availability × Performance × Quality', 
+      change: '+3.2% vs target', 
+      icon: TrendingUp, 
+      color: 'text-emerald-700', 
+      bg: 'bg-emerald-50' 
+    },
+    { 
+      label: 'Plant Average Defect Rate (DHU)', 
+      val: '1.18%', 
+      sub: 'Benchmark < 2.0% (AQL Passed)', 
+      change: '-0.3% this shift', 
+      icon: ShieldCheck, 
+      color: 'text-emerald-700', 
+      bg: 'bg-emerald-50' 
+    },
+    { 
+      label: 'Enterprise Compliance Rating', 
+      val: 'Grade A', 
+      sub: 'BSCI, Sedex & Accord Certified', 
+      change: '100% Compliant', 
+      icon: Award, 
+      color: 'text-amber-600', 
+      bg: 'bg-amber-50' 
+    }
+  ];
+
+  const liveSewingLines = [
+    {
+      line: 'Line 01',
+      style: 'H&M Basic Polo (Style #HM-PL-2026)',
+      targetPerHour: 400,
+      actualPerHour: 382,
+      efficiency: 95.5,
+      dhu: 1.1,
+      operatorCount: 28,
+      status: 'NORMAL'
+    },
+    {
+      line: 'Line 02',
+      style: 'Zara Mens Chino Pants (Style #ZR-CP-901)',
+      targetPerHour: 320,
+      actualPerHour: 292,
+      efficiency: 91.2,
+      dhu: 1.7,
+      operatorCount: 30,
+      status: 'WARNING'
+    },
+    {
+      line: 'Line 03',
+      style: 'M&S Denim Jacket (Style #MS-DJ-108)',
+      targetPerHour: 260,
+      actualPerHour: 248,
+      efficiency: 95.3,
+      dhu: 0.9,
+      operatorCount: 32,
+      status: 'NORMAL'
+    },
+    {
+      line: 'Line 04',
+      style: 'Target Fleece Hoodie (Style #TG-HD-44)',
+      targetPerHour: 350,
+      actualPerHour: 312,
+      efficiency: 89.1,
+      dhu: 1.3,
+      operatorCount: 26,
+      status: 'NORMAL'
+    }
+  ];
+
+  const activeOrders = [
+    {
+      po: 'PO-2026-001',
+      buyer: 'H&M Hennes & Mauritz',
+      style: 'Mens Classic Pique Polo Shirt',
+      qty: '5,000 pcs',
+      value: '$42,500',
+      delivery: '2026-10-15',
+      stage: 'AQL Passed / Ready for Gate Pass',
+      progress: 95,
+      statusColor: 'emerald'
+    },
+    {
+      po: 'PO-2026-002',
+      buyer: 'Zara / Inditex Group',
+      style: 'Stretch Twill Cargo Trousers',
+      qty: '3,500 pcs',
+      value: '$38,500',
+      delivery: '2026-10-22',
+      stage: 'Sewing Assembly (Lines 02 & 03)',
+      progress: 68,
+      statusColor: 'blue'
+    },
+    {
+      po: 'PO-2026-003',
+      buyer: 'Marks & Spencer (M&S)',
+      style: 'Vintage Washed Denim Jacket',
+      qty: '2,000 pcs',
+      value: '$48,000',
+      delivery: '2026-11-05',
+      stage: 'Cutting & 24h Relaxation Spreading',
+      progress: 35,
+      statusColor: 'amber'
+    }
+  ];
+
+  const plantAlerts = [
+    {
+      severity: 'CRITICAL',
+      source: 'Line 02 — Station 14',
+      time: '12m ago',
+      title: 'Needle Plate Fracture on Juki Machine',
+      desc: 'High-speed lockstitch needle tip break. Magnetic needle log initiated.'
+    },
+    {
+      severity: 'WARNING',
+      source: 'Fabric Warehouse',
+      time: '45m ago',
+      title: 'Roll #F-884 ASTM Points Drift',
+      desc: 'Penalty score at 21.4 pts / 100 sq yds approaching 24 pt rejection limit.'
+    },
+    {
+      severity: 'INFO',
+      source: 'Security Gate 01',
+      time: '1h ago',
+      title: '40FT HQ Container Dispatched',
+      desc: 'Truck #DHAKA-METRO-TA-4491 cleared gate with Seal #BD-EXP-77218.'
+    }
   ];
 
   return (
     <div className="p-6 space-y-6">
-      {/* Welcome Banner - Deep Green with subtle gold accent */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-900 via-emerald-800 to-teal-900 border border-emerald-700/40 p-6 shadow-md text-white">
+      {/* Welcome Banner - Deep Executive Emerald */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 border border-emerald-800/40 p-6 shadow-md text-white">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-950 border border-amber-300 flex items-center gap-1.5 shadow-sm">
                 <Sparkles className="w-3 h-3 text-slate-950" />
-                Phase 8 Active • Order Traceability 360° & Executive Plant BI
+                Live Manufacturing Floor Operations
               </span>
-              <span className="text-xs text-emerald-200 font-mono">Bangladesh Garments ERP</span>
+              <span className="text-xs text-emerald-300 font-mono">Apex Garments • Dhaka Unit 1</span>
             </div>
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
               Welcome back, {user.fullName}
             </h1>
-            <p className="text-xs text-emerald-100 max-w-2xl leading-relaxed">
-              You are currently authenticated as <span className="font-bold text-white underline decoration-amber-400">{user.role.name}</span> in the <span className="text-white font-semibold">Apex Garments Holdings</span> manufacturing environment.
+            <p className="text-xs text-emerald-100/90 max-w-2xl leading-relaxed">
+              Authenticated with <span className="font-bold text-white underline decoration-amber-400">{user.role.name}</span> privileges. All 8 manufacturing suites are operational with real-time floor telemetry.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          {/* Quick Nav Action Shortcuts */}
+          <div className="flex flex-wrap items-center gap-2.5">
             <button
               onClick={() => onNavigate('analytics')}
-              className="px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-emerald-900 text-xs font-bold shadow-md flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-white hover:bg-slate-50 text-emerald-950 text-xs font-bold shadow-sm flex items-center gap-2 transition-all hover:scale-102 cursor-pointer"
             >
-              <Activity className="w-4 h-4 text-emerald-700" />
-              <span>Order Traceability 360°</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              <Activity className="w-3.5 h-3.5 text-emerald-700" />
+              <span>Order 360° Passport</span>
+              <ArrowRight className="w-3 h-3" />
             </button>
             <button
               onClick={() => onNavigate('shipment')}
-              className="px-4 py-2.5 rounded-xl bg-emerald-700/80 hover:bg-emerald-600 text-white text-xs font-bold border border-emerald-600 flex items-center gap-2 transition-all cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 text-white text-xs font-bold border border-emerald-600 flex items-center gap-2 transition-all cursor-pointer"
             >
-              <Ship className="w-4 h-4 text-emerald-300" />
-              <span>Export Shipment</span>
+              <Ship className="w-3.5 h-3.5 text-emerald-300" />
+              <span>Export Gate Out</span>
             </button>
             <button
               onClick={() => onNavigate('fabric-qc')}
-              className="px-4 py-2.5 rounded-xl bg-emerald-700/80 hover:bg-emerald-600 text-white text-xs font-bold border border-emerald-600 flex items-center gap-2 transition-all cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 text-white text-xs font-bold border border-emerald-600 flex items-center gap-2 transition-all cursor-pointer"
             >
-              <Scissors className="w-4 h-4 text-emerald-300" />
+              <Scissors className="w-3.5 h-3.5 text-emerald-300" />
               <span>Fabric 4-Point QC</span>
             </button>
             <button
               onClick={() => onNavigate('aql-audit')}
-              className="px-4 py-2.5 rounded-xl bg-emerald-700/80 hover:bg-emerald-600 text-white text-xs font-bold border border-emerald-600 flex items-center gap-2 transition-all cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 text-white text-xs font-bold border border-emerald-600 flex items-center gap-2 transition-all cursor-pointer"
             >
-              <ShieldCheck className="w-4 h-4 text-amber-300" />
-              <span>ISO AQL 2.5 Audit</span>
+              <ShieldCheck className="w-3.5 h-3.5 text-amber-300" />
+              <span>ISO AQL 2.5</span>
             </button>
           </div>
         </div>
@@ -88,7 +228,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
         {kpis.map((kpi, idx) => {
           const Icon = kpi.icon;
           return (
-            <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between space-y-4 hover:shadow-md transition-all">
+            <div key={idx} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs flex flex-col justify-between space-y-3 hover:shadow-md transition-all">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate-500">{kpi.label}</span>
                 <div className={`p-2 rounded-xl ${kpi.bg}`}>
@@ -97,10 +237,10 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
               </div>
 
               <div>
-                <p className="text-2xl font-extrabold text-slate-900 tracking-tight">{kpi.val}</p>
+                <p className="text-2xl font-black text-slate-900 tracking-tight">{kpi.val}</p>
                 <div className="flex items-center justify-between mt-1 text-[11px]">
                   <span className="text-slate-500">{kpi.sub}</span>
-                  <span className="font-semibold text-emerald-700">{kpi.change}</span>
+                  <span className="font-bold text-emerald-700">{kpi.change}</span>
                 </div>
               </div>
             </div>
@@ -108,124 +248,252 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
         })}
       </div>
 
-      {/* Roadmap & Module Checklist */}
+      {/* Main Floor Operations Workspace Grid */}
       <div className="grid lg:grid-cols-12 gap-6">
-        {/* Module Status Checklist */}
-        <div className="lg:col-span-8 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-bold text-slate-900">GarmentERP BD — Modular Roadmap Status</h3>
-              <p className="text-xs text-slate-500">Step-by-step factory implementation lifecycle</p>
-            </div>
-            <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-emerald-50 text-emerald-800 border border-emerald-200">
-              Phase 5 / 8 Active
-            </span>
-          </div>
-
-          <div className="space-y-3">
-            {[
-              {
-                mod: 'Module 01 & 02: Core Foundation, RBAC & Factory Topology',
-                desc: 'User auth (JWT + refresh), 14 personas, Savar & Gazipur units, buildings, floors, lines, and tamper-evident audit logs.',
-                status: 'COMPLETE',
-                tag: 'Phase 1',
-                active: true
-              },
-              {
-                mod: 'Module 03, 04, 05: Buyer, Style Tech Pack, PO & Costing',
-                desc: 'Buyer profiles, Tech Pack versioning (v1, v2), measurement tolerances, pre-cost sheets (Fabric, CM, margin), and PO intake.',
-                status: 'COMPLETE',
-                tag: 'Phase 2',
-                active: true
-              },
-              {
-                mod: 'Module 06 & 07: SCM, Procurement, GRN & Negative Stock Engine',
-                desc: 'Certified suppliers, PR approval workflow, Supplier PO (SPO), Gate Entry GRN, and 100% strict negative stock prevention.',
-                status: 'COMPLETE',
-                tag: 'Phase 3',
-                active: true
-              },
-              {
-                mod: 'Module 08: Production: Cutting, Sewing, Finishing & Packing',
-                desc: 'Fabric relaxation 24h timer, cut orders, QR bundling, hourly line tracking, folding, and carton ratio packing list.',
-                status: 'COMPLETE',
-                tag: 'Phase 4',
-                active: true
-              },
-              {
-                mod: 'Module 09: Core QA/QC Suite, Defect Severity & AQL 2.5',
-                desc: 'Fabric 4-point system, inline/end-line QC, Critical/Major/Minor defect matrix, rework routing, CAPA 5-Whys, and ISO AQL sampling.',
-                status: 'ACTIVE NOW',
-                tag: 'Phase 5',
-                active: true
-              }
-            ].map((item, i) => (
-              <div
-                key={i}
-                className={`p-4 rounded-xl border flex items-start justify-between gap-4 transition-all ${
-                  item.active
-                    ? 'bg-slate-50 border-slate-200 hover:border-emerald-300'
-                    : 'bg-white border-slate-200 opacity-75'
-                }`}
-              >
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    {item.active ? (
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    ) : (
-                      <Clock className="w-4 h-4 text-slate-400 shrink-0" />
-                    )}
-                    <h4 className={`text-xs font-bold ${item.active ? 'text-slate-900' : 'text-slate-600'}`}>
-                      {item.mod}
-                    </h4>
-                    <span className="px-2 py-0.5 rounded text-[9px] font-mono bg-white text-slate-600 border border-slate-200">
-                      {item.tag}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 pl-6 leading-relaxed">{item.desc}</p>
+        {/* Left Column (8 cols): Real-Time Sewing Lines & Active Orders */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Real-Time Sewing Floor Status */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 rounded-lg bg-emerald-50 text-emerald-700">
+                  <Layers className="w-4 h-4" />
                 </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Sewing Lines 01–04 Live Floor Output</h3>
+                  <p className="text-[11px] text-slate-500">Real-time operator output, efficiency & defect rates (DHU %)</p>
+                </div>
+              </div>
+              <button
+                onClick={() => onNavigate('sewing')}
+                className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 cursor-pointer"
+              >
+                <span>Live Sewing Floor</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
 
-                <span
-                  className={`shrink-0 px-2.5 py-1 rounded-lg text-[10px] font-bold tracking-wide font-mono ${
-                    item.status === 'ACTIVE NOW'
-                      ? 'bg-amber-100 text-amber-800 border border-amber-300'
-                      : item.active
-                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                      : 'bg-slate-100 text-slate-600 border border-slate-200'
+            <div className="grid sm:grid-cols-2 gap-3.5">
+              {liveSewingLines.map((line, i) => (
+                <div 
+                  key={i} 
+                  className={`p-3.5 rounded-xl border transition-all ${
+                    line.status === 'WARNING'
+                      ? 'border-amber-200 bg-amber-50/20'
+                      : 'border-slate-200 bg-slate-50/40 hover:border-emerald-300'
                   }`}
                 >
-                  {item.status}
-                </span>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-bold text-xs text-slate-900">{line.line}</span>
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold font-mono border ${
+                      line.efficiency >= 92 
+                        ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
+                        : 'bg-amber-50 text-amber-800 border-amber-200'
+                    }`}>
+                      {line.efficiency}% Eff.
+                    </span>
+                  </div>
+
+                  <p className="text-[11px] text-slate-600 font-medium truncate mb-2.5" title={line.style}>
+                    {line.style}
+                  </p>
+
+                  <div className="space-y-1.5 text-[11px]">
+                    <div className="flex justify-between text-slate-500">
+                      <span>Hourly Output:</span>
+                      <span className="font-bold text-slate-900">{line.actualPerHour} / {line.targetPerHour} pcs</span>
+                    </div>
+                    {/* Progress Bar */}
+                    <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full ${line.efficiency >= 92 ? 'bg-emerald-600' : 'bg-amber-500'}`}
+                        style={{ width: `${Math.min(line.efficiency, 100)}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-slate-500 pt-0.5">
+                      <span>Line DHU: <strong className="text-slate-800">{line.dhu}%</strong></span>
+                      <span>Operators: <strong className="text-slate-800">{line.operatorCount}</strong></span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Active Export Purchase Orders Pipeline */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="p-1.5 rounded-lg bg-blue-50 text-blue-700">
+                  <Package className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Active Export Purchase Orders Pipeline</h3>
+                  <p className="text-[11px] text-slate-500">Buyer contracts, confirmed revenue & production progression</p>
+                </div>
               </div>
-            ))}
+              <button
+                onClick={() => onNavigate('orders')}
+                className="text-xs font-semibold text-blue-700 hover:text-blue-900 flex items-center gap-1 cursor-pointer"
+              >
+                <span>All Orders</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <div className="space-y-2.5">
+              {activeOrders.map((order, i) => (
+                <div 
+                  key={i}
+                  className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/40 hover:bg-white hover:border-slate-300 transition-all"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold text-xs text-slate-900">{order.po}</span>
+                      <span className="text-slate-300">•</span>
+                      <span className="font-semibold text-xs text-slate-700">{order.buyer}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-xs">
+                      <span className="font-bold text-emerald-800">{order.value}</span>
+                      <span className="text-slate-400 font-mono text-[11px]">Ex-Factory: {order.delivery}</span>
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-slate-600 mb-2">{order.style} ({order.qty})</p>
+
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[10px] text-slate-500">
+                      <span>Status: <strong className="text-slate-800">{order.stage}</strong></span>
+                      <span className="font-bold text-slate-700">{order.progress}%</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-emerald-600 rounded-full"
+                        style={{ width: `${order.progress}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Quick SQA Portfolio Highlights */}
-        <div className="lg:col-span-4 space-y-4">
-          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 text-slate-900 font-bold text-xs">
-              <GitBranch className="w-4 h-4 text-emerald-700" />
-              <span>SQA & Portfolio Assets</span>
+        {/* Right Column (4 cols): Live Plant Alerts & Quick Actions */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Live Floor Alerts Feed */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-500" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                  Live Factory Alerts
+                </h3>
+              </div>
+              <button 
+                onClick={() => onNavigate('analytics', 'alerts')}
+                className="text-[11px] text-emerald-700 hover:text-emerald-900 font-semibold cursor-pointer"
+              >
+                View Feed
+              </button>
             </div>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              Automated testing and architectural documentation included for technical interviews:
-            </p>
 
-            <div className="space-y-2">
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                <p className="font-semibold text-slate-900">Postman Automated Collections</p>
-                <p className="text-[10px] text-emerald-700 font-mono mt-0.5">postman/GarmentERP_QA_QC_Phase5.postman_collection.json</p>
-                <p className="text-[10px] text-slate-500 font-mono mt-0.5">postman/GarmentERP_Production_Phase4.postman_collection.json</p>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                <p className="font-semibold text-slate-900">System Specifications</p>
-                <p className="text-[10px] text-slate-500 font-mono mt-0.5">docs/SRS.md • docs/ERD.md • docs/API.md</p>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                <p className="font-semibold text-slate-900">End-to-End Operational Lifecycle</p>
-                <p className="text-[10px] text-slate-500 font-mono mt-0.5">docs/WORKFLOW.md</p>
-              </div>
+            <div className="space-y-2.5">
+              {plantAlerts.map((alert, i) => (
+                <div 
+                  key={i} 
+                  className={`p-3 rounded-xl border text-xs space-y-1 ${
+                    alert.severity === 'CRITICAL'
+                      ? 'bg-rose-50/50 border-rose-200'
+                      : alert.severity === 'WARNING'
+                        ? 'bg-amber-50/50 border-amber-200'
+                        : 'bg-slate-50 border-slate-200'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className={`px-1.5 py-0.2 rounded text-[9px] font-black tracking-wider ${
+                      alert.severity === 'CRITICAL'
+                        ? 'bg-rose-100 text-rose-800'
+                        : alert.severity === 'WARNING'
+                          ? 'bg-amber-100 text-amber-800'
+                          : 'bg-sky-100 text-sky-800'
+                    }`}>
+                      {alert.severity}
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-mono">{alert.time}</span>
+                  </div>
+                  <p className="font-bold text-slate-900 text-xs">{alert.title}</p>
+                  <p className="text-[11px] text-slate-500 leading-snug">{alert.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Operational Action Shortcuts */}
+          <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-3">
+            <div className="pb-2 border-b border-slate-100">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                <Cpu className="w-3.5 h-3.5 text-emerald-700" />
+                Quick Action Hub
+              </h3>
+              <p className="text-[10px] text-slate-400">Direct factory operational tasks</p>
+            </div>
+
+            <div className="space-y-1.5">
+              <button
+                onClick={() => onNavigate('warehouse')}
+                className="w-full text-left p-2.5 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all flex items-center justify-between text-xs font-semibold text-slate-800 group cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Package className="w-4 h-4 text-slate-500 group-hover:text-emerald-700" />
+                  <span>Issue Raw Materials & Trims</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-700" />
+              </button>
+
+              <button
+                onClick={() => onNavigate('fabric-qc')}
+                className="w-full text-left p-2.5 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all flex items-center justify-between text-xs font-semibold text-slate-800 group cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-slate-500 group-hover:text-emerald-700" />
+                  <span>Perform Fabric 4-Point QC</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-700" />
+              </button>
+
+              <button
+                onClick={() => onNavigate('sewing')}
+                className="w-full text-left p-2.5 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all flex items-center justify-between text-xs font-semibold text-slate-800 group cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Layers className="w-4 h-4 text-slate-500 group-hover:text-emerald-700" />
+                  <span>Log Hourly Sewing Output</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-700" />
+              </button>
+
+              <button
+                onClick={() => onNavigate('shipment')}
+                className="w-full text-left p-2.5 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all flex items-center justify-between text-xs font-semibold text-slate-800 group cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Truck className="w-4 h-4 text-slate-500 group-hover:text-emerald-700" />
+                  <span>Dispatch Security Gate Pass</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-700" />
+              </button>
+
+              <button
+                onClick={() => onNavigate('hr')}
+                className="w-full text-left p-2.5 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/30 transition-all flex items-center justify-between text-xs font-semibold text-slate-800 group cursor-pointer"
+              >
+                <div className="flex items-center gap-2.5">
+                  <Users className="w-4 h-4 text-slate-500 group-hover:text-emerald-700" />
+                  <span>Biometric Attendance & Payroll</span>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-700" />
+              </button>
             </div>
           </div>
         </div>
