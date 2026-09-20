@@ -7,7 +7,24 @@
 
 **GarmentERP BD** is an enterprise-grade ERP and Quality Management System engineered around the authentic business, production, and quality assurance workflows of Bangladesh Ready-Made Garments (RMG) manufacturing factories.
 
-It unites the end-to-end journey from **Buyer Inquiry & Purchase Order (PO)** to **Costing, BOM, Procurement, Warehouse Inventory, Production (Cutting, Sewing, Finishing), Carton Ratio Packing, Comprehensive QA/QC (Inspections, Defects, Rework, CAPA, AQL 1.5/2.5)**, and **Commercial Invoicing & Shipment**.
+It unites the end-to-end journey from **Buyer Inquiry & Purchase Order (PO)** to **Costing, BOM, Procurement, Multi-Bin Warehouse Inventory, Production (Cutting, Relaxation, Sewing, Finishing), Ratio Carton Packing, Comprehensive QA/QC (Fabric 4-Point, Inline Defects, Rework Station, CAPA 5-Whys, ISO AQL 2.5 Normal Sampling)**, **Customs Invoicing & Container Gate Pass Dispatch**, and **Executive Plant BI & OEE Telemetry**.
+
+---
+
+## 🌟 Key Enterprise Highlights
+
+- **Executive Two-Tier Navigation Bar & Menubar**:
+  - **Tier 1 (Utility Bar)**: Plant switcher (`Savar Unit 1` & `Gazipur Complex`), real-time Dhaka BST Clock (`UTC+6`), live API pulse (`● Online`), instant 14-role RBAC persona switcher, notifications bell, and user profile.
+  - **Tier 2 (Module Menubar)**: Horizontal menubar with 9 core factory modules (`Overview`, `Commercial ▾`, `Supply Chain ▾`, `Production ▾`, `QA / QC ▾`, `Logistics ▾`, `Operations ▾`, `Executive BI ▾`, `Administration ▾`).
+  - **Click-to-Expand Submenus**: Clicking any module opens a high-definition popover showing all submenus with micro-descriptions and standard badges (`ASTM D5430`, `ISO 2859-1`, `Labor Act 2006`, `MRP Engine`).
+  - **Quick Command Palette (`Ctrl+K`)**: Instant search modal allowing operators and executives to jump directly to any of the 26 specialized screens.
+  - **Collapsible Accordion Sidebar**: Multi-module accordion tree with instant submenu filtering and 1-click collapse to icon-rail mode.
+- **Factory Floor Compliance & Printables**:
+  - **Customs Security Gate Pass**: Official export container dispatch voucher with driver license, container seal barcode, and security signoff blocks.
+  - **Commercial Export Invoice**: Customs-compliant export invoice showing Buyer LC reference, HS codes, Port of Loading/Discharge, and Net FOB values.
+  - **Worker Payslip**: Official salary slip enforcing the **Bangladesh Labor Act 2006** overtime rate formula: $\text{OT Rate} = \frac{\text{Basic Salary}}{208} \times 2$.
+- **Universal RFC-4180 Excel/CSV Data Export**: One-click export with UTF-8 BOM (`\uFEFF`) across Orders, Inventory, Attendance, Payroll, Defect Logs, Invoices, and Gate Passes.
+- **Enterprise Toast Notification HUD & Action Guards**: Non-blocking toast notifications (`success`, `error`, `warning`, `info`) with modal confirmation safeguards for irreversible factory actions.
 
 ---
 
@@ -25,10 +42,10 @@ React 18 + TypeScript + Vite + Tailwind CSS (Client SPA)
          Audit Trail & SQA Suites
 ```
 
-- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Lucide Icons, Global Toast HUD, RFC-4180 Excel/CSV Exporters, Printable Gate Passes & Commercial Invoices.
-- **Backend**: Node.js, Express.js, TypeScript, JWT with Refresh Tokens, bcrypt, Zod validation.
+- **Frontend**: React 18, TypeScript, Vite, Tailwind CSS, Lucide Icons, Two-Tier Menubar Navigation, Command Palette, Global Toast HUD, RFC-4180 CSV Exporters, Printable Customs Slips.
+- **Backend**: Node.js, Express.js, TypeScript, JWT with Refresh Tokens, bcrypt, Zod validation, Chained SHA-256 Audit Logger.
 - **Database**: Prisma ORM, Multi-tenant Bangladesh Factory Schema (PostgreSQL/SQLite compatible).
-- **SQA & Portfolio Assets**: 8 Postman Collections, 96 Automated Integration Tests, 10-page Master Blueprint PDF.
+- **SQA & Testing**: 8 Postman Collections, 96 Automated Integration Tests (100% Pass rate across all 8 phases).
 
 ---
 
@@ -37,41 +54,50 @@ React 18 + TypeScript + Vite + Tailwind CSS (Client SPA)
 ```text
 GarmentERP-BD/
 ├── docs/
-│   ├── GarmentERP_BD_Complete_System_Specification.pdf # Master Enterprise Blueprint (All Modules & Workflows)
+│   ├── GarmentERP_BD_Complete_System_Specification.pdf # 10-page Master Blueprint PDF
+│   ├── GarmentERP_BD_Complete_Specification.html       # Master System HTML Specification
 │   ├── SRS.md            # Software Requirements Specification (31 Workflows)
 │   ├── ERD.md            # Complete Database Schema & Entity Relationships
 │   ├── API.md            # REST API Specification & Endpoint Catalog
 │   └── WORKFLOW.md       # Operational Lifecycles & QA Escalation Flows
 ├── postman/
-│   ├── GarmentERP_Auth_RBAC.postman_collection.json # Phase 1 Auth & RBAC
-│   ├── GarmentERP_Commercial_Phase2.postman_collection.json # Phase 2 Merchandising & BOM
-│   ├── GarmentERP_SupplyChain_Phase3.postman_collection.json # Phase 3 SCM & Inventory
-│   ├── GarmentERP_Production_Phase4.postman_collection.json # Phase 4 Cutting & Sewing
-│   ├── GarmentERP_QA_QC_Phase5.postman_collection.json # Phase 5 QA/QC & AQL 2.5
-│   ├── GarmentERP_Shipment_Phase6.postman_collection.json # Phase 6 Shipment & Gate Pass
-│   ├── GarmentERP_Operations_Phase7.postman_collection.json # Phase 7 Operations & Labor Act 2006 Payroll
-│   └── GarmentERP_Intelligence_Phase8.postman_collection.json # Phase 8 Traceability 360° & BI Dashboard
+│   ├── GarmentERP_Auth_RBAC.postman_collection.json            # Phase 1 Auth & RBAC
+│   ├── GarmentERP_Commercial_Phase2.postman_collection.json    # Phase 2 Merchandising & BOM
+│   ├── GarmentERP_SupplyChain_Phase3.postman_collection.json   # Phase 3 SCM & Inventory
+│   ├── GarmentERP_Production_Phase4.postman_collection.json    # Phase 4 Cutting & Sewing
+│   ├── GarmentERP_QA_QC_Phase5.postman_collection.json         # Phase 5 QA/QC & AQL 2.5
+│   ├── GarmentERP_Shipment_Phase6.postman_collection.json      # Phase 6 Shipment & Gate Pass
+│   ├── GarmentERP_Operations_Phase7.postman_collection.json    # Phase 7 Operations & Payroll
+│   └── GarmentERP_Intelligence_Phase8.postman_collection.json  # Phase 8 Traceability 360° & BI
+├── scripts/
+│   └── test-all.js       # Master automated CI test runner (All 8 Phases)
 ├── server/
 │   ├── prisma/           # Prisma ORM schema
 │   ├── src/
 │   │   ├── config/       # Roles, permissions & system constants
 │   │   ├── middleware/   # JWT verification, RBAC guard, audit logger
 │   │   ├── modules/
-│   │   │   ├── auth/     # Login, Register, Refresh Tokens, Role assignments
-│   │   │   ├── organization/ # Factories, Buildings, Floors, Lines, Warehouses
-│   │   │   └── audit/    # Tamper-evident compliance ledger
+│   │   │   ├── auth/         # Phase 1: Authentication & RBAC
+│   │   │   ├── organization/ # Phase 1: Factories, Lines & Warehouses
+│   │   │   ├── audit/        # Phase 1: SHA-256 Audit Trail
+│   │   │   ├── merchandising/# Phase 2: Buyers, Styles, Costing & POs
+│   │   │   ├── supplychain/  # Phase 3: Suppliers, Procurement & Stock
+│   │   │   ├── production/   # Phase 4: Cutting, Sewing & Finishing
+│   │   │   ├── qa/           # Phase 5: 4-Point, Inline QC, Rework, CAPA & AQL
+│   │   │   ├── shipment/     # Phase 6: Invoicing, Packing List & Gate Pass
+│   │   │   ├── operations/   # Phase 7: HR, Labor Act Payroll, Maintenance & Compliance
+│   │   │   └── analytics/    # Phase 8: Traceability 360°, OEE & Telemetry
 │   │   ├── services/     # In-memory store & persistent seeds
-│   │   └── tests/        # Automated backend integration tests (100% Pass)
+│   │   └── tests/        # Automated backend integration tests (96/96 PASS)
 │   └── tsconfig.json
 ├── client/
 │   ├── src/
-│   │   ├── components/   # Navbar, Sidebar, Badges
-│   │   ├── modules/
-│   │   │   ├── auth/     # Login view with 1-click persona switchers
-│   │   │   ├── organization/ # Factory tree, sewing lines, bonded warehouses
-│   │   │   ├── rbac/     # 14 roles permission matrix
-│   │   │   ├── audit/    # Audit trail table with filters
-│   │   │   └── dashboard/# Executive summary and module roadmap
+│   │   ├── components/   # Common components, ConfirmModal, ToastHUD
+│   │   │   └── layout/   # Two-Tier Navbar, Accordion Sidebar
+│   │   ├── context/      # ToastContext notification engine
+│   │   ├── navigation/   # Centralized navConfig (9 Modules, 26 Submenus)
+│   │   ├── modules/      # 8 Full Phase Enterprise Frontend Modules
+│   │   ├── utils/        # RFC-4180 Excel CSV Exporter
 │   │   ├── services/     # API client & demo profiles
 │   │   └── types/        # Shared TypeScript interfaces
 │   └── vite.config.ts
@@ -121,10 +147,8 @@ npm start
 
 ### 3. Run Automated Tests
 ```bash
-cd server
-npm test
-# Or run all 96 integration tests covering Phases 1 to 8:
-node ../scripts/test-all.js
+# Run all 96 automated integration tests covering all 8 phases:
+node scripts/test-all.js
 ```
 
 ### 4. Run Frontend Client
@@ -132,7 +156,7 @@ node ../scripts/test-all.js
 cd client
 npm install
 npm run dev
-# Open http://localhost:3000
+# Open http://localhost:3000 in your browser
 ```
 
 ### 🔑 Pre-Configured Test Credentials:
@@ -154,3 +178,4 @@ npm run dev
 - [x] **Phase 6: Shipment & Logistics — Commercial Invoicing, Packing List, Security Gate Pass, Dispatch Tracking**
 - [x] **Phase 7: Factory Operations — HR/Roster, Biometric Payroll (BD Labor Act 2006), Operational Finance, Machine Maintenance, Compliance Audits**
 - [x] **Phase 8: System Intelligence — Order Traceability 360°, Executive Dashboards, Real-Time Socket Alerts, SQA Test Automation**
+- [x] **Production Polish: Two-Tier Menubar Navigation, Click-to-Expand Submenus, Quick Search (`Ctrl+K`), Printable Factory Slips & RFC-4180 CSV Exporters**
