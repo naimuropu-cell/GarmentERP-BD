@@ -1,11 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { Language, translations } from '../i18n/translations';
+import { Language, translations, toBengaliNumber } from '../i18n/translations';
 
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   toggleLanguage: () => void;
   t: (key: string, defaultText?: string) => string;
+  formatNumber: (val: string | number) => string;
+  toBengaliNumber: (val: string | number) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -42,8 +44,15 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return defaultText || key;
   }, [language]);
 
+  const formatNumber = useCallback((val: string | number): string => {
+    if (language === 'bn') {
+      return toBengaliNumber(val);
+    }
+    return String(val);
+  }, [language]);
+
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, toggleLanguage, t }}>
+    <LanguageContext.Provider value={{ language, setLanguage, toggleLanguage, t, formatNumber, toBengaliNumber }}>
       {children}
     </LanguageContext.Provider>
   );
@@ -56,3 +65,4 @@ export const useLanguage = (): LanguageContextType => {
   }
   return context;
 };
+

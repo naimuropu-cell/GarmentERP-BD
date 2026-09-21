@@ -47,7 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   selectedFactory,
   onSelectFactory
 }) => {
-  const { language, toggleLanguage, t } = useLanguage();
+  const { language, toggleLanguage, t, toBengaliNumber } = useLanguage();
   const [time, setTime] = useState('');
   const [showRoleMenu, setShowRoleMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -58,22 +58,36 @@ export const Navbar: React.FC<NavbarProps> = ({
   const menubarRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Live Bangladesh BST Local Clock
+  // Live Bangladesh BST Local Clock (Bilingual English & Bengali)
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
-      setTime(now.toLocaleTimeString('en-US', { 
-        timeZone: 'Asia/Dhaka', 
-        hour12: true, 
-        hour: '2-digit', 
-        minute: '2-digit', 
-        second: '2-digit' 
-      }));
+      if (language === 'bn') {
+        const rawTime = now.toLocaleTimeString('en-US', { 
+          timeZone: 'Asia/Dhaka', 
+          hour12: true, 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          second: '2-digit' 
+        });
+        const isPM = rawTime.includes('PM');
+        const timeDigits = rawTime.replace(/\s*(AM|PM)/i, '');
+        const bnDigits = toBengaliNumber(timeDigits);
+        setTime(`${bnDigits} ${isPM ? 'অপরাহ্ন' : 'পূর্বাহ্ন'}`);
+      } else {
+        setTime(now.toLocaleTimeString('en-US', { 
+          timeZone: 'Asia/Dhaka', 
+          hour12: true, 
+          hour: '2-digit', 
+          minute: '2-digit', 
+          second: '2-digit' 
+        }));
+      }
     };
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [language, toBengaliNumber]);
 
   // Global Click-Outside & Escape key listener for open menus and modals
   useEffect(() => {
@@ -188,7 +202,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-600 inline-block ml-0.5" title="Bangladesh Sovereign Edition" />
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400 font-medium tracking-tight">Enterprise Apparel & QA System</p>
+              <p className="text-[10px] text-slate-400 font-medium tracking-tight">{t('brand_tagline', 'Enterprise Apparel & QA System')}</p>
             </div>
           </div>
 
@@ -204,7 +218,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               {user.factories.map(f => (
                 <option key={f.id} value={f.id}>
-                  {f.name} ({f.code})
+                  {language === 'bn' 
+                    ? (f.code === 'AG-SAVAR-01' ? 'এপেক্স গার্মেন্টস — ঢাকা ইউনিট (সাভার)' : 'এপেক্স গার্মেন্টস — গাজীপুর কমপ্লেক্স')
+                    : f.name} ({f.code})
                 </option>
               ))}
             </select>
@@ -245,7 +261,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Bangladesh Local Clock */}
           <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 text-xs font-mono">
             <Clock className="w-3.5 h-3.5 text-emerald-600" />
-            <span className="font-semibold">{time || '02:00:00 AM'}</span>
+            <span className="font-semibold">{time || (language === 'bn' ? '০২:০০:০০ পূর্বাহ্ন' : '02:00:00 AM')}</span>
             <span className="text-[10px] text-slate-400 uppercase font-medium">{t('bst_timezone', 'BST (+6)')}</span>
           </div>
 
@@ -261,9 +277,9 @@ export const Navbar: React.FC<NavbarProps> = ({
               title="Instant RBAC Role Switcher"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span className="hidden sm:inline text-slate-500 text-[11px]">Role:</span>
+              <span className="hidden sm:inline text-slate-500 text-[11px]">{t('role_label', 'Role:')}</span>
               <span className={`px-1.5 py-0.2 rounded text-[11px] font-bold border ${getRoleBadgeColor(user.role.code)}`}>
-                {user.role.name}
+                {t(`role_${user.role.code}`, user.role.name)}
               </span>
               <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
             </button>
@@ -271,8 +287,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             {showRoleMenu && (
               <div className="absolute right-0 mt-2 w-72 rounded-xl bg-white border border-slate-200 shadow-xl py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
                 <div className="px-3 py-1.5 border-b border-slate-100 mb-1">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Preview RBAC Persona</p>
-                  <p className="text-[10px] text-slate-400">Switch permissions across 14 Garment ERP roles</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">{t('role_preview_title', 'Preview RBAC Persona')}</p>
+                  <p className="text-[10px] text-slate-400">{t('role_preview_desc', 'Switch permissions across 14 Garment ERP roles')}</p>
                 </div>
                 <div className="max-h-72 overflow-y-auto px-1 space-y-1">
                   {(Object.keys(DEMO_PROFILES) as SystemRoleCode[]).map((rCode) => (
@@ -289,7 +305,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                       }`}
                     >
                       <div>
-                        <p className="font-semibold">{DEMO_PROFILES[rCode].title}</p>
+                        <p className="font-semibold">{t(`role_${rCode}`, DEMO_PROFILES[rCode].title)}</p>
                         <p className="text-[10px] text-slate-500">{DEMO_PROFILES[rCode].dept}</p>
                       </div>
                       {user.role.code === rCode && <ShieldCheck className="w-4 h-4 text-emerald-700" />}
@@ -306,7 +322,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
             </span>
-            <span>Online</span>
+            <span>{t('status_online', 'Online')}</span>
           </div>
 
           {/* Plant Notifications Bell */}

@@ -26,40 +26,40 @@ interface OverviewDashboardProps {
 }
 
 export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNavigate }) => {
-  const { t } = useLanguage();
+  const { language, t, toBengaliNumber } = useLanguage();
   const kpis = [
     { 
       label: t('kpi_active_lines', 'Active Production Lines'), 
-      val: '8 Lines', 
+      val: t('val_active_lines', '8 Lines'), 
       sub: t('kpi_active_lines_sub', 'Savar + Gazipur Units'), 
-      change: '+2 lines active', 
+      change: t('change_active_lines', '+2 lines active'), 
       icon: Layers, 
       color: 'text-emerald-700', 
       bg: 'bg-emerald-50' 
     },
     { 
       label: t('kpi_oee_target', 'Plant Overall OEE Target'), 
-      val: '85.1%', 
+      val: t('val_oee', '85.1%'), 
       sub: t('kpi_oee_sub', 'Availability × Performance × Quality'), 
-      change: '+3.2% vs target', 
+      change: t('change_oee', '+3.2% vs target'), 
       icon: TrendingUp, 
       color: 'text-emerald-700', 
       bg: 'bg-emerald-50' 
     },
     { 
       label: t('kpi_dhu_rate', 'Plant Average Defect Rate (DHU)'), 
-      val: '1.18%', 
+      val: t('val_dhu', '1.18%'), 
       sub: t('kpi_dhu_sub', 'Benchmark < 2.0% (AQL Passed)'), 
-      change: '-0.3% this shift', 
+      change: t('change_dhu', '-0.3% this shift'), 
       icon: ShieldCheck, 
       color: 'text-emerald-700', 
       bg: 'bg-emerald-50' 
     },
     { 
       label: t('kpi_compliance', 'Enterprise Compliance Rating'), 
-      val: 'Grade A', 
+      val: t('val_compliance', 'Grade A'), 
       sub: t('kpi_compliance_sub', 'BSCI, Sedex & Accord Certified'), 
-      change: '100% Compliant', 
+      change: t('change_compliance', '100% Compliant'), 
       icon: Award, 
       color: 'text-amber-600', 
       bg: 'bg-amber-50' 
@@ -68,8 +68,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
 
   const liveSewingLines = [
     {
-      line: 'Line 01',
-      style: 'H&M Basic Polo (Style #HM-PL-2026)',
+      line: language === 'bn' ? 'লাইন ০১' : 'Line 01',
+      style: language === 'bn' ? 'এইচঅ্যান্ডএম বেসিক পোলো (স্টাইল #HM-PL-2026)' : 'H&M Basic Polo (Style #HM-PL-2026)',
       targetPerHour: 400,
       actualPerHour: 382,
       efficiency: 95.5,
@@ -78,8 +78,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
       status: 'NORMAL'
     },
     {
-      line: 'Line 02',
-      style: 'Zara Mens Chino Pants (Style #ZR-CP-901)',
+      line: language === 'bn' ? 'লাইন ০২' : 'Line 02',
+      style: language === 'bn' ? 'জারা মেনস চিনো প্যান্ট (স্টাইল #ZR-CP-901)' : 'Zara Mens Chino Pants (Style #ZR-CP-901)',
       targetPerHour: 320,
       actualPerHour: 292,
       efficiency: 91.2,
@@ -88,8 +88,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
       status: 'WARNING'
     },
     {
-      line: 'Line 03',
-      style: 'M&S Denim Jacket (Style #MS-DJ-108)',
+      line: language === 'bn' ? 'লাইন ০৩' : 'Line 03',
+      style: language === 'bn' ? 'এমঅ্যান্ডএস ডেনিম জ্যাকেট (স্টাইল #MS-DJ-108)' : 'M&S Denim Jacket (Style #MS-DJ-108)',
       targetPerHour: 260,
       actualPerHour: 248,
       efficiency: 95.3,
@@ -98,8 +98,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
       status: 'NORMAL'
     },
     {
-      line: 'Line 04',
-      style: 'Target Fleece Hoodie (Style #TG-HD-44)',
+      line: language === 'bn' ? 'লাইন ০৪' : 'Line 04',
+      style: language === 'bn' ? 'টার্গেট ফ্লিস হুডি (স্টাইল #TG-HD-44)' : 'Target Fleece Hoodie (Style #TG-HD-44)',
       targetPerHour: 350,
       actualPerHour: 312,
       efficiency: 89.1,
@@ -113,33 +113,33 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
     {
       po: 'PO-2026-001',
       buyer: 'H&M Hennes & Mauritz',
-      style: 'Mens Classic Pique Polo Shirt',
-      qty: '5,000 pcs',
-      value: '$42,500',
-      delivery: '2026-10-15',
-      stage: 'AQL Passed / Ready for Gate Pass',
+      style: language === 'bn' ? 'মেনস ক্লাসিক পাইক পোলো শার্ট' : 'Mens Classic Pique Polo Shirt',
+      qty: language === 'bn' ? '৫,০০০ পিস' : '5,000 pcs',
+      value: language === 'bn' ? '$৪২,৫০০' : '$42,500',
+      delivery: language === 'bn' ? '১৫-১০-২০২৬' : '2026-10-15',
+      stage: t('stage_po_001', 'AQL Passed / Ready for Gate Pass'),
       progress: 95,
       statusColor: 'emerald'
     },
     {
       po: 'PO-2026-002',
       buyer: 'Zara / Inditex Group',
-      style: 'Stretch Twill Cargo Trousers',
-      qty: '3,500 pcs',
-      value: '$38,500',
-      delivery: '2026-10-22',
-      stage: 'Sewing Assembly (Lines 02 & 03)',
+      style: language === 'bn' ? 'স্ট্রেচ টুইল কার্গো ট্রাউজার্স' : 'Stretch Twill Cargo Trousers',
+      qty: language === 'bn' ? '৩,৫০০ পিস' : '3,500 pcs',
+      value: language === 'bn' ? '$৩৮,৫০০' : '$38,500',
+      delivery: language === 'bn' ? '২২-১০-২০২৬' : '2026-10-22',
+      stage: t('stage_po_002', 'Sewing Assembly (Lines 02 & 03)'),
       progress: 68,
       statusColor: 'blue'
     },
     {
       po: 'PO-2026-003',
       buyer: 'Marks & Spencer (M&S)',
-      style: 'Vintage Washed Denim Jacket',
-      qty: '2,000 pcs',
-      value: '$48,000',
-      delivery: '2026-11-05',
-      stage: 'Cutting & 24h Relaxation Spreading',
+      style: language === 'bn' ? 'ভিন্টেজ ওয়াশড ডেনিম জ্যাকেট' : 'Vintage Washed Denim Jacket',
+      qty: language === 'bn' ? '২,০০০ পিস' : '2,000 pcs',
+      value: language === 'bn' ? '$৪৮,০০০' : '$48,000',
+      delivery: language === 'bn' ? '০৫-১১-২০২৬' : '2026-11-05',
+      stage: t('stage_po_003', 'Cutting & 24h Relaxation Spreading'),
       progress: 35,
       statusColor: 'amber'
     }
@@ -147,25 +147,28 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
 
   const plantAlerts = [
     {
-      severity: 'CRITICAL',
-      source: 'Line 02 — Station 14',
-      time: '12m ago',
-      title: 'Needle Plate Fracture on Juki Machine',
-      desc: 'High-speed lockstitch needle tip break. Magnetic needle log initiated.'
+      severity: t('severity_critical', 'CRITICAL'),
+      rawSeverity: 'CRITICAL',
+      source: language === 'bn' ? 'লাইন ০২ — স্টেশন ১৪' : 'Line 02 — Station 14',
+      time: t('time_12m_ago', '12m ago'),
+      title: t('alert_needle_title', 'Needle Plate Fracture on Juki Machine'),
+      desc: t('alert_needle_desc', 'High-speed lockstitch needle tip break. Magnetic needle log initiated.')
     },
     {
-      severity: 'WARNING',
-      source: 'Fabric Warehouse',
-      time: '45m ago',
-      title: 'Roll #F-884 ASTM Points Drift',
-      desc: 'Penalty score at 21.4 pts / 100 sq yds approaching 24 pt rejection limit.'
+      severity: t('severity_warning', 'WARNING'),
+      rawSeverity: 'WARNING',
+      source: language === 'bn' ? 'ফেব্রিক ওয়্যারহাউস' : 'Fabric Warehouse',
+      time: t('time_45m_ago', '45m ago'),
+      title: t('alert_roll_title', 'Roll #F-884 ASTM Points Drift'),
+      desc: t('alert_roll_desc', 'Penalty score at 21.4 pts / 100 sq yds approaching 24 pt rejection limit.')
     },
     {
-      severity: 'INFO',
-      source: 'Security Gate 01',
-      time: '1h ago',
-      title: '40FT HQ Container Dispatched',
-      desc: 'Truck #DHAKA-METRO-TA-4491 cleared gate with Seal #BD-EXP-77218.'
+      severity: t('severity_info', 'INFO'),
+      rawSeverity: 'INFO',
+      source: language === 'bn' ? 'সিকিউরিটি গেট ০১' : 'Security Gate 01',
+      time: t('time_1h_ago', '1h ago'),
+      title: t('alert_container_title', '40FT HQ Container Dispatched'),
+      desc: t('alert_container_desc', 'Truck #DHAKA-METRO-TA-4491 cleared gate with Seal #BD-EXP-77218.')
     }
   ];
 
@@ -180,10 +183,12 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
                 <Sparkles className="w-3 h-3 text-slate-950" />
                 {t('live_floor_operations', 'Live Manufacturing Floor Operations')}
               </span>
-              <span className="text-xs text-emerald-300 font-mono">Apex Garments • Dhaka Unit 1</span>
+              <span className="text-xs text-emerald-300 font-mono">
+                {language === 'bn' ? 'এপেক্স গার্মেন্টস • ঢাকা ইউনিট ১' : 'Apex Garments • Dhaka Unit 1'}
+              </span>
             </div>
             <h1 className="text-2xl font-extrabold text-white tracking-tight">
-              {t('welcome_back', 'Welcome back')}, {user.fullName}
+              {t('welcome_back', 'Welcome back')}, {language === 'bn' && user.fullName === 'Engr. Naimur Rahman' ? 'ইঞ্জিনিয়ার নাঈমুর রহমান (সিস্টেম আর্কিটেক্ট)' : `${user.fullName} (${t(`role_${user.role.code}`, user.role.name)})`}
             </h1>
             <p className="text-xs text-emerald-100/90 max-w-2xl leading-relaxed">
               {t('banner_subtitle', 'All 8 manufacturing suites are operational with real-time floor telemetry.')}
@@ -292,7 +297,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
                         ? 'bg-emerald-50 text-emerald-800 border-emerald-200' 
                         : 'bg-amber-50 text-amber-800 border-amber-200'
                     }`}>
-                      {line.efficiency}% Eff.
+                      {language === 'bn' ? `${toBengaliNumber(line.efficiency)}% ${t('eff_suffix', 'Eff.')}` : `${line.efficiency}% Eff.`}
                     </span>
                   </div>
 
@@ -303,7 +308,9 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
                   <div className="space-y-1.5 text-[11px]">
                     <div className="flex justify-between text-slate-500">
                       <span>{t('hourly_output', 'Hourly Output:')}</span>
-                      <span className="font-bold text-slate-900">{line.actualPerHour} / {line.targetPerHour} pcs</span>
+                      <span className="font-bold text-slate-900">
+                        {language === 'bn' ? `${toBengaliNumber(line.actualPerHour)} / ${toBengaliNumber(line.targetPerHour)} ${t('pcs_unit', 'pcs')}` : `${line.actualPerHour} / ${line.targetPerHour} pcs`}
+                      </span>
                     </div>
                     {/* Progress Bar */}
                     <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
@@ -313,8 +320,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
                       />
                     </div>
                     <div className="flex justify-between text-slate-500 pt-0.5">
-                      <span>{t('line_dhu', 'Line DHU:')} <strong className="text-slate-800">{line.dhu}%</strong></span>
-                      <span>{t('operators', 'Operators:')} <strong className="text-slate-800">{line.operatorCount}</strong></span>
+                      <span>{t('line_dhu', 'Line DHU:')} <strong className="text-slate-800">{language === 'bn' ? `${toBengaliNumber(line.dhu)}%` : `${line.dhu}%`}</strong></span>
+                      <span>{t('operators', 'Operators:')} <strong className="text-slate-800">{language === 'bn' ? `${toBengaliNumber(line.operatorCount)} জন` : `${line.operatorCount}`}</strong></span>
                     </div>
                   </div>
                 </div>
@@ -366,7 +373,9 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
                   <div className="space-y-1">
                     <div className="flex justify-between text-[10px] text-slate-500">
                       <span>{t('status', 'Status:')} <strong className="text-slate-800">{order.stage}</strong></span>
-                      <span className="font-bold text-slate-700">{order.progress}%</span>
+                      <span className="font-bold text-slate-700">
+                        {language === 'bn' ? `${toBengaliNumber(order.progress)}%` : `${order.progress}%`}
+                      </span>
                     </div>
                     <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
                       <div 
@@ -405,18 +414,18 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
                 <div 
                   key={i} 
                   className={`p-3 rounded-xl border text-xs space-y-1 ${
-                    alert.severity === 'CRITICAL'
+                    alert.rawSeverity === 'CRITICAL'
                       ? 'bg-rose-50/50 border-rose-200'
-                      : alert.severity === 'WARNING'
+                      : alert.rawSeverity === 'WARNING'
                         ? 'bg-amber-50/50 border-amber-200'
                         : 'bg-slate-50 border-slate-200'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <span className={`px-1.5 py-0.2 rounded text-[9px] font-black tracking-wider ${
-                      alert.severity === 'CRITICAL'
+                      alert.rawSeverity === 'CRITICAL'
                         ? 'bg-rose-100 text-rose-800'
-                        : alert.severity === 'WARNING'
+                        : alert.rawSeverity === 'WARNING'
                           ? 'bg-amber-100 text-amber-800'
                           : 'bg-sky-100 text-sky-800'
                     }`}>
@@ -430,6 +439,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({ user, onNa
               ))}
             </div>
           </div>
+
 
           {/* Quick Operational Action Shortcuts */}
           <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs space-y-3">

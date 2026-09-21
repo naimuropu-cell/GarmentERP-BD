@@ -104,6 +104,59 @@ export const translations: Record<Language, Record<string, string>> = {
     'action_dispatch_gatepass': 'Dispatch Security Gate Pass',
     'action_biometric_payroll': 'Biometric Attendance & Payroll',
 
+    // Roles & Factory
+    'role_SUPER_ADMIN': 'Super Administrator',
+    'role_FACTORY_ADMIN': 'Factory Administrator',
+    'role_MANAGEMENT': 'Executive Management',
+    'role_MERCHANDISER': 'Merchandiser',
+    'role_PURCHASE_OFFICER': 'Purchase Officer',
+    'role_STORE_OFFICER': 'Store Officer',
+    'role_PROD_PLANNER': 'Production Planner',
+    'role_PROD_SUPERVISOR': 'Production Supervisor',
+    'role_QA_MANAGER': 'QA Manager',
+    'role_QC_INSPECTOR': 'QC Inspector',
+    'role_COMMERCIAL_OFFICER': 'Commercial Officer',
+    'role_HR_OFFICER': 'HR Officer',
+    'role_FINANCE_OFFICER': 'Finance Officer',
+    'role_MAINTENANCE_OFFICER': 'Maintenance Officer',
+    'factory_savar': 'Apex Garments — Dhaka Unit (Savar) (AG-SAVAR-01)',
+    'factory_gazipur': 'Apex Garments — Gazipur Complex (AG-GAZIPUR-02)',
+
+    // KPIs values & dynamic metrics
+    'val_active_lines': '8 Lines',
+    'change_active_lines': '+2 lines active',
+    'val_oee': '85.1%',
+    'change_oee': '+3.2% vs target',
+    'val_dhu': '1.18%',
+    'change_dhu': '-0.3% this shift',
+    'val_compliance': 'Grade A',
+    'change_compliance': '100% Compliant',
+
+    // Floor Metrics & Units
+    'line_prefix': 'Line',
+    'eff_suffix': 'Eff.',
+    'pcs_unit': 'pcs',
+    'operators_unit': 'operators',
+
+    // Alerts
+    'severity_critical': 'CRITICAL',
+    'severity_warning': 'WARNING',
+    'severity_info': 'INFO',
+    'time_12m_ago': '12m ago',
+    'time_45m_ago': '45m ago',
+    'time_1h_ago': '1h ago',
+    'alert_needle_title': 'Needle Plate Fracture on Juki Machine',
+    'alert_needle_desc': 'High-speed lockstitch needle tip break. Magnetic needle log initiated.',
+    'alert_roll_title': 'Roll #F-884 ASTM Points Drift',
+    'alert_roll_desc': 'Fabric roll points approaching threshold. Second inspection scheduled.',
+    'alert_container_title': 'Container #TGHU-9921 Dispatched',
+    'alert_container_desc': 'Commercial export shipment cleared factory gate for Chittagong Port.',
+
+    // PO Stages
+    'stage_po_001': 'AQL Passed / Ready for Gate Pass',
+    'stage_po_002': 'Sewing Assembly (Lines 02 & 03)',
+    'stage_po_003': 'Cutting & 24h Relaxation Spreading',
+
     // Sidebar
     'nav_tree': 'Navigation Tree',
     'expand': 'Expand',
@@ -213,6 +266,59 @@ export const translations: Record<Language, Record<string, string>> = {
     'action_dispatch_gatepass': 'সিকিউরিটি গেট পাস ছাড়পত্র দিন',
     'action_biometric_payroll': 'বায়োমেট্রিক হাজিরা ও পে-রোল',
 
+    // Roles & Factory
+    'role_SUPER_ADMIN': 'সুপার অ্যাডমিন',
+    'role_FACTORY_ADMIN': 'ফ্যাক্টরি অ্যাডমিন',
+    'role_MANAGEMENT': 'এক্সিকিউটিভ ম্যানেজমেন্ট',
+    'role_MERCHANDISER': 'মার্চেন্ডাইজার',
+    'role_PURCHASE_OFFICER': 'পারচেজ অফিসার',
+    'role_STORE_OFFICER': 'স্টোর অফিসার',
+    'role_PROD_PLANNER': 'প্রোডাকশন প্ল্যানার',
+    'role_PROD_SUPERVISOR': 'প্রোডাকশন সুপারভাইজার',
+    'role_QA_MANAGER': 'কিউএ ম্যানেজার',
+    'role_QC_INSPECTOR': 'কিউসি ইন্সপেক্টর',
+    'role_COMMERCIAL_OFFICER': 'কমার্শিয়াল অফিসার',
+    'role_HR_OFFICER': 'এইচআর অফিসার',
+    'role_FINANCE_OFFICER': 'ফিন্যান্স অফিসার',
+    'role_MAINTENANCE_OFFICER': 'মেইনটেন্যান্স অফিসার',
+    'factory_savar': 'এপেক্স গার্মেন্টস — ঢাকা ইউনিট (সাভার) (AG-SAVAR-01)',
+    'factory_gazipur': 'এপেক্স গার্মেন্টস — গাজীপুর কমপ্লেক্স (AG-GAZIPUR-02)',
+
+    // KPIs values & dynamic metrics
+    'val_active_lines': '৮টি লাইন',
+    'change_active_lines': '+২টি লাইন চালু',
+    'val_oee': '৮৫.১%',
+    'change_oee': '+৩.২% লক্ষ্যমাত্রার চেয়ে বেশি',
+    'val_dhu': '১.১৮%',
+    'change_dhu': '-০.৩% এই শিফটে',
+    'val_compliance': 'গ্রেড এ',
+    'change_compliance': '১০০% কমপ্লায়েন্ট',
+
+    // Floor Metrics & Units
+    'line_prefix': 'লাইন',
+    'eff_suffix': 'দক্ষতা',
+    'pcs_unit': 'পিস',
+    'operators_unit': 'জন অপারেটর',
+
+    // Alerts
+    'severity_critical': 'জরুরি',
+    'severity_warning': 'সতর্কতা',
+    'severity_info': 'তথ্য',
+    'time_12m_ago': '১২ মিনিট আগে',
+    'time_45m_ago': '৪৫ মিনিট আগে',
+    'time_1h_ago': '১ ঘণ্টা আগে',
+    'alert_needle_title': 'জুকি মেশিনে নিডেল প্লেট ফ্র্যাকচার',
+    'alert_needle_desc': 'হাই-স্পিড লকস্টিচ সুইয়ের ডগা ভেঙেছে। ম্যাগনেটিক নিডেল লগ চালু করা হয়েছে।',
+    'alert_roll_title': 'রোল #F-884 এএসটিএম পয়েন্ট বিচ্যুতি',
+    'alert_roll_desc': 'ফেব্রিক রোল পয়েন্ট সীমা ছাড়িয়ে যাচ্ছে। দ্বিতীয় পরিদর্শনের নির্দেশ দেওয়া হয়েছে।',
+    'alert_container_title': 'কনটেইনার #TGHU-9921 গেট আউট সম্পন্ন',
+    'alert_container_desc': 'চট্টগ্রাম বন্দরের উদ্দেশে কমার্শিয়াল চালান ফ্যাক্টরি গেট ত্যাগ করেছে।',
+
+    // PO Stages
+    'stage_po_001': 'একিউএল পাস / গেট পাসের জন্য প্রস্তুত',
+    'stage_po_002': 'সেলাই সংযোজন (লাইন ০২ ও ০৩)',
+    'stage_po_003': 'কাটিং ও ২৪ ঘণ্টা রিল্যাক্সেশন',
+
     // Sidebar
     'nav_tree': 'ন্যাভিগেশন ট্রি',
     'expand': 'সব খুলুন',
@@ -220,3 +326,9 @@ export const translations: Record<Language, Record<string, string>> = {
     'filter_menus': 'মেনু ও সাবমেনু খুঁজুন...'
   }
 };
+
+export const toBengaliNumber = (input: string | number): string => {
+  const bengaliDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+  return String(input).replace(/[0-9]/g, (digit) => bengaliDigits[parseInt(digit, 10)]);
+};
+
