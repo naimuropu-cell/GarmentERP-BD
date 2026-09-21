@@ -569,16 +569,49 @@ export const Navbar: React.FC<NavbarProps> = ({
           })}
         </nav>
 
-        {/* Right side of Menubar: Active Path Breadcrumbs */}
+        {/* Right side of Menubar: Active Path Breadcrumbs (Interactive Navigation) */}
         <div className="hidden lg:flex items-center gap-1 text-[11px] text-slate-400 py-1 pl-4 shrink-0 font-medium">
-          <span className="text-slate-500 font-semibold">{t('brand_name', 'GarmentERP')}</span>
-          <ChevronRight className="w-3 h-3 text-slate-300" />
-          <span className="text-slate-600">{t('module_' + (activeModule?.id || 'dashboard'), activeModule?.shortTitle || 'Plant')}</span>
-          <ChevronRight className="w-3 h-3 text-slate-300" />
-          <span className="text-emerald-800 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-            {t('sub_' + (activeSubmenu?.id.replace(/-/g, '_') || 'overview'), activeSubmenu?.shortLabel || activeSubmenu?.label || 'Overview')}
-          </span>
+          <button
+            type="button"
+            onClick={() => onSelectTab('overview')}
+            className="text-slate-500 hover:text-emerald-700 hover:underline font-semibold cursor-pointer transition-colors"
+            title="Return to Executive Overview"
+          >
+            {t('brand_name', 'GarmentERP')}
+          </button>
+          <ChevronRight className="w-3 h-3 text-slate-300 shrink-0" />
+          <button
+            type="button"
+            onClick={() => {
+              if (activeModule) {
+                onSelectTab(activeModule.defaultTabId);
+              } else {
+                onSelectTab('overview');
+              }
+            }}
+            className="text-slate-600 hover:text-emerald-700 hover:underline font-medium cursor-pointer transition-colors"
+            title={`Go to ${activeModule?.title || 'Overview'}`}
+          >
+            {t('module_' + (activeModule?.id || 'dashboard'), activeModule?.shortTitle || 'Plant')}
+          </button>
+          <ChevronRight className="w-3 h-3 text-slate-300 shrink-0" />
+          <button
+            type="button"
+            onClick={() => {
+              if (activeSubmenu) {
+                onSelectTab(activeSubmenu.id, activeSubmenu.subTab);
+              } else {
+                onSelectTab('overview');
+              }
+            }}
+            className="text-emerald-800 font-bold bg-emerald-50 hover:bg-emerald-100 hover:border-emerald-300 px-2 py-0.5 rounded border border-emerald-200 cursor-pointer shadow-2xs transition-all flex items-center gap-1"
+            title="Currently Active Screen — Click to Refresh"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block animate-pulse" />
+            <span>{t('sub_' + (activeSubmenu?.id.replace(/-/g, '_') || 'overview'), activeSubmenu?.shortLabel || activeSubmenu?.label || 'Overview')}</span>
+          </button>
         </div>
+
       </div>
 
       {/* ========================================================================= */}
