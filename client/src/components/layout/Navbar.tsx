@@ -390,7 +390,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         className="relative bg-white px-4 flex items-center justify-between border-b border-slate-200 text-xs font-medium overflow-visible"
       >
         {/* Horizontal List of Module Menus */}
-        <nav className="flex items-center gap-1 py-1.5 overflow-x-auto no-scrollbar">
+        <nav className="flex items-center gap-1 py-1.5 overflow-visible">
           {MODULE_MENUS.map((menu) => {
             const Icon = menu.icon;
             const isMenuOpen = openMenuId === menu.id;
@@ -403,6 +403,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   onClick={() => handleMenuClick(menu.id)}
+                  onMouseEnter={() => {
+                    if (openMenuId !== null && openMenuId !== menu.id && !isDashboard) {
+                      setOpenMenuId(menu.id);
+                    }
+                  }}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer ${
                     isMenuOpen
                       ? 'bg-emerald-800 text-white shadow-sm ring-1 ring-emerald-900 font-bold'
@@ -439,7 +444,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {/* ================================================================= */}
                 {isMenuOpen && !isDashboard && (
                   <div 
-                    className="absolute left-0 top-full mt-1.5 w-[380px] sm:w-[420px] rounded-2xl bg-white border border-slate-200/90 shadow-2xl z-50 p-3.5 animate-in fade-in zoom-in-95 duration-150"
+                    className={`absolute ${menu.id === 'admin' || menu.id === 'analytics' ? 'right-0' : 'left-0'} top-full mt-1.5 w-[380px] sm:w-[420px] rounded-2xl bg-white border border-slate-200/90 shadow-2xl z-50 p-3.5 animate-in fade-in zoom-in-95 duration-150`}
                   >
                     {/* Submenu Header banner */}
                     <div className="flex items-start justify-between pb-3 mb-2.5 border-b border-slate-100">
@@ -451,15 +456,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                           </span>
                         </div>
                         <p className="text-[11px] text-slate-500 mt-0.5 leading-snug">{menu.description}</p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onSelectTab(menu.defaultTabId);
+                            setOpenMenuId(null);
+                          }}
+                          className="text-[11px] font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 mt-1 hover:underline cursor-pointer"
+                        >
+                          <span>{t('open_module_view', 'Open Full Department →')}</span>
+                        </button>
                       </div>
                       <button 
                         onClick={(e) => { e.stopPropagation(); setOpenMenuId(null); }}
-                        className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                        className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
                         title="Close menu"
                       >
                         <X className="w-4 h-4" />
                       </button>
                     </div>
+
 
                     {/* Submenus List */}
                     <div className="space-y-1.5 max-h-[440px] overflow-y-auto pr-1">

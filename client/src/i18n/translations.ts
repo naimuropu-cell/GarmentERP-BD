@@ -34,6 +34,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'module_analytics_full': 'Executive Plant BI & Telemetry',
     'module_admin': 'Administration',
     'module_admin_full': 'System Administration & RBAC',
+    'open_module_view': 'Open Full Department →',
 
     // Submenus
     'sub_overview': 'Plant Overview & Live Status',
@@ -196,6 +197,7 @@ export const translations: Record<Language, Record<string, string>> = {
     'module_analytics_full': 'প্ল্যান্ট বিআই ও টেলিমেট্রি',
     'module_admin': 'অ্যাডমিন',
     'module_admin_full': 'সিস্টেম অ্যাডমিনিস্ট্রেশন ও আরব্যাক',
+    'open_module_view': 'সম্পূর্ণ বিভাগে যান →',
 
     // Submenus
     'sub_overview': 'প্ল্যান্ট ওভারভিউ ও সরাসরি অবস্থা',
